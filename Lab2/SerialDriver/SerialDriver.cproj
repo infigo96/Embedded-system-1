@@ -32,10 +32,16 @@
       <framework-data>
   <options>
     <option id="avr32.drivers.gpio" value="Add" config="" content-id="Atmel.ASF" />
-    <option id="common.applications.user_application" value="Add" config="" content-id="Atmel.ASF" />
     <option id="common.boards" value="Add" config="" content-id="Atmel.ASF" />
+    <option id="avr32.drivers.intc" value="Add" config="" content-id="Atmel.ASF" />
+    <option id="common.applications.user_application" value="Add" config="" content-id="Atmel.ASF" />
   </options>
-  <configurations />
+  <configurations>
+    <configuration key="config.avr32.utils.trampoline" value="yes" default="yes" content-id="Atmel.ASF" />
+    <configuration key="config.avr32.utils.gccstartup" value="yes" default="yes" content-id="Atmel.ASF" />
+    <configuration key="config.utils.interrupt.intc" value="yes" default="yes" content-id="Atmel.ASF" />
+    <configuration key="config.avr32.drivers.intc.exception" value="yes" default="yes" content-id="Atmel.ASF" />
+  </configurations>
   <files>
     <file path="src/ASF/avr32/boards/evk1100/evk1100.h" framework="" version="" source="avr32/boards/evk1100/evk1100.h" changed="False" content-id="Atmel.ASF" />
     <file path="src/ASF/avr32/boards/evk1100/init.c" framework="" version="" source="avr32/boards/evk1100/init.c" changed="False" content-id="Atmel.ASF" />
@@ -264,6 +270,12 @@
     <Folder Include="src\config\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\driver.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\driver.h">
+      <SubType>compile</SubType>
+    </Compile>
     <None Include="src\asf.h">
       <SubType>compile</SubType>
     </None>
