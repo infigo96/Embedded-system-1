@@ -36,7 +36,7 @@ void initButton(void);
 void part1(void);
 void part2(volatile int *toggle, volatile unsigned long *pressing_button);
 
-void part1(void)
+void part1(void) //Toggle the led with 100ms after pressing the button, Locks to this state
 {
 	volatile unsigned long button_state = AVR32_GPIO.port[BUTTON0_PORT].pvr & BUTTON0_PIN;
 	while(button_state==0)
@@ -55,7 +55,7 @@ void part2(volatile int *toggle, volatile unsigned long *pressing_button)
 	button_state_1 = AVR32_GPIO.port[BUTTON1_PORT].pvr & BUTTON1_PIN;
 	button_state_2 = AVR32_GPIO.port[BUTTON2_PORT].pvr & BUTTON2_PIN;
 	//If button1 is being pressed, light the LED until the button is released
-	if (button_state_1 == 0 || *toggle == 1)
+	if (button_state_1 == 0 || *toggle == 1) //Simple on/off until the led is toggled to ON, then it is only on
 	{
 		//Start the light
 		AVR32_GPIO.port[LED1_PORT].ovrc = LED1_BIT_VALUE;
@@ -68,16 +68,16 @@ void part2(volatile int *toggle, volatile unsigned long *pressing_button)
 	if (button_state_2 == 0 && *pressing_button != 0)
 	{
 		if (*toggle == 0)
-		*toggle = 1;
+		*toggle = 1;	//Save if we have toggled the LED to ON
 		else
 		*toggle = 0;
 	}
-	*pressing_button = button_state_2; //Save previous state
+	*pressing_button = button_state_2; //Save previous button state
 	
 }
 
 
-void mdelay(int ms)
+void mdelay(int ms)		//Delay function
 {
 	long volatile cycles = 10*ms;
 	while (cycles != 0)
@@ -159,7 +159,7 @@ int main(void)
 	volatile unsigned long pressing_button = AVR32_GPIO.port[BUTTON2_PORT].pvr & BUTTON2_PIN;
 	
 	
-	while(1)
+	while(1) //both part 1 and 2s function condition is checked. 
 	{
 		part1();
 		
