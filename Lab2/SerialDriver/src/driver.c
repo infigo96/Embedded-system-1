@@ -41,16 +41,26 @@ void USART_init(volatile avr32_usart_t *usart)
 	usart->MR.modsync = 0; // irrelevant (manchester)
 	usart->MR.onebit = 1; // Start Frame delimiter is One Bit.
 
+	AVR32_PM->MCCTRL.mcsel = 0;
+	AVR32_PM->C
+
 	usart->BRGR.fp = 0; // No fractions needed.
 	usart->BRGR.cd = 1250; // CD = 12 000 000 / 9 600 => CD = 1250.
 
 	usart->CR.rstrx = 0; // Reset Receiver
 	usart->CR.rsttx = 0; // Reset transmitter
+
+	
 }
 
-char USART_getChar()
+volatile char USART_getChar()
 {
-	char hej = 'a';
+	volatile char hej = 'b';
+	if(AVR32_USART1.CSR.rxrdy==1)
+	{
+		hej = (char)AVR32_USART1.RHR.rxchr;
+	}
+	
 	return hej;
 }
 void USART_putChar(char c)

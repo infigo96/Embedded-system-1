@@ -24,7 +24,7 @@ int main (void)
 							LED6_GPIO & ( GPIO_MAX_PIN_NUMBER -1), LED7_GPIO & ( GPIO_MAX_PIN_NUMBER -1)};
 	int defineBITVALUEs[8] = {	1<<definePINs[0], 1<<definePINs[1], 1<<definePINs[2], 1<<definePINs[3],
 								1<<definePINs[4], 1<<definePINs[5], 1<<definePINs[6], 1<<definePINs[7]};
-	initLEDs(3,definePORTs,defineBITVALUEs);
+	initLEDs(1+2+4,definePORTs,defineBITVALUEs);
 
 	char ready = 'r';
 	/* Insert system clock initialization code here (sysclk_init()). */
@@ -34,15 +34,27 @@ int main (void)
 	{
 		lightLED(1,definePORTs,defineBITVALUEs);
 	}
-		
+	volatile char answer;
 	while(1)
 	{
-		mdelay(1000);
-		USART_putChar(ready);
-		if(usart->CSR.txrdy==1)
+		mdelay(2000);
+		//USART_putChar(ready);
+		//if(usart->CSR.txrdy==1)
+		//{
+			//lightLED(2,definePORTs,defineBITVALUEs);
+		//}
+		
+		answer = USART_getChar();
+		if(answer != 'b' && answer !=  0)
+		{
+			lightLED(4,definePORTs,defineBITVALUEs);
+			closeLED(2,definePORTs,defineBITVALUEs);
+		}
+		else
 		{
 			lightLED(2,definePORTs,defineBITVALUEs);
 		}
+
 	}
 	/* Insert application code here, after the board has been initialized. */
 }
