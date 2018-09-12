@@ -2,10 +2,11 @@
 
 void USART_init(volatile avr32_usart_t *usart)
 {
-	usart->CR.rstrx = 1; // Reset Receiver
 	volatile int a=0;
-	usart->CR.rsttx = 1; // Reset transmitter
-	usart->CR.rxen = 1;	// Enable transmitter
+
+	usart->CR.rstrx = 0; // Reset Receiver
+	usart->CR.rsttx = 0; // Reset receiver
+	usart->CR.rxen = 1;	// Enable receiver
 	usart->CR.rxdis = 0; // Don't disable receiver
 	usart->CR.txen = 1; // Enable Transmitter
 	usart->CR.txdis = 0; // Don't disable transmitter
@@ -33,11 +34,11 @@ void USART_init(volatile avr32_usart_t *usart)
 	usart->MR.over = 0; // 16 bit over-sampling (not used in synchronous mode)
 	usart->MR.inack = 1; // no nacks generated
 	usart->MR.dsnack = 0; // no parity bit used so this does nothing
-	usart->MR.var_sync = 1; // Update when character is writen into THR register
+	usart->MR.var_sync = 1; // Update when character is written into THR register
 	usart->MR.max_iteration = 0; // Not used
 	usart->MR.filter = 0; // no filtering or receive line
 	usart->MR.man = 0; // Manchester is disabled
-	usart->MR.modsync = 0; // irrelevant (manchester)
+	usart->MR.modsync = 0; // irrelevant (Manchester)
 	usart->MR.onebit = 1; // Start Frame delimiter is One Bit.
 
 	volatile avr32_pm_t *pmart = &AVR32_PM;
@@ -52,13 +53,10 @@ void USART_init(volatile avr32_usart_t *usart)
 	usart->BRGR.fp = 0; // No fractions needed.
 	usart->BRGR.cd = 1250; // CD = 12 000 000 / 9 600 => CD = 1250.
 
-	usart->CR.rstrx = 0; // Reset Receiver
-	usart->CR.rsttx = 0; // Reset transmitter
-
 	volatile avr32_spi_t *spiart = &AVR32_SPI1;
 	spiart->CR.spien = 1;
 
-	//Enable pages 45+179 in datasheet and uc3a0512.h row 1090.
+	//Enable pages 45+179 in data sheet and uc3a0512.h row 1090.
 	volatile avr32_gpio_port_t *usartIO = &AVR32_GPIO.port[0]; // Fix define
 	usartIO->pmr0c = 1 << 5; //RXD
 	usartIO->pmr1c = 1 << 5; //RXD
