@@ -1,6 +1,5 @@
 #include "driver.h"
 
-
 void USART_init(volatile avr32_usart_t *usart)
 {
 	usart->CR.rstrx = 1; // Reset Receiver
@@ -41,16 +40,51 @@ void USART_init(volatile avr32_usart_t *usart)
 	usart->MR.modsync = 0; // irrelevant (manchester)
 	usart->MR.onebit = 1; // Start Frame delimiter is One Bit.
 
-	AVR32_PM->MCCTRL.mcsel = 0;
-	AVR32_PM->C
-
+	volatile avr32_pm_t *pmart = &AVR32_PM;
+	pmart->MCCTRL.mcsel = 0;
+	volatile unsigned long temp = pmart->clkmask[2];
+	if ((temp & (1<<9)) == 0)
+	{
+		pmart->clkmask[2] = temp + (1 << 9);
+		a = 2;
+	}
+	
 	usart->BRGR.fp = 0; // No fractions needed.
 	usart->BRGR.cd = 1250; // CD = 12 000 000 / 9 600 => CD = 1250.
 
 	usart->CR.rstrx = 0; // Reset Receiver
 	usart->CR.rsttx = 0; // Reset transmitter
 
-	
+	volatile avr32_spi_t *spiart = &AVR32_SPI1;
+	spiart->CR.spien = 1;
+
+	//Enable pages 45+179 in datasheet and uc3a0512.h row 1090.
+	volatile avr32_gpio_port_t *usartIO = &AVR32_GPIO.port[0]; // Fix define
+	usartIO->pmr0c = 1 << 5; //RXD
+	usartIO->pmr1c = 1 << 5; //RXD
+	usartIO->pmr0c = 1 << 6; //TXD
+	usartIO->pmr1c = 1 << 6; //TXD
+	usartIO->pmr0c = 1 << 7; //CLK
+	usartIO->pmr1c = 1 << 7; //CLK
+	usartIO = &AVR32_GPIO.port[1]; // Fix define
+	usartIO->pmr0s = 1 << 23; //DCD
+	usartIO->pmr1c = 1 << 23; //DCD
+	usartIO->pmr0s = 1 << 24; //DSR
+	usartIO->pmr1c = 1 << 24; //DSR
+	usartIO->pmr0s = 1 << 25; //DTR
+	usartIO->pmr1c = 1 << 25; //DTR
+	usartIO->pmr0s = 1 << 26; //RI
+	usartIO->pmr1c = 1 << 26; //RI
+	usartIO = &AVR32_GPIO.port[4]; // Fix define
+	usartIO->pmr0s = 1 << 4; //RXD
+	usartIO->pmr1c = 1 << 4; //RXD
+	usartIO->pmr0s = 1 << 5; //TXD
+	usartIO->pmr1c = 1 << 5; //TXD
+	usartIO->pmr0s = 1 << 6; //CTS
+	usartIO->pmr1c = 1 << 6; //CTS
+	usartIO->pmr0s = 1 << 7; //RTS
+	usartIO->pmr1c = 1 << 7; //RTS
+
 }
 
 volatile char USART_getChar()

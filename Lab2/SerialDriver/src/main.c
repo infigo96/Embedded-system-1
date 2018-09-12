@@ -38,7 +38,7 @@ int main (void)
 	while(1)
 	{
 		mdelay(2000);
-		//USART_putChar(ready);
+		USART_putChar(ready);
 		//if(usart->CSR.txrdy==1)
 		//{
 			//lightLED(2,definePORTs,defineBITVALUEs);
