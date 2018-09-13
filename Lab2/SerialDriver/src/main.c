@@ -26,7 +26,6 @@ int main (void)
 								1<<definePINs[4], 1<<definePINs[5], 1<<definePINs[6], 1<<definePINs[7]};
 	initLEDs(1+2+4,definePORTs,defineBITVALUEs);
 
-	char ready = 'r';
 	/* Insert system clock initialization code here (sysclk_init()). */
 	volatile avr32_usart_t *usart = &AVR32_USART1;
 	USART_init(usart);
@@ -34,11 +33,11 @@ int main (void)
 	{
 		lightLED(1,definePORTs,defineBITVALUEs);
 	}
-	volatile char answer;
+	volatile char answer = 'r';
 	while(1)
 	{
 		mdelay(2000);
-		USART_putChar(ready);
+		USART_putChar(answer);
 		//if(usart->CSR.txrdy==1)
 		//{
 			//lightLED(2,definePORTs,defineBITVALUEs);

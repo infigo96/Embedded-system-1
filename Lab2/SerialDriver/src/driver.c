@@ -1,4 +1,5 @@
 #include "driver.h"
+#include "evk1100.h"
 
 void USART_init(volatile avr32_usart_t *usart)
 {
@@ -27,7 +28,9 @@ void USART_init(volatile avr32_usart_t *usart)
 	usart->MR.sync = 1; // Synchronous mode
 	usart->MR.par = 4; // No parity bit
 	usart->MR.nbstop = 0; // 1 bit stop bit.
+	
 	usart->MR.chmode = 0; // normal channel mode
+	
 	usart->MR.msbf = 0; // Least significant bit first
 	usart->MR.mode9 = 0; // see usart->MR.chrl
 	usart->MR.clko = 1; // CLK = Usart_clock
@@ -41,6 +44,14 @@ void USART_init(volatile avr32_usart_t *usart)
 	usart->MR.modsync = 0; // irrelevant (Manchester)
 	usart->MR.onebit = 1; // Start Frame delimiter is One Bit.
 
+	//Interrupt handling for USART
+	usart->IER.txempty = 1;
+	usart->IER.txrdy = 1;	//Enable the transmitter interrupt 
+	usart->IER.rxrdy = 1;	//Enable the receiver interrupt
+	
+	//Check if there is a clock in SSC that needs to be enabled --------------!!!!!!!!!!
+	
+	//This part enables the main system clock in usart. 
 	volatile avr32_pm_t *pmart = &AVR32_PM;
 	pmart->MCCTRL.mcsel = 0;
 	volatile unsigned long temp = pmart->clkmask[2];
@@ -49,7 +60,9 @@ void USART_init(volatile avr32_usart_t *usart)
 		pmart->clkmask[2] = temp + (1 << 9);
 		a = 2;
 	}
+	pm_switch_to_osc0(&AVR32_PM, FOSC0, OSC0_STARTUP);
 	
+	//This is the Baud generator controller set.
 	usart->BRGR.fp = 0; // No fractions needed.
 	usart->BRGR.cd = 1250; // CD = 12 000 000 / 9 600 => CD = 1250.
 
@@ -60,11 +73,17 @@ void USART_init(volatile avr32_usart_t *usart)
 	volatile avr32_gpio_port_t *usartIO = &AVR32_GPIO.port[0]; // Fix define
 	usartIO->pmr0c = 1 << 5; //RXD
 	usartIO->pmr1c = 1 << 5; //RXD
+	usartIO->gperc = 1 << 5;	//RXD
+	
 	usartIO->pmr0c = 1 << 6; //TXD
 	usartIO->pmr1c = 1 << 6; //TXD
+	usartIO->gperc = 1 << 6; //TXD
+
 	usartIO->pmr0c = 1 << 7; //CLK
 	usartIO->pmr1c = 1 << 7; //CLK
-	usartIO = &AVR32_GPIO.port[1]; // Fix define
+	usartIO->gperc = 1 << 7; //CLK
+	
+	/*usartIO = &AVR32_GPIO.port[1]; // Fix define
 	usartIO->pmr0s = 1 << 23; //DCD
 	usartIO->pmr1c = 1 << 23; //DCD
 	usartIO->pmr0s = 1 << 24; //DSR
@@ -72,16 +91,23 @@ void USART_init(volatile avr32_usart_t *usart)
 	usartIO->pmr0s = 1 << 25; //DTR
 	usartIO->pmr1c = 1 << 25; //DTR
 	usartIO->pmr0s = 1 << 26; //RI
-	usartIO->pmr1c = 1 << 26; //RI
+	usartIO->pmr1c = 1 << 26; //RI*/
 	usartIO = &AVR32_GPIO.port[4]; // Fix define
 	usartIO->pmr0s = 1 << 4; //RXD
 	usartIO->pmr1c = 1 << 4; //RXD
+	usartIO->gperc = 1 << 4; //RXD
+	
 	usartIO->pmr0s = 1 << 5; //TXD
 	usartIO->pmr1c = 1 << 5; //TXD
+	usartIO->gperc = 1 << 5; //TXD
+	
 	usartIO->pmr0s = 1 << 6; //CTS
 	usartIO->pmr1c = 1 << 6; //CTS
+	usartIO->gperc = 1 << 6; //CTS
+	
 	usartIO->pmr0s = 1 << 7; //RTS
 	usartIO->pmr1c = 1 << 7; //RTS
+	usartIO->gperc = 1 << 7; //RTS
 
 }
 
