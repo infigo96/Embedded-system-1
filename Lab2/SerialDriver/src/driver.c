@@ -31,7 +31,7 @@ void USART_init(volatile avr32_usart_t *usart)
 	
 	usart->MR.chmode = 0; // normal channel mode
 	
-	usart->MR.msbf = 0; // Least significant bit first
+	usart->MR.msbf = 1; // Least significant bit first
 	usart->MR.mode9 = 0; // see usart->MR.chrl
 	usart->MR.clko = 1; // CLK = Usart_clock
 	usart->MR.over = 0; // 16 bit over-sampling (not used in synchronous mode)
@@ -60,10 +60,10 @@ void USART_init(volatile avr32_usart_t *usart)
 		pmart->clkmask[2] = temp + (1 << 9);
 		a = 2;
 	}
-	
+	pm_switch_to_osc0(&AVR32_PM, FOSC0, OSC0_STARTUP);
 	//This is the Baud generator controller set.
 	usart->BRGR.fp = 0; // No fractions needed.
-	usart->BRGR.cd = 12; // CD = 115200 / 9 600 => CD = 12.
+	usart->BRGR.cd = 1250; // CD = 12 000 000 / 9 600 => CD = 1250.
 
 	volatile avr32_spi_t *spiart = &AVR32_SPI1;
 	spiart->CR.spien = 1;
@@ -82,7 +82,7 @@ void USART_init(volatile avr32_usart_t *usart)
 	usartIO->pmr1c = 1 << 7; //CLK
 	usartIO->gperc = 1 << 7; //CLK
 	
-	/*usartIO = &AVR32_GPIO.port[1]; // Fix define
+	/*usartIO = &AVR32_GPIO.port[1]; // Is not needed for our communication
 	usartIO->pmr0s = 1 << 23; //DCD
 	usartIO->pmr1c = 1 << 23; //DCD
 	usartIO->pmr0s = 1 << 24; //DSR
@@ -109,22 +109,38 @@ void USART_init(volatile avr32_usart_t *usart)
 	usartIO->gperc = 1 << 7; //RTS
 
 }
-
+void mdelay(int ms)
+{
+	long volatile cycles = 1050*ms;
+	while (cycles != 0)
+	{
+		cycles--;
+	}
+}
 volatile char USART_getChar()
 {
-	volatile char hej = 'O';
-	if(AVR32_USART1.CSR.rxrdy==1)
-	{
-		hej = (char)AVR32_USART1.RHR.rxchr;
-	}
+	volatile char toTRX = 'b';
 	
-	return hej;
+	while(AVR32_USART1.CSR.rxrdy==0);
+	toTRX = (char)AVR32_USART1.RHR.rxchr;
+	
+	return toTRX;
 }
 void USART_putChar(char c)
 {
-	AVR32_USART1.THR.txsynh = 0;
-	AVR32_USART1.THR.txchr = c;
-	volatile int a=0;
+	for(int i = 0; i < 4; i++)
+	{
+		if(AVR32_USART1.CSR.txrdy == 1)
+		{	
+			AVR32_USART1.THR.txsynh = 0;
+			AVR32_USART1.THR.txchr = c;
+			break;
+		}
+		else
+		{
+			mdelay(2);
+		}
+	}
 }
 void USART_reset()
 {

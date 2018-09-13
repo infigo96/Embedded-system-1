@@ -2,15 +2,7 @@
 # include "compiler.h"
 # include "driver.h"
 # include "LED.h"
-void mdelay(int ms);
-void mdelay(int ms)
-{
-	long volatile cycles = 10*ms;
-	while (cycles != 0)
-	{
-		cycles--;
-	}
-}
+
 
 int main (void)
 {
@@ -29,29 +21,24 @@ int main (void)
 	/* Insert system clock initialization code here (sysclk_init()). */
 	volatile avr32_usart_t *usart = &AVR32_USART1;
 	USART_init(usart);
-	if(usart->CSR.txrdy==1) //Is transmitter ready?
-	{
-		lightLED(1,definePORTs,defineBITVALUEs);
-	}
-	volatile char answer = 'r';
+
+
+	volatile char answer;
 	while(1)
 	{
-		mdelay(500);
-		USART_putChar(answer);
-		//if(usart->CSR.txrdy==1)
-		//{
-			//lightLED(2,definePORTs,defineBITVALUEs);
-		//}
-		
+		//USART_putChar(answer);
+		//mdelay(220);
 		answer = USART_getChar();
-		if(answer != 'b' && answer !=  0)
+		if (answer != 'b')
 		{
-			lightLED(4,definePORTs,defineBITVALUEs);
-			closeLED(2,definePORTs,defineBITVALUEs);
+
+			USART_putChar(answer);
+			lightLED(1,definePORTs, defineBITVALUEs);
+
 		}
 		else
 		{
-			lightLED(2,definePORTs,defineBITVALUEs);
+			closeLED(1, definePORTs, defineBITVALUEs);
 		}
 
 	}

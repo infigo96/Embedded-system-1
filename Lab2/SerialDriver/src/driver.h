@@ -8,6 +8,8 @@
 #include "evk1100.h"
 #include "pm.h"
 
+
+void mdelay(int ms);
 void USART_init(volatile avr32_usart_t * usart);
 char USART_getChar();
 void USART_putChar(char c);
