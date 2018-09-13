@@ -60,11 +60,10 @@ void USART_init(volatile avr32_usart_t *usart)
 		pmart->clkmask[2] = temp + (1 << 9);
 		a = 2;
 	}
-	pm_switch_to_osc0(&AVR32_PM, FOSC0, OSC0_STARTUP);
 	
 	//This is the Baud generator controller set.
 	usart->BRGR.fp = 0; // No fractions needed.
-	usart->BRGR.cd = 1250; // CD = 12 000 000 / 9 600 => CD = 1250.
+	usart->BRGR.cd = 12; // CD = 115200 / 9 600 => CD = 12.
 
 	volatile avr32_spi_t *spiart = &AVR32_SPI1;
 	spiart->CR.spien = 1;
@@ -113,7 +112,7 @@ void USART_init(volatile avr32_usart_t *usart)
 
 volatile char USART_getChar()
 {
-	volatile char hej = 'b';
+	volatile char hej = 'O';
 	if(AVR32_USART1.CSR.rxrdy==1)
 	{
 		hej = (char)AVR32_USART1.RHR.rxchr;

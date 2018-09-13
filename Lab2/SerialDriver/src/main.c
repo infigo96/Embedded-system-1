@@ -36,7 +36,7 @@ int main (void)
 	volatile char answer = 'r';
 	while(1)
 	{
-		mdelay(2000);
+		mdelay(500);
 		USART_putChar(answer);
 		//if(usart->CSR.txrdy==1)
 		//{
