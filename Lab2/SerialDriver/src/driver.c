@@ -138,7 +138,7 @@ void USART_putChar(char c)
 		}
 		else
 		{
-			mdelay(2);
+			//mdelay(2);
 		}
 	}
 }

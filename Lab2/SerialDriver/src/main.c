@@ -26,21 +26,9 @@ int main (void)
 	volatile char answer;
 	while(1)
 	{
-		//USART_putChar(answer);
-		//mdelay(220);
 		answer = USART_getChar();
-		if (answer != 'b')
-		{
-
-			USART_putChar(answer);
-			lightLED(1,definePORTs, defineBITVALUEs);
-
-		}
-		else
-		{
-			closeLED(1, definePORTs, defineBITVALUEs);
-		}
-
+		
+		USART_putChar(answer);
 	}
-	/* Insert application code here, after the board has been initialized. */
 }
+
