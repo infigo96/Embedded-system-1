@@ -26,9 +26,9 @@ int main (void)
 	volatile char answer;
 	while(1)
 	{
-		answer = USART_getChar();
+		USART_getString(Message);
 		
-		USART_putChar(answer);
+		USART_putString(Message);
 	}
 }
 

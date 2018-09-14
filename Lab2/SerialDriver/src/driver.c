@@ -60,7 +60,8 @@ void USART_init(volatile avr32_usart_t *usart)
 		pmart->clkmask[2] = temp + (1 << 9);
 		a = 2;
 	}
-	pm_switch_to_osc0(&AVR32_PM, FOSC0, OSC0_STARTUP);
+	pm_switch_to_osc0(&AVR32_PM, FOSC0, OSC0_STARTUP); //Set 12MHz clock
+	
 	//This is the Baud generator controller set.
 	usart->BRGR.fp = 0; // No fractions needed.
 	usart->BRGR.cd = 1250; // CD = 12 000 000 / 9 600 => CD = 1250.
@@ -119,32 +120,56 @@ void mdelay(int ms)
 }
 volatile char USART_getChar()
 {
-	volatile char toTRX = 'b';
+	volatile char toTRX ;
 	
 	while(AVR32_USART1.CSR.rxrdy==0);
-		toTRX = (char)AVR32_USART1.RHR.rxchr;
+	toTRX = (char)AVR32_USART1.RHR.rxchr;
 	
 	return toTRX;
 }
 void USART_putChar(char c)
 {
-	/*for(int i = 0; i < 4; i++)
-	{*/
-	if(AVR32_USART1.CSR.txrdy == 1)
-	{	
-		AVR32_USART1.THR.txsynh = 0;
-		AVR32_USART1.THR.txchr = c;
+	while(1)
+	{
+		if(AVR32_USART1.CSR.txrdy == 1)
+		{	
+			AVR32_USART1.THR.txsynh = 0;
+			AVR32_USART1.THR.txchr = c;
+			break;
+		}
 	}
-	//}
 }
 void USART_reset()
 {
 	//Reset the control register
-	AVR32_USART1->CR.rstrx = 1; // Reset Receiver
-	AVR32_USART1->CR.rsttx = 1; // Reset Transmitter
-	AVR32_USART1->CR.rststa = 1; // Resets Status bit
+	volatile avr32_usart_t *usart = &AVR32_USART1;
+
+	usart->CR.rstrx = 1; // Reset Receiver
+	usart->CR.rsttx = 1; // Reset Transmitter
+	usart->CR.rststa = 1; // Resets Status bit
 
 	//Reset the Serial Port Interface
 	volatile avr32_spi_t *spiart = &AVR32_SPI1;
 	spiart->CR.swrst = 1; // Reset the SPI
+}
+void USART_getString(char *message)
+{
+	volatile int i=0;
+	do
+	{
+		message[i] = USART_getChar();
+		i++;
+	}
+	while(message[i-1]!='\n');
+	message[i] = 0;
+}
+void USART_putString(char *message)
+{
+	volatile int i=0;
+	while (message[i]!=0)
+	{
+		USART_putChar(message[i]);
+		i++;
+	}
+	
 }

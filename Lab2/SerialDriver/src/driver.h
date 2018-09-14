@@ -13,6 +13,9 @@ void mdelay(int ms);
 void USART_init(volatile avr32_usart_t * usart);
 char USART_getChar();
 void USART_putChar(char c);
+void USART_getString(char *message);
+void USART_putString(char *message);
+
 void USART_reset();
 int base2converter(int exp);
 
