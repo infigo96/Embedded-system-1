@@ -23,11 +23,9 @@ int main (void)
 	USART_init(usart);
 
 	char Message[256];
-	volatile char answer;
 	while(1)
 	{
 		USART_getString(Message);
-		
 		USART_putString(Message);
 	}
 }
