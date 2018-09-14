@@ -22,7 +22,7 @@ int main (void)
 	volatile avr32_usart_t *usart = &AVR32_USART1;
 	USART_init(usart);
 
-
+	char Message[256];
 	volatile char answer;
 	while(1)
 	{

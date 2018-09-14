@@ -31,7 +31,7 @@ void USART_init(volatile avr32_usart_t *usart)
 	
 	usart->MR.chmode = 0; // normal channel mode
 	
-	usart->MR.msbf = 1; // Least significant bit first
+	usart->MR.msbf = 0; // Least significant bit first
 	usart->MR.mode9 = 0; // see usart->MR.chrl
 	usart->MR.clko = 1; // CLK = Usart_clock
 	usart->MR.over = 0; // 16 bit over-sampling (not used in synchronous mode)
@@ -128,19 +128,14 @@ volatile char USART_getChar()
 }
 void USART_putChar(char c)
 {
-	for(int i = 0; i < 4; i++)
-	{
-		if(AVR32_USART1.CSR.txrdy == 1)
-		{	
-			AVR32_USART1.THR.txsynh = 0;
-			AVR32_USART1.THR.txchr = c;
-			break;
-		}
-		else
-		{
-			//mdelay(2);
-		}
+	/*for(int i = 0; i < 4; i++)
+	{*/
+	if(AVR32_USART1.CSR.txrdy == 1)
+	{	
+		AVR32_USART1.THR.txsynh = 0;
+		AVR32_USART1.THR.txchr = c;
 	}
+	//}
 }
 void USART_reset()
 {
