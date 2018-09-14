@@ -34,7 +34,6 @@
     <option id="avr32.drivers.gpio" value="Add" config="" content-id="Atmel.ASF" />
     <option id="avr32.drivers.intc" value="Add" config="" content-id="Atmel.ASF" />
     <option id="common.boards" value="Add" config="" content-id="Atmel.ASF" />
-    <option id="avr32.drivers.pm" value="Add" config="" content-id="Atmel.ASF" />
     <option id="common.applications.user_application" value="Add" config="" content-id="Atmel.ASF" />
   </options>
   <configurations>
@@ -74,14 +73,6 @@
     <file path="src/ASF/common/utils/interrupt.h" framework="" version="" source="common/utils/interrupt.h" changed="False" content-id="Atmel.ASF" />
     <file path="src/ASF/common/utils/interrupt/interrupt_avr32.h" framework="" version="" source="common/utils/interrupt/interrupt_avr32.h" changed="False" content-id="Atmel.ASF" />
     <file path="src/ASF/common/utils/parts.h" framework="" version="" source="common/utils/parts.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/avr32/drivers/flashc/flashc.c" framework="" version="3.40.0" source="avr32\drivers\flashc\flashc.c" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/avr32/drivers/flashc/flashc.h" framework="" version="3.40.0" source="avr32\drivers\flashc\flashc.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/avr32/drivers/pm/pm.c" framework="" version="3.40.0" source="avr32\drivers\pm\pm.c" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/avr32/drivers/pm/power_clocks_lib.c" framework="" version="3.40.0" source="avr32\drivers\pm\power_clocks_lib.c" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/avr32/drivers/pm/pm_conf_clocks.c" framework="" version="3.40.0" source="avr32\drivers\pm\pm_conf_clocks.c" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/avr32/drivers/pm/power_clocks_lib.h" framework="" version="3.40.0" source="avr32\drivers\pm\power_clocks_lib.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/avr32/drivers/pm/pm.h" framework="" version="3.40.0" source="avr32\drivers\pm\pm.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/avr32/drivers/pm/sleep.h" framework="" version="3.40.0" source="avr32\drivers\pm\sleep.h" changed="False" content-id="Atmel.ASF" />
   </files>
   <documentation help="http://asf.atmel.com/docs/3.40.0/common.applications.user_application.evk1100/html/index.html" />
   <offline-documentation help="" />
@@ -133,8 +124,6 @@
       <Value>../src/ASF/avr32/drivers/gpio</Value>
       <Value>../src</Value>
       <Value>../src/config</Value>
-      <Value>../src/ASF/avr32/drivers/flashc</Value>
-      <Value>../src/ASF/avr32/drivers/pm</Value>
     </ListValues>
   </avr32gcc.compiler.directories.IncludePaths>
   <avr32gcc.compiler.optimization.level>Optimize for size (-Os)</avr32gcc.compiler.optimization.level>
@@ -167,8 +156,6 @@
       <Value>../src/ASF/avr32/drivers/gpio</Value>
       <Value>../src</Value>
       <Value>../src/config</Value>
-      <Value>../src/ASF/avr32/drivers/flashc</Value>
-      <Value>../src/ASF/avr32/drivers/pm</Value>
     </ListValues>
   </avr32gcc.assembler.general.IncludePaths>
   <avr32gcc.preprocessingassembler.general.AssemblerFlags>-mrelax -DBOARD=EVK1100</avr32gcc.preprocessingassembler.general.AssemblerFlags>
@@ -185,8 +172,6 @@
       <Value>../src/ASF/avr32/drivers/gpio</Value>
       <Value>../src</Value>
       <Value>../src/config</Value>
-      <Value>../src/ASF/avr32/drivers/flashc</Value>
-      <Value>../src/ASF/avr32/drivers/pm</Value>
     </ListValues>
   </avr32gcc.preprocessingassembler.general.IncludePaths>
 </Avr32Gcc>
@@ -218,8 +203,6 @@
       <Value>../src/ASF/avr32/drivers/gpio</Value>
       <Value>../src</Value>
       <Value>../src/config</Value>
-      <Value>../src/ASF/avr32/drivers/flashc</Value>
-      <Value>../src/ASF/avr32/drivers/pm</Value>
     </ListValues>
   </avr32gcc.compiler.directories.IncludePaths>
   <avr32gcc.compiler.optimization.OtherFlags>-fdata-sections</avr32gcc.compiler.optimization.OtherFlags>
@@ -252,8 +235,6 @@
       <Value>../src/ASF/avr32/drivers/gpio</Value>
       <Value>../src</Value>
       <Value>../src/config</Value>
-      <Value>../src/ASF/avr32/drivers/flashc</Value>
-      <Value>../src/ASF/avr32/drivers/pm</Value>
     </ListValues>
   </avr32gcc.assembler.general.IncludePaths>
   <avr32gcc.assembler.debugging.DebugLevel>Default (-g)</avr32gcc.assembler.debugging.DebugLevel>
@@ -271,8 +252,6 @@
       <Value>../src/ASF/avr32/drivers/gpio</Value>
       <Value>../src</Value>
       <Value>../src/config</Value>
-      <Value>../src/ASF/avr32/drivers/flashc</Value>
-      <Value>../src/ASF/avr32/drivers/pm</Value>
     </ListValues>
   </avr32gcc.preprocessingassembler.general.IncludePaths>
   <avr32gcc.preprocessingassembler.debugging.DebugLevel>Default (-Wa,-g)</avr32gcc.preprocessingassembler.debugging.DebugLevel>
@@ -286,10 +265,8 @@
     <Folder Include="src\ASF\avr32\boards\" />
     <Folder Include="src\ASF\avr32\boards\evk1100\" />
     <Folder Include="src\ASF\avr32\drivers\" />
-    <Folder Include="src\ASF\avr32\drivers\flashc\" />
     <Folder Include="src\ASF\avr32\drivers\gpio\" />
     <Folder Include="src\ASF\avr32\drivers\intc\" />
-    <Folder Include="src\ASF\avr32\drivers\pm\" />
     <Folder Include="src\ASF\avr32\utils\" />
     <Folder Include="src\ASF\avr32\utils\header_files\" />
     <Folder Include="src\ASF\avr32\utils\linker_scripts\" />
@@ -306,30 +283,6 @@
     <Folder Include="src\config\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="src\ASF\avr32\drivers\flashc\flashc.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <None Include="src\ASF\avr32\drivers\flashc\flashc.h">
-      <SubType>compile</SubType>
-    </None>
-    <Compile Include="src\ASF\avr32\drivers\pm\pm.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <None Include="src\ASF\avr32\drivers\pm\pm.h">
-      <SubType>compile</SubType>
-    </None>
-    <Compile Include="src\ASF\avr32\drivers\pm\pm_conf_clocks.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="src\ASF\avr32\drivers\pm\power_clocks_lib.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <None Include="src\ASF\avr32\drivers\pm\power_clocks_lib.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="src\ASF\avr32\drivers\pm\sleep.h">
-      <SubType>compile</SubType>
-    </None>
     <Compile Include="src\driver.c">
       <SubType>compile</SubType>
     </Compile>

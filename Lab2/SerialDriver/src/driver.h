@@ -8,7 +8,6 @@
 #include "avr32\pm_231.h"
 #include "avr32\spi_1991.h"
 #include "evk1100.h"
-#include "pm.h"
 # include "board.h"
 # include "compiler.h"
 
