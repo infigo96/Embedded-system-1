@@ -6,7 +6,7 @@ void USART_init(volatile avr32_usart_t *usart)
 	volatile int a=0;
 
 	usart->CR.rstrx = 0; // Reset Receiver
-	usart->CR.rsttx = 0; // Reset receiver
+	usart->CR.rsttx = 0; // Reset Transmitter
 	usart->CR.rxen = 1;	// Enable receiver
 	usart->CR.rxdis = 0; // Don't disable receiver
 	usart->CR.txen = 1; // Enable Transmitter
@@ -122,7 +122,7 @@ volatile char USART_getChar()
 	volatile char toTRX = 'b';
 	
 	while(AVR32_USART1.CSR.rxrdy==0);
-	toTRX = (char)AVR32_USART1.RHR.rxchr;
+		toTRX = (char)AVR32_USART1.RHR.rxchr;
 	
 	return toTRX;
 }
@@ -144,5 +144,12 @@ void USART_putChar(char c)
 }
 void USART_reset()
 {
-	volatile int i = 0; 
+	//Reset the control register
+	AVR32_USART1->CR.rstrx = 1; // Reset Receiver
+	AVR32_USART1->CR.rsttx = 1; // Reset Transmitter
+	AVR32_USART1->CR.rststa = 1; // Resets Status bit
+
+	//Reset the Serial Port Interface
+	volatile avr32_spi_t *spiart = &AVR32_SPI1;
+	spiart->CR.swrst = 1; // Reset the SPI
 }
