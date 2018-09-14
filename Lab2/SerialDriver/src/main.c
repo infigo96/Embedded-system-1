@@ -17,7 +17,10 @@ int main (void)
 	int defineBITVALUEs[8] = {	1<<definePINs[0], 1<<definePINs[1], 1<<definePINs[2], 1<<definePINs[3],
 								1<<definePINs[4], 1<<definePINs[5], 1<<definePINs[6], 1<<definePINs[7]};
 	initLEDs(1+2+4,definePORTs,defineBITVALUEs);
-
+	volatile avr32_gpio_port_t * button0_port;
+	button0_port = &AVR32_GPIO.port[BUTTON0_PORT];
+	button0_port->gpers = BUTTON0_PIN;
+	button0_port->oderc = BUTTON0_PIN;
 	/* Insert system clock initialization code here (sysclk_init()). */
 	volatile avr32_usart_t *usart = &AVR32_USART1;
 	USART_init(usart);

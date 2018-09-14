@@ -66,14 +66,11 @@ void USART_init(volatile avr32_usart_t *usart)
 	usart->BRGR.fp = 0; // No fractions needed.
 	usart->BRGR.cd = 78; // CD = 12 000 000 / (16*9 600) => CD = 78,125. 
 
-	volatile avr32_spi_t *spiart = &AVR32_SPI1;
-	spiart->CR.spien = 1;
-
 	//Enable pages 45+179 in data sheet and uc3a0512.h row 1090.
 	volatile avr32_gpio_port_t *usartIO = &AVR32_GPIO.port[0]; // Fix define
 	usartIO->pmr0c = 1 << 5; //RXD
 	usartIO->pmr1c = 1 << 5; //RXD
-	usartIO->gperc = 1 << 5;	//RXD
+	usartIO->gperc = 1 << 5; //RXD
 	
 	usartIO->pmr0c = 1 << 6; //TXD
 	usartIO->pmr1c = 1 << 6; //TXD
@@ -83,32 +80,7 @@ void USART_init(volatile avr32_usart_t *usart)
 	usartIO->pmr1c = 1 << 7; //CLK
 	usartIO->gperc = 1 << 7; //CLK
 	
-	/*usartIO = &AVR32_GPIO.port[1]; // Is not needed for our communication
-	usartIO->pmr0s = 1 << 23; //DCD
-	usartIO->pmr1c = 1 << 23; //DCD
-	usartIO->pmr0s = 1 << 24; //DSR
-	usartIO->pmr1c = 1 << 24; //DSR
-	usartIO->pmr0s = 1 << 25; //DTR
-	usartIO->pmr1c = 1 << 25; //DTR
-	usartIO->pmr0s = 1 << 26; //RI
-	usartIO->pmr1c = 1 << 26; //RI*/
-	/*usartIO = &AVR32_GPIO.port[4]; // Fix define
-	usartIO->pmr0s = 1 << 4; //RXD
-	usartIO->pmr1c = 1 << 4; //RXD
-	usartIO->gperc = 1 << 4; //RXD
 	
-	usartIO->pmr0s = 1 << 5; //TXD
-	usartIO->pmr1c = 1 << 5; //TXD
-	usartIO->gperc = 1 << 5; //TXD
-	
-	usartIO->pmr0s = 1 << 6; //CTS
-	usartIO->pmr1c = 1 << 6; //CTS
-	usartIO->gperc = 1 << 6; //CTS
-	
-	usartIO->pmr0s = 1 << 7; //RTS
-	usartIO->pmr1c = 1 << 7; //RTS
-	usartIO->gperc = 1 << 7; //RTS*/
-
 }
 void mdelay(int ms)
 {
@@ -121,8 +93,16 @@ void mdelay(int ms)
 char USART_getChar()
 {
 	char toTRX ;
-	
-	while(AVR32_USART1.CSR.rxrdy==0);
+	volatile avr32_gpio_port_t *a = &AVR32_GPIO.port[BUTTON0_PORT];
+	volatile unsigned long btnstat;
+	while(AVR32_USART1.CSR.rxrdy==0)
+	{
+		btnstat = a->pvr & BUTTON0_PIN;
+		if(btnstat == 0)
+		{
+			USART_reset();
+		}
+	}
 	toTRX = (char)AVR32_USART1.RHR.rxchr;
 	
 	return toTRX;
@@ -147,10 +127,16 @@ void USART_reset()
 	usart->CR.rstrx = 1; // Reset Receiver
 	usart->CR.rsttx = 1; // Reset Transmitter
 	usart->CR.rststa = 1; // Resets Status bit
+	//Clear the bits
+	usart->CR.rstrx = 0;
+	usart->CR.rsttx = 0;
+	usart->CR.rststa = 0;
+	
+	usart->CR.rxen = 1;	// Enable receiver
+	usart->CR.rxdis = 0; // Don't disable receiver
+	usart->CR.txen = 1; // Enable Transmitter
+	usart->CR.rxdis = 0; // Don't disable receiver
 
-	//Reset the Serial Port Interface
-	volatile avr32_spi_t *spiart = &AVR32_SPI1;
-	spiart->CR.swrst = 1; // Reset the SPI
 }
 void USART_getString(char *message)
 {
