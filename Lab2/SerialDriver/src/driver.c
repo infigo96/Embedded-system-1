@@ -84,6 +84,8 @@ void USART_init(volatile avr32_usart_t *usart)
 	
 	
 }
+
+// Delay input milli sec.
 void mdelay(int ms)
 {
 	long volatile cycles = 1050*ms;
@@ -92,6 +94,8 @@ void mdelay(int ms)
 		cycles--;
 	}
 }
+
+// Reads 
 char USART_getChar()
 {
 	char toTRX ;
