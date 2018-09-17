@@ -66,11 +66,11 @@ int main(void)
 	volatile int i = 0;
 	volatile int toggle = 0;
 	volatile avr32_tc_t *tc = &AVR32_TC;
-	tc_waveform_opt_t opt;
+	static tc_waveform_opt_t opt;
 	opt.channel = 0;
 	opt.wavsel = TC_WAVEFORM_SEL_UP_MODE_RC_TRIGGER;
-	opt.tcclks = TC_CLOCK_SOURCE_TC1;
-	int hej0 = tc_write_rc(tc,0,5);
+	opt.tcclks = TC_CLOCK_SOURCE_TC2;
+	int hej0 = tc_write_rc(tc,0,100);
 	int hej1 = tc_init_waveform(tc, &opt);
 	unsigned int hejsan = 0;
 	int hej2 = tc_start(tc, hejsan);
@@ -81,7 +81,8 @@ int main(void)
 	
 	
 	tc_interrupt_t bitfield;
-	INTC_register_interrupt(&tc_irq_handler,0,AVR32_INTC_INT0);
+	bitfield.cpcs = 1;
+	INTC_register_interrupt(&tc_irq_handler,AVR32_TC_IRQ0 ,AVR32_INTC_INT0);
 
 	int hej4 = tc_configure_interrupts(tc,0,&bitfield);
 	
