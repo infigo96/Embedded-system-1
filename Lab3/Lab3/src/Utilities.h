@@ -13,5 +13,4 @@ void Convert_Sec_To_String(char *timestring);
 
 
 
-
 #endif /* UTILITIES_H_ */

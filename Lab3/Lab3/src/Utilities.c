@@ -5,10 +5,10 @@
  *  Author: Albert
  */ 
 #include "Utilities.h"
-//Divides total number of seconds into seconds, minuts and hours. Then, outputs it as a string
+//Divides total number of seconds into seconds, minuts and hours. Then, outputs it as a string (with cursermovment)
 void Convert_Sec_To_String(char *timestring){
 	char seconds[4], minuts[5], hours[5];
-	char output[12];
+	char output[15];
 
 
 	sprintf(hours, "%dh ", (time / 3600) % 24);
@@ -18,5 +18,6 @@ void Convert_Sec_To_String(char *timestring){
 	strcat(output,hours);
 	strcat(output,minuts);
 	strcat(output,seconds);
+	strcat(output,1);
 	strcpy(timestring, output);
 }
