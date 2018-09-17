@@ -19,6 +19,7 @@
 # define LED1_PIN ( LED1_GPIO & ( GPIO_MAX_PIN_NUMBER -1))
 // This is a 1 - bit written to the bit position of the GPIO pin
 # define LED1_BIT_VALUE (1 << LED1_PIN )
+int test = 0;
 void initLED(void)
 {
 	//----------------------------------------LED0-----------------------------------------------------//
@@ -54,6 +55,7 @@ void initLED(void)
 __attribute__((__interrupt__)) static void tc_irq_handler(void)
 {
 	AVR32_GPIO.port[LED0_PORT].ovrt = LED0_BIT_VALUE;
+	test++;
 	tc_read_sr(&AVR32_TC, 0);
 }
 int main(void)
@@ -63,16 +65,29 @@ int main(void)
 	*/
 	volatile int i = 0;
 	volatile int toggle = 0;
-	volatile  tc = &AVR32_TC;
-	volatile tc_waveform_opt_t *opt;
-	opt->channel = 0;
-	opt->wavsel = TC_WAVEFORM_SEL_UP_MODE_RC_TRIGGER;
-	opt->tcclks = TC_CLOCK_SOURCE_XC0;
-	int tc_init_waveform(tc, opt);
+	volatile avr32_tc_t *tc = &AVR32_TC;
+	tc_waveform_opt_t opt;
+	opt.channel = 0;
+	opt.wavsel = TC_WAVEFORM_SEL_UP_MODE_RC_TRIGGER;
+	opt.tcclks = TC_CLOCK_SOURCE_TC1;
+	int hej0 = tc_write_rc(tc,0,5);
+	int hej1 = tc_init_waveform(tc, &opt);
 	unsigned int hejsan = 0;
-	int tc_start(tc, hejsan);
-	INTC_register_interrupt(&tc_irq_handler,0,AVR32_INTC_INT0);
+	int hej2 = tc_start(tc, hejsan);
 	
+	
+	Disable_global_interrupt();
+	INTC_init_interrupts();
+	
+	
+	tc_interrupt_t bitfield;
+	INTC_register_interrupt(&tc_irq_handler,0,AVR32_INTC_INT0);
+
+	int hej4 = tc_configure_interrupts(tc,0,&bitfield);
+	
+	Enable_global_interrupt();
+	
+	test++;
 	while(1) //both part 1 and 2s function condition is checked. 
 	{
 		
