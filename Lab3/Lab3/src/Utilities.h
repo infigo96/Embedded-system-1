@@ -5,10 +5,10 @@
  *  Author: Albert
  */ 
 
-
+volatile int time;
 #ifndef UTILITIES_H_
 #define UTILITIES_H_
-void Convert_Sec_To_String(int time, string *timestring);
+void Convert_Sec_To_String(char *timestring);
 
 
 
