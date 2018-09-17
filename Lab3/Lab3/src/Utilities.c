@@ -6,5 +6,7 @@
  */ 
 #include "Utilities.h"
 void Convert_Sec_To_String(char *timestring){
-	time
+	volatile int secounds, minuts, hours;
+	
+	secounds = time % 60;
 }
