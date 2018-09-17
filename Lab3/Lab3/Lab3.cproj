@@ -296,6 +296,12 @@
     <Compile Include="src\ASF\avr32\drivers\tc\tc.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\Stopwatch.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\Stopwatch.h">
+      <SubType>compile</SubType>
+    </Compile>
     <None Include="src\ASF\avr32\drivers\tc\tc.h">
       <SubType>compile</SubType>
     </None>

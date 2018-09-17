@@ -1,6 +1,6 @@
 # include "board.h"
 # include "compiler.h"
-#include "..\tc\tc.h"
+#include "tc.h"
 #include "avr32\uc3a0512.h"
 /* Define the ports and pins to be used */
 // The maximum number of pins in a port
@@ -66,32 +66,11 @@ int main(void)
 	volatile int i = 0;
 	volatile int toggle = 0;
 	volatile avr32_tc_t *tc = &AVR32_TC;
-	static tc_waveform_opt_t opt;
-	opt.channel = 0;
-	opt.wavsel = TC_WAVEFORM_SEL_UP_MODE_RC_TRIGGER;
-	opt.tcclks = TC_CLOCK_SOURCE_TC2;
-	int hej0 = tc_write_rc(tc,0,100);
-	int hej1 = tc_init_waveform(tc, &opt);
-	unsigned int hejsan = 0;
-	int hej2 = tc_start(tc, hejsan);
-	
-	
-	Disable_global_interrupt();
-	INTC_init_interrupts();
-	
-	
-	tc_interrupt_t bitfield;
-	bitfield.cpcs = 1;
-	INTC_register_interrupt(&tc_irq_handler,AVR32_TC_IRQ0 ,AVR32_INTC_INT0);
-
-	int hej4 = tc_configure_interrupts(tc,0,&bitfield);
-	
-	Enable_global_interrupt();
 	
 	test++;
 	while(1) //both part 1 and 2s function condition is checked. 
 	{
-		
+		toggle ^= 0x1 << 0;
 		
 		//Debugging purposes
 		i++;
