@@ -1,5 +1,16 @@
-SW_init(volatile avr32_tc_t *tc)
+#include "Stopwatch.h"
+
+__attribute__((__interrupt__)) static void tc_irq_handler(void)
 {
+	AVR32_GPIO.port[LED0_PORT].ovrt = LED0_BIT_VALUE;
+	time++;
+	tc_read_sr(&AVR32_TC, 0);
+}
+
+
+void SW_init(volatile avr32_tc_t *tc)
+{
+	//--------------------
 	static tc_waveform_opt_t opt;
 	opt.channel = 0;
 	opt.wavsel = TC_WAVEFORM_SEL_UP_MODE_RC_TRIGGER;
@@ -21,4 +32,5 @@ SW_init(volatile avr32_tc_t *tc)
 	int hej4 = tc_configure_interrupts(tc,0,&bitfield);
 
 	Enable_global_interrupt();
+	//--------------------------------------
 }

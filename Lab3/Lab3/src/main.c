@@ -2,24 +2,8 @@
 # include "compiler.h"
 #include "tc.h"
 #include "avr32\uc3a0512.h"
-/* Define the ports and pins to be used */
-// The maximum number of pins in a port
-# define GPIO_MAX_PIN_NUMBER 32
+#include "Stopwatch.h"
 
-// This is the port which LED0_GPIO is located on
-# define LED0_PORT ( LED0_GPIO / GPIO_MAX_PIN_NUMBER )
-// This is the bit position of the GPIO pin
-# define LED0_PIN ( LED0_GPIO & ( GPIO_MAX_PIN_NUMBER -1))
-// This is a 1 - bit written to the bit position of the GPIO pin
-# define LED0_BIT_VALUE (1 << LED0_PIN )
-
-// This is the port which LED1_GPIO is located on
-# define LED1_PORT ( LED1_GPIO / GPIO_MAX_PIN_NUMBER )
-// This is the bit position of the GPIO pin
-# define LED1_PIN ( LED1_GPIO & ( GPIO_MAX_PIN_NUMBER -1))
-// This is a 1 - bit written to the bit position of the GPIO pin
-# define LED1_BIT_VALUE (1 << LED1_PIN )
-int test = 0;
 void initLED(void)
 {
 	//----------------------------------------LED0-----------------------------------------------------//
@@ -52,12 +36,7 @@ void initLED(void)
 	led1_port->oders = LED1_BIT_VALUE;
 }
 
-__attribute__((__interrupt__)) static void tc_irq_handler(void)
-{
-	AVR32_GPIO.port[LED0_PORT].ovrt = LED0_BIT_VALUE;
-	test++;
-	tc_read_sr(&AVR32_TC, 0);
-}
+
 int main(void)
 {
 	initLED();
@@ -66,8 +45,9 @@ int main(void)
 	volatile int i = 0;
 	volatile int toggle = 0;
 	volatile avr32_tc_t *tc = &AVR32_TC;
-	
-	test++;
+	time = 0; 
+
+	SW_init(tc);
 	while(1) //both part 1 and 2s function condition is checked. 
 	{
 		toggle ^= 0x1 << 0;
