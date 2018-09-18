@@ -44,6 +44,7 @@ int main(void)
 {
 	// Initiate the global stopwatch time to 0.
 	time = 0; 
+	instruction = 0;
 	int localTime = 0; //Used to detect if an interrupt has occurred
 	unsigned int channel = 0; //Compiler complains if 0 is written directly
 	char timeString[25]; //Stores the formated time
@@ -84,9 +85,12 @@ int main(void)
 			{
 				// Resets rise and start the counter. Look at Page 647 in data sheet.
 				tc_start(tc,channel);
+				instruction = 0; //Reset the
+
 			}
 			else
 			{
+				instruction = 0; //Reset the
 				tc_stop(tc,channel);
 			}
 		}
@@ -96,8 +100,9 @@ int main(void)
 			tc_stop(tc,channel);
 			time = 0;
 			toggle=0;
+			instruction = 0; //Reset the
+
 		}
-		//instruction = 0; //Reset the 
 
 		if ((int)(time/10) != localTime)
 		{
