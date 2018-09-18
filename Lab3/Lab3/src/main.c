@@ -76,7 +76,7 @@ int main(void)
 
 		char instruction = USART_getChar(); //Read instruction from user (if any exists)
 
-		//Is the instruction a Start/Stop command?
+		//if the instruction is a Start/Stop command
 		if(instruction == 's')
 		{
 			toggle ^= 0x1 << 0; //Changes the toggle variable between 1 and 0
@@ -90,7 +90,7 @@ int main(void)
 				tc_stop(tc,channel);
 			}
 		}
-		//Is the instruction a Reset command?
+		//if the instruction is a Reset command
 		else if (instruction == 'r')
 		{
 			tc_stop(tc,channel);
