@@ -44,7 +44,7 @@ int main(void)
 {
 	// Initiate the global stopwatch time to 0.
 	time = 0; 
-	instruction = 0;
+	char instruction = 0;
 	int localTime = 0; //Used to detect if an interrupt has occurred
 	unsigned int channel = 0; //Compiler complains if 0 is written directly
 	char timeString[25]; //Stores the formated time
@@ -75,7 +75,7 @@ int main(void)
 			USART_reset();
 		}
 
-		char instruction = USART_getChar(); //Read instruction from user (if any exists)
+		instruction = USART_getChar(); //Read instruction from user (if any exists)
 
 		//if the instruction is a Start/Stop command
 		if(instruction == 's')
