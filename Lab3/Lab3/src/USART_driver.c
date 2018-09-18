@@ -97,9 +97,12 @@ char USART_getChar()
 	if(AVR32_USART1.CSR.rxrdy==1)
 	{
 		toTRX = (char)AVR32_USART1.RHR.rxchr;
+		return toTRX;
 	}
-
-	return toTRX;
+	else
+	{
+		return (char) 0;
+	}
 }
 
 // Writes to the THR registry txchr pins IF the txrdy pin is 1 (high) in the CSR registry.

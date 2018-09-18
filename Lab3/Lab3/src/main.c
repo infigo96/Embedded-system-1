@@ -3,6 +3,8 @@
 #include "tc.h"
 #include "avr32\uc3a0512.h"
 #include "Stopwatch.h"
+#include "USART_driver.h"
+#include "Utilities.h"
 
 void initLED(void)
 {
@@ -41,8 +43,9 @@ int main(void)
 {
 	// Initiate the global stopwatch time to 0.
 	time = 0; 
+	int localTime = 0;
 	unsigned int channel = 0; //Compiler complains if 0 is written directly
-	char timeString[3]; 
+	char timeString[15]; 
 
 	// Initiate the LEDs
 	initLED();
@@ -89,10 +92,17 @@ int main(void)
 		{
 			tc_stop(tc,channel);
 			time = 0;
+			localTime = 0;
 		}
 		instruction = 0;
 
-		Convert_Sec_To_String(timeString, time);
+		if (time > localTime)
+		{
+			Convert_Sec_To_String(timeString, time);
+			localTime = time;
+			USART_putString(timeString);
+		}
+		
 		//Debugging purposes
 		i++;
 	}
