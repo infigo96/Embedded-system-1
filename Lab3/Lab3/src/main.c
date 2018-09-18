@@ -92,13 +92,15 @@ int main(void)
 		{
 			tc_stop(tc,channel);
 			time = 0;
+			toggle=0;
 		}
 		instruction = 0;
 
-		if (time != localTime)
+		if ((int)(time/10) != localTime)
 		{
-			Convert_Sec_To_String(timeString, time);
-			localTime = time;
+			AVR32_GPIO.port[LED0_PORT].ovrt = LED0_BIT_VALUE;
+			localTime = (int)(time/10);
+			Convert_Sec_To_String(timeString, localTime);
 			USART_putString(timeString);
 		}
 		

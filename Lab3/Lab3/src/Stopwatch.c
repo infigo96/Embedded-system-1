@@ -2,7 +2,6 @@
 
 __attribute__((__interrupt__)) static void tc_irq_handler(void)
 {
-	AVR32_GPIO.port[LED0_PORT].ovrt = LED0_BIT_VALUE;
 	time++;
 	tc_read_sr(&AVR32_TC, 0);
 }
@@ -15,9 +14,9 @@ void SW_init(volatile avr32_tc_t *tc)
 	unsigned int channel = 0; //Compiler complains if 0 is written directly
 	opt.channel = channel;
 	opt.wavsel = TC_WAVEFORM_SEL_UP_MODE_RC_TRIGGER;
-	opt.tcclks = TC_CLOCK_SOURCE_TC2;
-	tc_write_rc(tc,channel,100);
+	opt.tcclks = TC_CLOCK_SOURCE_TC5;
 	tc_init_waveform(tc, &opt);
+	tc_write_rc(tc,channel,9375);
 
 	Disable_global_interrupt();
 	INTC_init_interrupts();
