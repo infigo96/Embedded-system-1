@@ -80,6 +80,12 @@ void USART_init(volatile avr32_usart_t *usart)
 	usartIO->pmr0c = 1 << 7; //CLK
 	usartIO->pmr1c = 1 << 7; //CLK
 	usartIO->gperc = 1 << 7; //CLK
+	
+	// Initiate reset button for USART.
+	volatile avr32_gpio_port_t * button0_port;
+	button0_port = &AVR32_GPIO.port[BUTTON0_PORT];
+	button0_port->gpers = BUTTON0_PIN;
+	button0_port->oderc = BUTTON0_PIN;
 }
 
 // Polls the designated register (CSR) until pin rxrdy == 1 (is high). 
