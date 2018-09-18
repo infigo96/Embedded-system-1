@@ -9,7 +9,7 @@ int time;
 #define UTILITIES_H_
 #include <stdio.h>
 #include <string.h>
-void Convert_Sec_To_String(char *timestring);
+void Convert_Sec_To_String(char *timestring, int timeValue);
 
 
 

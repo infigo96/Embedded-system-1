@@ -93,19 +93,12 @@ void USART_init(volatile avr32_usart_t *usart)
 char USART_getChar()
 {
 	char toTRX ;
-	volatile avr32_gpio_port_t *a = &AVR32_GPIO.port[BUTTON0_PORT];
-	volatile unsigned long btnstat;
-	while(AVR32_USART1.CSR.rxrdy==0)
+
+	if(AVR32_USART1.CSR.rxrdy==1)
 	{
-		// Reset funktion bound to button_0
-		btnstat = a->pvr & BUTTON0_PIN;
-		if(btnstat == 0)
-		{
-			USART_reset();
-		}
+		toTRX = (char)AVR32_USART1.RHR.rxchr;
 	}
-	toTRX = (char)AVR32_USART1.RHR.rxchr;
-	
+
 	return toTRX;
 }
 
@@ -142,20 +135,6 @@ void USART_reset()
 	usart->CR.txen = 1; // Enable Transmitter
 	usart->CR.txdis = 0; // Don't disable transmitter
 
-}
-
-// Get string method. Buffers to fixed size char array that is defined by the calling function.
-// uses USART_getChar() and fills said buffer untill 'new line' read. 
-void USART_getString(char *message)
-{
-	int i=0;
-	do
-	{
-		message[i] = USART_getChar();
-		i++;
-	}
-	while(message[i-1]!='\n');
-	message[i] = 0; //Sets last char as null char for USART_putString() purposes.
 }
 
 // Put string method. Buffers to fixed size char array that is defined by the calling function.
