@@ -52,12 +52,6 @@ void USART_init(volatile avr32_usart_t *usart)
 	pmart->OSCCTRL0.startup = 6;
 	pmart->MCCTRL.osc0en = 1;
 	pmart->MCCTRL.mcsel = 1;
-	volatile unsigned long temp = pmart->clkmask[2]; //Might be unnecessary since its preset to all ones.
-	if ((temp & (1<<9)) == 0)
-	{
-		pmart->clkmask[2] = temp + (1 << 9);
-		a = 2;
-	}
 	
 	//This is the Baud generator controller set.
 	usart->BRGR.fp = 0; // No fractions needed.

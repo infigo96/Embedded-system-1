@@ -33,7 +33,7 @@ void USART_init(volatile avr32_usart_t *usart)
 	usart->MR.chmode = 0; // normal channel mode
 	usart->MR.msbf = 0; // Least significant bit first
 	usart->MR.mode9 = 0; // see usart->MR.chrl
-	usart->MR.clko = 1; // CLK = Usart_clock
+	usart->MR.clko = 1; // CLK = Usart_clock will drive the CLK pin.
 	usart->MR.over = 0; // 16 bit over-sampling
 	usart->MR.inack = 1; // no nacks generated
 	usart->MR.dsnack = 0; // no parity bit used so this does nothing
@@ -48,16 +48,10 @@ void USART_init(volatile avr32_usart_t *usart)
 	// This part enables the 12Mhz system clock. 
 	// Osccilator0 settings in Power Management and mask for usart access.
 	volatile avr32_pm_t *pmart = &AVR32_PM; // Address of registry
-	pmart->OSCCTRL0.mode = 4;
-	pmart->OSCCTRL0.startup = 6;
-	pmart->MCCTRL.osc0en = 1;
-	pmart->MCCTRL.mcsel = 1;
-	volatile unsigned long temp = pmart->clkmask[2]; //Might be unnecessary since its preset to all ones.
-	if ((temp & (1<<9)) == 0)
-	{
-		pmart->clkmask[2] = temp + (1 << 9);
-		a = 2;
-	}
+	pmart->OSCCTRL0.mode = 4;  //Connect clock oscillator 0 with gain 0
+	pmart->OSCCTRL0.startup = 6; //142 ms startup time 
+	pmart->MCCTRL.osc0en = 1; //Enable the oscillator 0
+	pmart->MCCTRL.mcsel = 1; //Select oscillator 0 for use
 	
 	//This is the Baud generator controller set.
 	usart->BRGR.fp = 0; // No fractions needed.
