@@ -75,8 +75,6 @@ int main(void)
 			USART_reset();
 		}
 
-		char instruction = USART_getChar(); //Read instruction from user (if any exists)
-
 		//if the instruction is a Start/Stop command
 		if(instruction == 's')
 		{
