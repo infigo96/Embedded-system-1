@@ -1,6 +1,8 @@
 #include "driver.h"
 #include "evk1100.h"
 
+
+// USART_init sets bits in the USART register that initiate the Usart1 system.
 void USART_init(volatile avr32_usart_t *usart)
 {
 	volatile int a=0;
@@ -25,16 +27,14 @@ void USART_init(volatile avr32_usart_t *usart)
 	usart->MR.mode = 0; // Normal mode
 	usart->MR.usclks = 0; // Clock usart
 	usart->MR.chrl = 3; // 8-bits char length
-	usart->MR.sync = 0; // FUCKING!! asynchronous mode!
+	usart->MR.sync = 0; // asynchronous mode!
 	usart->MR.par = 4; // No parity bit
 	usart->MR.nbstop = 0; // 1 bit stop bit.
-	
 	usart->MR.chmode = 0; // normal channel mode
-	
 	usart->MR.msbf = 0; // Least significant bit first
 	usart->MR.mode9 = 0; // see usart->MR.chrl
 	usart->MR.clko = 1; // CLK = Usart_clock
-	usart->MR.over = 0; // 16 bit over-sampling (not used in synchronous mode)
+	usart->MR.over = 0; // 16 bit over-sampling
 	usart->MR.inack = 1; // no nacks generated
 	usart->MR.dsnack = 0; // no parity bit used so this does nothing
 	usart->MR.var_sync = 1; // Update when character is written into THR register
@@ -45,19 +45,18 @@ void USART_init(volatile avr32_usart_t *usart)
 	usart->MR.onebit = 1; // Start Frame delimiter is One Bit.
 
 	//Interrupt handling for USART
-	usart->IER.txempty = 1;
+	usart->IER.txempty = 1; //Start with empty tranmitter
 	usart->IER.txrdy = 1;	//Enable the transmitter interrupt 
 	usart->IER.rxrdy = 1;	//Enable the receiver interrupt
 	
-	//Check if there is a clock in SSC that needs to be enabled --------------!!!!!!!!!!
-	
-	//This part enables the main system clock in usart. 
-	volatile avr32_pm_t *pmart = &AVR32_PM;
+	// This part enables the 12Mhz system clock. 
+	// Osccilator0 settings in Power Management and mask for usart access.
+	volatile avr32_pm_t *pmart = &AVR32_PM; // Address of registry
 	pmart->OSCCTRL0.mode = 4;
 	pmart->OSCCTRL0.startup = 6;
 	pmart->MCCTRL.osc0en = 1;
 	pmart->MCCTRL.mcsel = 1;
-	volatile unsigned long temp = pmart->clkmask[2];
+	volatile unsigned long temp = pmart->clkmask[2]; //Might be unnecessary since its preset to all ones.
 	if ((temp & (1<<9)) == 0)
 	{
 		pmart->clkmask[2] = temp + (1 << 9);
@@ -69,7 +68,7 @@ void USART_init(volatile avr32_usart_t *usart)
 	usart->BRGR.cd = 78; // CD = 12 000 000 / (16*9 600) => CD = 78,125. 
 
 	//Enable pages 45+179 in data sheet and uc3a0512.h row 1090.
-	volatile avr32_gpio_port_t *usartIO = &AVR32_GPIO.port[0]; // Fix define
+	volatile avr32_gpio_port_t *usartIO = &AVR32_GPIO.port[0];
 	usartIO->pmr0c = 1 << 5; //RXD
 	usartIO->pmr1c = 1 << 5; //RXD
 	usartIO->gperc = 1 << 5; //RXD
@@ -81,22 +80,21 @@ void USART_init(volatile avr32_usart_t *usart)
 	usartIO->pmr0c = 1 << 7; //CLK
 	usartIO->pmr1c = 1 << 7; //CLK
 	usartIO->gperc = 1 << 7; //CLK
-	
-	
 }
 
 // Delay input milli sec.
 void mdelay(int ms)
 {
-	// The multiplicator is the estimated number of cycles per mili sec.
-	long volatile cycles = 1050*ms;
+	// The multiplicator 1091 is the estimated number of cycles per mili sec based on the calculation 12000/11 (instead of 115,2/11).
+	long volatile cycles = 1091*ms;
 	while (cycles != 0)
 	{
 		cycles--;
 	}
 }
 
-// Polls the designated register until rxrdy == 1. Then it takes the char in rxchar and returns it.
+// Polls the designated register (CSR) until pin rxrdy == 1 (is high). 
+// Then it takes the char that was placed in the RHR register on rxchar pins and returns it.
 char USART_getChar()
 {
 	char toTRX ;
@@ -104,6 +102,7 @@ char USART_getChar()
 	volatile unsigned long btnstat;
 	while(AVR32_USART1.CSR.rxrdy==0)
 	{
+		// Reset funktion bound to button_0
 		btnstat = a->pvr & BUTTON0_PIN;
 		if(btnstat == 0)
 		{
@@ -114,6 +113,8 @@ char USART_getChar()
 	
 	return toTRX;
 }
+
+// Writes to the THR registry txchr pins IF the txrdy pin is 1 (high) in the CSR registry.
 void USART_putChar(char c)
 {
 	while(1)
@@ -126,6 +127,8 @@ void USART_putChar(char c)
 		}
 	}
 }
+
+// Reset function which clears and sets bits in the Usart Control Register
 void USART_reset()
 {
 	//Reset the control register
@@ -134,7 +137,7 @@ void USART_reset()
 	usart->CR.rstrx = 1; // Reset Receiver
 	usart->CR.rsttx = 1; // Reset Transmitter
 	usart->CR.rststa = 1; // Resets Status bit
-	//Clear the bits
+	//Clear the bits just in case
 	usart->CR.rstrx = 0;
 	usart->CR.rsttx = 0;
 	usart->CR.rststa = 0;
@@ -142,9 +145,12 @@ void USART_reset()
 	usart->CR.rxen = 1;	// Enable receiver
 	usart->CR.rxdis = 0; // Don't disable receiver
 	usart->CR.txen = 1; // Enable Transmitter
-	usart->CR.rxdis = 0; // Don't disable receiver
+	usart->CR.txdis = 0; // Don't disable transmitter
 
 }
+
+// Get string method. Buffers to fixed size char array that is defined by the calling function.
+// uses USART_getChar() and fills said buffer untill 'new line' read. 
 void USART_getString(char *message)
 {
 	int i=0;
@@ -154,8 +160,11 @@ void USART_getString(char *message)
 		i++;
 	}
 	while(message[i-1]!='\n');
-	message[i] = 0;
+	message[i] = 0; //Sets last char as null char for USART_putString() purposes.
 }
+
+// Put string method. Buffers to fixed size char array that is defined by the calling function.
+// Uses USART_putChar() to write to the register untill 'null' char found in the buffer.
 void USART_putString(char *message)
 {
 	int i=0;

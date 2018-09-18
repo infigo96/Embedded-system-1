@@ -25,12 +25,13 @@ int main (void)
 	// Initiate the LEDs we require
 	initLEDs(1+2+4,definePORTs,defineBITVALUEs);
 	
-
+	// Initiate reset button.
 	volatile avr32_gpio_port_t * button0_port;
 	button0_port = &AVR32_GPIO.port[BUTTON0_PORT];
 	button0_port->gpers = BUTTON0_PIN;
 	button0_port->oderc = BUTTON0_PIN;
-	/* Insert system clock initialization code here (sysclk_init()). */
+
+	// Initiate Usart.
 	volatile avr32_usart_t *usart = &AVR32_USART1;
 	USART_init(usart);
 
@@ -38,10 +39,8 @@ int main (void)
 	char Message[256];
 	while(1)
 	{
-
-		// Get string method w
+		// Gets string and returns it
 		USART_getString(Message);
-		//
 		USART_putString(Message);
 	}
 }
