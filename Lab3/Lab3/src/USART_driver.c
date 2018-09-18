@@ -45,9 +45,9 @@ void USART_init(volatile avr32_usart_t *usart)
 	usart->MR.onebit = 1; // Start Frame delimiter is One Bit.
 
 	//Interrupt handling for USART
-	usart->IER.txempty = 1; //Start with empty tranmitter
+	/*usart->IER.txempty = 1; //Start with empty tranmitter
 	usart->IER.txrdy = 1;	//Enable the transmitter interrupt 
-	usart->IER.rxrdy = 1;	//Enable the receiver interrupt
+	usart->IER.rxrdy = 1;	//Enable the receiver interrupt*/
 	
 	// This part enables the 12Mhz system clock. 
 	// Osccilator0 settings in Power Management and mask for usart access.
