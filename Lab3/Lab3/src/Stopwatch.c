@@ -1,6 +1,6 @@
 #include "Stopwatch.h"
 
-__attribute__((__interrupt__)) static void tc_irq_handler(void)
+__attribute__((__interrupt__)) static void watch_interrupt(void)
 {
 	time++;
 	tc_read_sr(&AVR32_TC, 0);
@@ -23,7 +23,7 @@ void SW_init(volatile avr32_tc_t *tc)
 
 	tc_interrupt_t bitfield;
 	bitfield.cpcs = 1;
-	INTC_register_interrupt(&tc_irq_handler,AVR32_TC_IRQ0 ,AVR32_INTC_INT0);
+	INTC_register_interrupt(&watch_interrupt,AVR32_TC_IRQ0 ,AVR32_INTC_INT0);
 
 	tc_configure_interrupts(tc,0,&bitfield);
 
