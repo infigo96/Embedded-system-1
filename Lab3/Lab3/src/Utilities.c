@@ -8,17 +8,23 @@
 //Divides total number of seconds into seconds, minuts and hours. Then, outputs it as a string (with cursermovment)
 void Convert_Sec_To_String(char *timestring, int timeValue){
 	char seconds[4], minuts[5], hours[5];
-	char output[15];
+	char output[25];
 
 
 	sprintf(hours, "%dh ", (timeValue / 3600) % 24);
 	sprintf(minuts, "%dm ", (timeValue / 60) % 60);
 	sprintf(seconds, "%ds", timeValue % 60);
 	
+	char esc_Seq[7];
+    sprintf(esc_Seq, "%c[2J",0x1B);		//Empty the terminal window
+
+	strcpy(output,esc_Seq);
+	sprintf(esc_Seq, "%c[0;0H",0x1B);	//Move the cursor to the begining of the row in the terminal
+	
+	strcat(output,esc_Seq);
 	strcat(output,hours);
 	strcat(output,minuts);
 	strcat(output,seconds);
-	strcat(output, 1);
 	strcpy(timestring, output);
 }
 

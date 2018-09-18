@@ -45,7 +45,7 @@ int main(void)
 	time = 0; 
 	int localTime = 0;
 	unsigned int channel = 0; //Compiler complains if 0 is written directly
-	char timeString[15]; 
+	char timeString[25]; 
 
 	// Initiate the LEDs
 	initLED();
