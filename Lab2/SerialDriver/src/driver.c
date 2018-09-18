@@ -88,6 +88,7 @@ void USART_init(volatile avr32_usart_t *usart)
 // Delay input milli sec.
 void mdelay(int ms)
 {
+	// The multiplicator is the estimated number of cycles per mili sec.
 	long volatile cycles = 1050*ms;
 	while (cycles != 0)
 	{
@@ -95,7 +96,7 @@ void mdelay(int ms)
 	}
 }
 
-// Reads 
+// Polls the designated register until rxrdy == 1. Then it takes the char in rxchar and returns it.
 char USART_getChar()
 {
 	char toTRX ;
