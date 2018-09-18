@@ -46,8 +46,13 @@ int main(void)
 	volatile int toggle = 0;
 	volatile avr32_tc_t *tc = &AVR32_TC;
 	time = 0; 
-
 	SW_init(tc);
+
+	volatile avr32_usart_t *usart = &AVR32_USART1;
+	USART_init(usart);
+
+	volatile avr32_gpio_port_t
+
 	while(1) //both part 1 and 2s function condition is checked. 
 	{
 		toggle ^= 0x1 << 0;
