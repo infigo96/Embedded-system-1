@@ -5,10 +5,10 @@
  *  Author: Albert
  */ 
 #include "Utilities.h"
-//Divides total number of seconds into seconds, minuts and hours. Then, outputs it as a string (with cursermovment)
+//Divides total number of seconds into seconds, minuts and hours. Then, outputs it as a string (with ANSI cursor movement)
 void Convert_Sec_To_String(char *timestring, int timeValue){
-	char seconds[4], minuts[5], hours[5];
-	char output[25];
+	char seconds[4], minuts[5], hours[5]; //Stores the seconds, minuts and hours as text
+	char output[25]; //The combined output
 
 
 	sprintf(hours, "%dh ", (timeValue / 3600) % 24);
@@ -17,15 +17,15 @@ void Convert_Sec_To_String(char *timestring, int timeValue){
 	
 	char esc_Seq[7];
     sprintf(esc_Seq, "%c[2J",0x1B);		//Empty the terminal window
-
 	strcpy(output,esc_Seq);
-	sprintf(esc_Seq, "%c[0;0H",0x1B);	//Move the cursor to the begining of the row in the terminal
 	
+	sprintf(esc_Seq, "%c[0;0H",0x1B);	//Move the cursor to the beginning of the row/column in the terminal
 	strcat(output,esc_Seq);
+	//Append the time
 	strcat(output,hours);
 	strcat(output,minuts);
 	strcat(output,seconds);
-	strcpy(timestring, output);
+	strcpy(timestring, output); //Copy to the inputted string
 }
 
 // Delay input milli sec.

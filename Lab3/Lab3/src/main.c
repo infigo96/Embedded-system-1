@@ -6,6 +6,7 @@
 #include "USART_driver.h"
 #include "Utilities.h"
 
+//Initializes the LED
 void initLED(void)
 {
 	//----------------------------------------LED0-----------------------------------------------------//
@@ -43,9 +44,9 @@ int main(void)
 {
 	// Initiate the global stopwatch time to 0.
 	time = 0; 
-	int localTime = 0;
+	int localTime = 0; //Used to detect if an interrupt has occurred
 	unsigned int channel = 0; //Compiler complains if 0 is written directly
-	char timeString[25]; 
+	char timeString[25]; //Stores the formated time
 
 	// Initiate the LEDs
 	initLED();
@@ -73,11 +74,12 @@ int main(void)
 			USART_reset();
 		}
 
-		char instruction = USART_getChar();
+		char instruction = USART_getChar(); //Read instruction from user (if any exists)
 
+		//Is the instruction a Start/Stop command?
 		if(instruction == 's')
 		{
-			toggle ^= 0x1 << 0;
+			toggle ^= 0x1 << 0; //Changes the toggle variable between 1 and 0
 			if(toggle == 1)
 			{
 				// Resets rise and start the counter. Look at Page 647 in data sheet.
@@ -88,13 +90,14 @@ int main(void)
 				tc_stop(tc,channel);
 			}
 		}
+		//Is the instruction a Reset command?
 		else if (instruction == 'r')
 		{
 			tc_stop(tc,channel);
 			time = 0;
 			toggle=0;
 		}
-		instruction = 0;
+		//instruction = 0; //Reset the 
 
 		if ((int)(time/10) != localTime)
 		{
@@ -103,8 +106,5 @@ int main(void)
 			Convert_Sec_To_String(timeString, localTime);
 			USART_putString(timeString);
 		}
-		
-		//Debugging purposes
-		i++;
 	}
 }

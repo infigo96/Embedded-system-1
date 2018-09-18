@@ -4,7 +4,7 @@
 	# include "compiler.h"
 	#include "tc.h"
 	#include "avr32\uc3a0512.h"
-	extern int time;
+	extern unsigned int time; //Counts 10ths of seconds. Is incremented during watch_interrupt
 	void SW_init(volatile avr32_tc_t *tc);
 	
 	/* Define the ports and pins to be used */
