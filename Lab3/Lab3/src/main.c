@@ -92,11 +92,10 @@ int main(void)
 		{
 			tc_stop(tc,channel);
 			time = 0;
-			localTime = 0;
 		}
 		instruction = 0;
 
-		if (time > localTime)
+		if (time != localTime)
 		{
 			Convert_Sec_To_String(timeString, time);
 			localTime = time;
