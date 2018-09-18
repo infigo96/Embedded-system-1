@@ -18,6 +18,17 @@ void Convert_Sec_To_String(char *timestring){
 	strcat(output,hours);
 	strcat(output,minuts);
 	strcat(output,seconds);
-	strcat(output,1);
+	strcat(output, 1);
 	strcpy(timestring, output);
+}
+
+// Delay input milli sec.
+void mdelay(int ms)
+{
+	// The multiplicator 1091 is the estimated number of cycles per mili sec based on the calculation 12000/11 (instead of 115,2/11).
+	long volatile cycles = 1091*ms;
+	while (cycles != 0)
+	{
+		cycles--;
+	}
 }
