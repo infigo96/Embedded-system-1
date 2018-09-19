@@ -10,10 +10,9 @@ void Convert_Sec_To_String(char *timestring, int timeValue){
 	char seconds[4], minuts[5], hours[5]; //Stores the seconds, minuts and hours as text
 	char output[25]; //The combined output
 
-
-	sprintf(hours, "%dh ", (timeValue / 3600) % 24);
-	sprintf(minuts, "%dm ", (timeValue / 60) % 60);
-	sprintf(seconds, "%ds", timeValue % 60);
+	sprintf(hours, "%02dh ", (timeValue / 3600) % 24);
+	sprintf(minuts, "%02dm ", (timeValue / 60) % 60);
+	sprintf(seconds, "%02ds", timeValue % 60);
 	
 	char esc_Seq[7];
     sprintf(esc_Seq, "%c[2J",0x1B);		//Empty the terminal window
