@@ -36,12 +36,12 @@ int main (void)
 	USART_init(usart);
 
 	// Message buffer handled by the operating system
-	char Message[256];
+	char Message[BUFFERSIZE];
 	while(1)
 	{
 		// Gets string and returns it
-		USART_getString(Message);
-		USART_putString(Message);
+		USART_getString(Message, BUFFERSIZE);
+		USART_putString(Message, BUFFERSIZE);
 	}
 }
 

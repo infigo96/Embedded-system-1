@@ -141,7 +141,7 @@ void USART_reset()
 
 // Get string method. Buffers to fixed size char array that is defined by the calling function.
 // uses USART_getChar() and fills said buffer untill 'new line' read. 
-void USART_getString(char *message)
+void USART_getString(char *message, int maxLength)
 {
 	int i=0;
 	do
@@ -149,16 +149,19 @@ void USART_getString(char *message)
 		message[i] = USART_getChar();
 		i++;
 	}
-	while(message[i-1]!='\n');
-	message[i] = 0; //Sets last char as null char for USART_putString() purposes.
+	while(message[i-1]!='\n' && i < maxLength);
+	if(i < maxLength)
+	{
+		message[i] = 0; //Sets last char as null char for USART_putString() purposes.
+	}
 }
 
 // Put string method. Buffers to fixed size char array that is defined by the calling function.
 // Uses USART_putChar() to write to the register untill 'null' char found in the buffer.
-void USART_putString(char *message)
+void USART_putString(char *message, int maxLength)
 {
 	int i=0;
-	while (message[i]!=0)
+	while (message[i]!=0 && i < maxLength)
 	{
 		USART_putChar(message[i]);
 		i++;
