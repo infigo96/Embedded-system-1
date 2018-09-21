@@ -2,17 +2,19 @@
 
 __attribute__((__interrupt__)) static void watch_interrupt(void)
 {
-	/*unsigned int hej = AVR32_GPIO.port[BUTTON0_PORT].pvr & BUTTON0_PIN;
-	if(hej == 0 && lockdown == 0)
+	//buttin[0] = AVR32_GPIO.port[BUTTON0_PORT].pvr;
+	buttin[0] = hej->pvr & BUTTON0_PIN;
+	buttin[1] = hej->pvr & BUTTON0_PIN;
+	buttin[2] = hej->pvr & BUTTON0_PIN;
+	buttin[3] = hej->pvr & BUTTON0_PIN;
+	buttin[4] = hej->pvr & BUTTON0_PIN;
+	buttin[5] = hej->pvr & BUTTON0_PIN;
+	buttin[6] = hej->pvr & BUTTON0_PIN;
+	if(buttin[6] == 0)
 	{
-		firstPress++;
-		presses[0]++;
+		tc_stop(&AVR32_TC,0);
+		lockdown = 1;
 	}
-	else if(firstPress != 0)
-	{
-		presses[1]++;
-	}*/
-	time++;
 	tc_read_sr(&AVR32_TC, 0);
 }
 
@@ -24,9 +26,9 @@ void SW_init(volatile avr32_tc_t *tc)
 	unsigned int channel = 0; //Compiler complains if 0 is written directly
 	opt.channel = channel;
 	opt.wavsel = TC_WAVEFORM_SEL_UP_MODE_RC_TRIGGER;
-	opt.tcclks = TC_CLOCK_SOURCE_TC5;
+	opt.tcclks = TC_CLOCK_SOURCE_TC2;
 	tc_init_waveform(tc, &opt);
-	tc_write_rc(tc,channel,56250);
+	tc_write_rc(tc,channel,30);
 
 	Disable_global_interrupt();
 	INTC_init_interrupts();

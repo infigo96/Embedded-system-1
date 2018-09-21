@@ -8,6 +8,8 @@
 	unsigned int presses[2];
 	int firstPress;
 	int lockdown;
+	unsigned int buttin[7];
+	avr32_gpio_port_t* hej;
 	
 	#define BUTTON0_PORT (GPIO_JOYSTICK_LEFT >> 5)	#define BUTTON0_PIN (1 << (GPIO_JOYSTICK_LEFT & 0x1f))
 	

@@ -47,6 +47,7 @@ int main(void)
 	char instruction = 0;
 	presses[0] = 0;
 	presses[1] = 0;
+	unsigned int buttonval[6];
 	firstPress = 0;
 	int localTime = 0; //Used to detect if an interrupt has occurred
 	unsigned int channel = 0; //Compiler complains if 0 is written directly
@@ -59,14 +60,14 @@ int main(void)
 	button0_port = &AVR32_GPIO.port[BUTTON0_PORT];
 	button0_port->gpers = BUTTON0_PIN;
 	button0_port->oderc = BUTTON0_PIN;
-
+	
 	volatile int i = 0;
 	volatile int toggle = 0;
 	lockdown = 0;
 	volatile avr32_tc_t *tc = &AVR32_TC;
 	// Initiates timer counter, sets CR compare interrupt 
 	SW_init(tc);
-
+	hej = &(AVR32_GPIO.port[BUTTON0_PORT]);
 	//Initiate USART for communication
 	volatile avr32_usart_t *usart = &AVR32_USART1;
 	USART_init(usart);
@@ -75,21 +76,23 @@ int main(void)
 	volatile avr32_gpio_port_t *a = &AVR32_GPIO.port[BUTTON0_PORT];
 	volatile unsigned long btnstat;
 	AVR32_GPIO.port[LED1_PORT].ovrt = LED1_BIT_VALUE;
-
 	while(1)
 	{
-		if(((int)time/10) != localTime)
+		/*if(((int)time/10) != localTime) //Timer for delay, run tc5 and RC on 56250 for one sec trig
 		{
 			AVR32_GPIO.port[LED0_PORT].ovrt = LED0_BIT_VALUE;
 			localTime = (int)time/10;
 
-		}
-		if(presses[0] >= 5000 && lockdown == 0)
+		}*/
+		if(lockdown == 1)
 		{
 			AVR32_GPIO.port[LED0_PORT].ovrt = LED0_BIT_VALUE;
-			tc_stop(tc,0);
-			lockdown = 1;
-			firstPress = 0;
+			//tc_stop(tc,0);
+			for(int i; i < 6; i++)
+			{
+				buttonval[i] = buttin[i] & BUTTON0_PIN;
+			}
+			lockdown == 0;
 		}
 		i++;
 	}
