@@ -88,11 +88,9 @@ int main(void)
 		{
 			AVR32_GPIO.port[LED0_PORT].ovrt = LED0_BIT_VALUE;
 			//tc_stop(tc,0);
-			for(int i; i < 6; i++)
-			{
-				buttonval[i] = buttin[i] & BUTTON0_PIN;
-			}
-			lockdown == 0;
+			
+			lockdown = 0;
+			tc_start(tc,0);
 		}
 		i++;
 	}

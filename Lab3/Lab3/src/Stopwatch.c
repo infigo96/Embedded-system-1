@@ -28,7 +28,7 @@ void SW_init(volatile avr32_tc_t *tc)
 	opt.wavsel = TC_WAVEFORM_SEL_UP_MODE_RC_TRIGGER;
 	opt.tcclks = TC_CLOCK_SOURCE_TC2;
 	tc_init_waveform(tc, &opt);
-	tc_write_rc(tc,channel,30);
+	tc_write_rc(tc,channel,10);
 
 	Disable_global_interrupt();
 	INTC_init_interrupts();
