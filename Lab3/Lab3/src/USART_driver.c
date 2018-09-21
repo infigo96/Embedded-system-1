@@ -48,10 +48,19 @@ void USART_init(volatile avr32_usart_t *usart)
 	// This part enables the 12Mhz system clock. 
 	// Osccilator0 settings in Power Management and mask for usart access.
 	volatile avr32_pm_t *pmart = &AVR32_PM; // Address of registry
-	pmart->OSCCTRL0.mode = 4;
+	pmart->OSCCTRL0.mode = 6;
 	pmart->OSCCTRL0.startup = 6;
 	pmart->MCCTRL.osc0en = 1;
-	pmart->MCCTRL.mcsel = 1;
+	pmart->PLL[0].pllcount = 60;
+	pmart->PLL[0].plldiv = 0;
+	pmart->PLL[0].pllmul = 2;
+	pmart->PLL[0].pllopt = 1;
+	pmart->PLL[0].pllosc = 0;
+	pmart->PLL[0].pllen = 1;
+	 while (!(pmart->poscsr & AVR32_PM_POSCSR_LOCK0_MASK));
+
+	
+	pmart->MCCTRL.mcsel = 2;
 	
 	//This is the Baud generator controller set.
 	usart->BRGR.fp = 0; // No fractions needed.
@@ -71,11 +80,7 @@ void USART_init(volatile avr32_usart_t *usart)
 	usartIO->pmr1c = 1 << 7; //CLK
 	usartIO->gperc = 1 << 7; //CLK
 	
-	// Initiate reset button for USART.
-	volatile avr32_gpio_port_t * button0_port;
-	button0_port = &AVR32_GPIO.port[BUTTON0_PORT];
-	button0_port->gpers = BUTTON0_PIN;
-	button0_port->oderc = BUTTON0_PIN;
+
 }
 
 // Polls the designated register (CSR) until pin rxrdy == 1 (is high). 

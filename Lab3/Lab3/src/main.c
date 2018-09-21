@@ -45,16 +45,24 @@ int main(void)
 	// Initiate the global stopwatch time to 0.
 	time = 0; 
 	char instruction = 0;
+	presses[0] = 0;
+	presses[1] = 0;
+	firstPress = 0;
 	int localTime = 0; //Used to detect if an interrupt has occurred
 	unsigned int channel = 0; //Compiler complains if 0 is written directly
 	char timeString[25]; //Stores the formated time
 
 	// Initiate the LEDs
 	initLED();
-
+	// Initiate reset button for USART.
+	volatile avr32_gpio_port_t * button0_port;
+	button0_port = &AVR32_GPIO.port[BUTTON0_PORT];
+	button0_port->gpers = BUTTON0_PIN;
+	button0_port->oderc = BUTTON0_PIN;
 
 	volatile int i = 0;
 	volatile int toggle = 0;
+	lockdown = 0;
 	volatile avr32_tc_t *tc = &AVR32_TC;
 	// Initiates timer counter, sets CR compare interrupt 
 	SW_init(tc);
@@ -62,54 +70,27 @@ int main(void)
 	//Initiate USART for communication
 	volatile avr32_usart_t *usart = &AVR32_USART1;
 	USART_init(usart);
-
+	tc_start(tc,0);
 	// Reset function bound to button_0
 	volatile avr32_gpio_port_t *a = &AVR32_GPIO.port[BUTTON0_PORT];
 	volatile unsigned long btnstat;
+	AVR32_GPIO.port[LED1_PORT].ovrt = LED1_BIT_VALUE;
 
 	while(1)
 	{
-		btnstat = a->pvr & BUTTON0_PIN;
-		if(btnstat == 0)
-		{
-			USART_reset();
-		}
-
-		instruction = USART_getChar(); //Read instruction from user (if any exists)
-
-		//if the instruction is a Start/Stop command
-		if(instruction == 's')
-		{
-			toggle ^= 0x1 << 0; //Changes the toggle variable between 1 and 0
-			if(toggle == 1)
-			{
-				// Resets rise and start the counter. Look at Page 647 in data sheet.
-				tc_start(tc,channel);
-				instruction = 0; //Reset the
-
-			}
-			else
-			{
-				instruction = 0; //Reset the
-				tc_stop(tc,channel);
-			}
-		}
-		//if the instruction is a Reset command
-		else if (instruction == 'r')
-		{
-			tc_stop(tc,channel);
-			time = 0;
-			toggle=0;
-			instruction = 0; //Reset the
-
-		}
-
-		if ((int)(time/10) != localTime)
+		if(((int)time/10) != localTime)
 		{
 			AVR32_GPIO.port[LED0_PORT].ovrt = LED0_BIT_VALUE;
-			localTime = (int)(time/10);
-			Convert_Sec_To_String(timeString, localTime);
-			USART_putString(timeString);
+			localTime = (int)time/10;
+
 		}
+		if(presses[0] >= 5000 && lockdown == 0)
+		{
+			AVR32_GPIO.port[LED0_PORT].ovrt = LED0_BIT_VALUE;
+			tc_stop(tc,0);
+			lockdown = 1;
+			firstPress = 0;
+		}
+		i++;
 	}
 }

@@ -2,6 +2,16 @@
 
 __attribute__((__interrupt__)) static void watch_interrupt(void)
 {
+	/*unsigned int hej = AVR32_GPIO.port[BUTTON0_PORT].pvr & BUTTON0_PIN;
+	if(hej == 0 && lockdown == 0)
+	{
+		firstPress++;
+		presses[0]++;
+	}
+	else if(firstPress != 0)
+	{
+		presses[1]++;
+	}*/
 	time++;
 	tc_read_sr(&AVR32_TC, 0);
 }
@@ -16,7 +26,7 @@ void SW_init(volatile avr32_tc_t *tc)
 	opt.wavsel = TC_WAVEFORM_SEL_UP_MODE_RC_TRIGGER;
 	opt.tcclks = TC_CLOCK_SOURCE_TC5;
 	tc_init_waveform(tc, &opt);
-	tc_write_rc(tc,channel,9375);
+	tc_write_rc(tc,channel,56250);
 
 	Disable_global_interrupt();
 	INTC_init_interrupts();
