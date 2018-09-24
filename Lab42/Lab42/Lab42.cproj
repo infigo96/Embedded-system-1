@@ -277,6 +277,9 @@
     <Folder Include="src\config\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\PWM_Led.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\PWM_Led.h">
       <SubType>compile</SubType>
     </Compile>
