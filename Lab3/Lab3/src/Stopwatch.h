@@ -6,7 +6,8 @@
 	#include "avr32\uc3a0512.h"
 	unsigned int time; //Counts 10ths of seconds. Is incremented during watch_interrupt
 	void SW_init(volatile avr32_tc_t *tc);
-	
+	void SW_start(volatile avr32_tc_t *tc, unsigned int channel);
+	void SW_stop(volatile avr32_tc_t *tc, unsigned int channel);
 	/* Define the ports and pins to be used */
 	// The maximum number of pins in a port
 	# define GPIO_MAX_PIN_NUMBER 32

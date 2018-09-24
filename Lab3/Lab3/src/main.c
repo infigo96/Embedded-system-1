@@ -7,6 +7,7 @@
 #include "Utilities.h"
 
 //Initializes the LED
+void initLED(void);
 void initLED(void)
 {
 	//----------------------------------------LED0-----------------------------------------------------//
@@ -53,7 +54,6 @@ int main(void)
 	initLED();
 
 
-	volatile int i = 0;
 	volatile int toggle = 0;
 	volatile avr32_tc_t *tc = &AVR32_TC;
 	// Initiates timer counter, sets CR compare interrupt 
@@ -75,6 +75,7 @@ int main(void)
 			USART_reset();
 		}
 
+
 		instruction = USART_getChar(); //Read instruction from user (if any exists)
 
 		//if the instruction is a Start/Stop command
@@ -84,14 +85,14 @@ int main(void)
 			if(toggle == 1)
 			{
 				// Resets rise and start the counter. Look at Page 647 in data sheet.
-				tc_start(tc,channel);
-				instruction = 0; //Reset the
+				SW_start(tc,channel);
+				instruction = 0; //Reset the instruction to avoid re-enter the if case
 
 			}
 			else
 			{
-				instruction = 0; //Reset the
-				tc_stop(tc,channel);
+				instruction = 0; //Reset the instruction to avoid re-enter the if case
+				SW_stop(tc,channel);
 			}
 		}
 		//if the instruction is a Reset command
@@ -100,16 +101,17 @@ int main(void)
 			tc_stop(tc,channel);
 			time = 0;
 			toggle=0;
-			instruction = 0; //Reset the
+			instruction = 0; //Reset the instruction to avoid re-enter the if case
 
 		}
-
+		
+		//If one whole second has passed
 		if ((int)(time/10) != localTime)
 		{
-			AVR32_GPIO.port[LED0_PORT].ovrt = LED0_BIT_VALUE;
-			localTime = (int)(time/10);
-			Convert_Sec_To_String(timeString, localTime);
-			USART_putString(timeString);
+			AVR32_GPIO.port[LED0_PORT].ovrt = LED0_BIT_VALUE; //Toggle the LED
+			localTime = (int)(time/10); //Convert the clock time into seconds
+			Convert_Sec_To_String(timeString, localTime); //Format the time into a string ("00h 00m 00s") with ANSI escape sequences
+			USART_putString(timeString); //Send the string through USART
 		}
 	}
 }
