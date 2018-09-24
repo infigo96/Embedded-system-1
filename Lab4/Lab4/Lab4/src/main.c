@@ -36,11 +36,7 @@ int main(void)
 	
 
 
-	//// Convert the potentiometer value to a value btwn 0-255
-	//brightness_LED5 = pot_value * 255 / 1024;
-//
-	//// Set the intensity of the LED
-	//LED_Set_Intensity(LED5, brightness_LED5);
+
 	delay_init();
 	display_init();
 	char text[25] = "Hello world";
@@ -61,7 +57,11 @@ int main(void)
 		// Get the potentiometer value
 		pot_value = adc_get_value(&AVR32_ADC, ADC_POTENTIOMETER_CHANNEL);
 
-
+		//// Convert the potentiometer value to a value btwn 0-255
+		brightness_LED5 = pot_value * 255 / 1024;
+		//
+		//// Set the intensity of the LED
+		LED_Set_Intensity(LED5, brightness_LED5);
 		
 		//Clear the display
 		//dip204_clear_display();
