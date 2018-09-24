@@ -7,10 +7,11 @@ __attribute__((__interrupt__)) static void watch_interrupt(void)
 }
 
 __attribute__((__interrupt__)) static void readana(void)
-{
-	AVR32_GPIO.port[LED1_PORT].ovrt = LED1_BIT_VALUE;
-	instruction = (char)AVR32_USART1.RHR.rxchr;
-	(&AVR32_USART1)->IMR.rxrdy;
+{	
+	//Every time a Usart interupt for rxrdy is triggered this is run.
+	AVR32_GPIO.port[LED1_PORT].ovrt = LED1_BIT_VALUE;		//Trigger the led
+	instruction = (char)AVR32_USART1.RHR.rxchr;		//Reads the char message
+	(&AVR32_USART1)->IMR.rxrdy;		//Reads the Interrupt Mask register to clear this interrupt.
 }
 
 void SW_init(volatile avr32_tc_t *tc)

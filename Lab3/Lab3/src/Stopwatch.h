@@ -5,7 +5,7 @@
 	#include "tc.h"
 	#include "avr32\uc3a0512.h"
 	unsigned int time; //Counts 10ths of seconds. Is incremented during watch_interrupt
-	char instruction;
+	char instruction;	//Global instruction that is set in the USART interrupt.
 	void SW_init(volatile avr32_tc_t *tc);
 	
 	/* Define the ports and pins to be used */
