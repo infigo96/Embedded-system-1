@@ -26,6 +26,7 @@ int readRTC(void)
 {
 	return *(itp32(RTC_ADRESS + RTC_VALUE ));
 }
+//Generated
 int PWM(float duty_cycle)
 {
 	if(readRTC() > WRAP_VALUE * duty_cycle)
@@ -33,6 +34,7 @@ int PWM(float duty_cycle)
 	else
 		return 1;
 }
+//Set the Main clock to Oscillator 0
 void initMAINCLK()
 {
 	//*(itp32(PM_ADRESS + O0CTRL)) |= (0x04 << 0); // MODE Select = 4'
@@ -41,5 +43,8 @@ void initMAINCLK()
 	//*(itp32(PM_ADRESS + MCCTRL)) |= (0x01 << 0); // Select Main clock to OSC0 = 1'
 	
 	*(itp32(PM_ADRESS + O0CTRL)) = 0x604; // MODE Select = 4' // STARTUP time Select = 6'
-	*(itp32(PM_ADRESS + MCCTRL)) = 0x05; // Enable OSC0' // Select Main clock to OSC0 = 1'
+	//*(itp32(PM_ADRESS + MCCTRL)) = 0x05; // Enable OSC0' // Select Main clock to OSC0 = 1'
+	volatile unsigned int* foo = itp32(PM_ADRESS + MCCTRL);
+	*(itp32(PM_ADRESS + MCCTRL)) |= (0x01 << 2); // Enable OSC0'
+	*(itp32(PM_ADRESS + MCCTRL)) |= (0x01 << 0); // Select Main clock to OSC0 = 1'
 }
