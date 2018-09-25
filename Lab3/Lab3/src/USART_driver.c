@@ -53,8 +53,8 @@ void USART_init(volatile avr32_usart_t *usart)
 	pmart->MCCTRL.osc0en = 1;
 	pmart->PLL[0].pllcount = 60;
 	pmart->PLL[0].plldiv = 0;
-	pmart->PLL[0].pllmul = 2;
-	pmart->PLL[0].pllopt = 1;
+	pmart->PLL[0].pllmul = 5;
+	pmart->PLL[0].pllopt = 3;
 	pmart->PLL[0].pllosc = 0;
 	pmart->PLL[0].pllen = 1;
 	 while (!(pmart->poscsr & AVR32_PM_POSCSR_LOCK0_MASK));

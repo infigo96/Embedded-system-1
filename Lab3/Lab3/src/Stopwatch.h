@@ -9,7 +9,7 @@
 	unsigned int buttin[7];
 	avr32_gpio_port_t* hej;
 	
-	#define BUTTON0_PORT (GPIO_PUSH_BUTTON_0 >> 5)	#define BUTTON0_PIN (1 << (GPIO_PUSH_BUTTON_0 & 0x1f))
+	#define BUTTON0_PORT (GPIO_JOYSTICK_LEFT >> 5)	#define BUTTON0_PIN (1 << (GPIO_JOYSTICK_LEFT & 0x1f))
 	
 	void SW_init(volatile avr32_tc_t *tc);
 	

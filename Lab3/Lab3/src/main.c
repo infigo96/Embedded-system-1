@@ -72,6 +72,7 @@ int main(void)
 	volatile unsigned long btnstat;
 	int ledNumbers; 
 	unsigned int endPress = 0;
+	int start = 0;
 	while(1)
 	{
 		
@@ -81,11 +82,23 @@ int main(void)
 			ledNumbers = binbun();
 			lightLED(ledNumbers,definePORTs,defineBITVALUEs);
 			closeLED(254-ledNumbers,definePORTs,defineBITVALUEs);
+			start = 0; 
+			for(int i = 0; i<7; i++)
+			{
+				if(buttin[i] == 0 && start == 0)
+				{
+					start = 1;
+				}
+				else if (buttin[i] != 0 && start == 1)
+				{
+					lockdown = 2;
+				}
+			}
 			do
 			{
 				endPress= hej->pvr & BUTTON0_PIN;
 			}
-			while(endPress == 0);
+			while(endPress == 0 || lockdown == 2);
 			
 			lockdown = 0;
 			tc_start(tc,0);
