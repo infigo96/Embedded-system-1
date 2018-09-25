@@ -5,56 +5,51 @@
 #include "Stopwatch.h"
 #include "USART_driver.h"
 #include "Utilities.h"
+#include "LED.h"
 
 //Initializes the LED
-void initLED(void)
+int binbun(void)
 {
-	//----------------------------------------LED0-----------------------------------------------------//
-	//First make access to the GPIO port registers
-	volatile avr32_gpio_port_t * led0_port;
-	led0_port = & AVR32_GPIO.port[LED0_PORT];
-
-	//Choose GPIO peripheral function. By writing a 1 to gpers , GPIO Enable Register Set
-	led0_port->gpers = LED0_BIT_VALUE;
-
-	//Set the output value register to 1 in order (turn the LED off)
-	led0_port->ovrs = LED0_BIT_VALUE;
-
-	//by writing a 1 to oders , Output Drive Enable
-	led0_port->oders = LED0_BIT_VALUE;
-	
-	
-	//----------------------------------------LED1-----------------------------------------------------//
-	//First make access to the GPIO port registers
-	volatile avr32_gpio_port_t * led1_port;
-	led1_port = & AVR32_GPIO.port[LED1_PORT];
-
-	//Choose GPIO peripheral function. By writing a 1 to gpers , GPIO Enable Register Set
-	led1_port->gpers = LED1_BIT_VALUE;
-
-	//Set the output value register to 1 in order (turn the LED off)
-	led1_port->ovrs = LED1_BIT_VALUE;
-
-	//by writing a 1 to oders , Output Drive Enable
-	led1_port->oders = LED1_BIT_VALUE;
+	int RetValue = 0;
+	int number_table[7] = {128,64,32,16,8,4,2};
+	for(int i = 0; i < 7; i++)
+	{
+		if(buttin[i] == 0)
+		{
+			RetValue += number_table[i];
+		}
+	}
+	return RetValue;
 }
-
 
 int main(void)
 {
+	// Some setup for using initLED(), lightLED() and closeLED().
+	// First is the port numbers
+	int definePORTs[8] = {	LED0_GPIO / GPIO_MAX_PIN_NUMBER, LED1_GPIO / GPIO_MAX_PIN_NUMBER,
+		LED2_GPIO / GPIO_MAX_PIN_NUMBER, LED3_GPIO / GPIO_MAX_PIN_NUMBER,
+		LED4_GPIO / GPIO_MAX_PIN_NUMBER, LED5_GPIO / GPIO_MAX_PIN_NUMBER,
+	LED6_GPIO / GPIO_MAX_PIN_NUMBER, LED7_GPIO / GPIO_MAX_PIN_NUMBER};
+	// Then given port, calc the pin for that port.
+	int definePINs[8] = {	LED0_GPIO & ( GPIO_MAX_PIN_NUMBER -1), LED1_GPIO & ( GPIO_MAX_PIN_NUMBER -1),
+		LED2_GPIO & ( GPIO_MAX_PIN_NUMBER -1), LED3_GPIO & ( GPIO_MAX_PIN_NUMBER -1),
+		LED4_GPIO & ( GPIO_MAX_PIN_NUMBER -1), LED5_GPIO & ( GPIO_MAX_PIN_NUMBER -1),
+	LED6_GPIO & ( GPIO_MAX_PIN_NUMBER -1), LED7_GPIO & ( GPIO_MAX_PIN_NUMBER -1)};
+	// Finally create a bit mask with a 1 shifted to desired pin.
+	int defineBITVALUEs[8] = {	1<<definePINs[0], 1<<definePINs[1], 1<<definePINs[2], 1<<definePINs[3],
+	1<<definePINs[4], 1<<definePINs[5], 1<<definePINs[6], 1<<definePINs[7]};
+	initLEDs(255,definePORTs,defineBITVALUEs);
+	
+	
+	
 	// Initiate the global stopwatch time to 0.
 	time = 0; 
 	char instruction = 0;
-	presses[0] = 0;
-	presses[1] = 0;
-	unsigned int buttonval[6];
-	firstPress = 0;
+
 	int localTime = 0; //Used to detect if an interrupt has occurred
 	unsigned int channel = 0; //Compiler complains if 0 is written directly
 	char timeString[25]; //Stores the formated time
 
-	// Initiate the LEDs
-	initLED();
 	// Initiate reset button for USART.
 	volatile avr32_gpio_port_t * button0_port;
 	button0_port = &AVR32_GPIO.port[BUTTON0_PORT];
@@ -75,19 +70,22 @@ int main(void)
 	// Reset function bound to button_0
 	volatile avr32_gpio_port_t *a = &AVR32_GPIO.port[BUTTON0_PORT];
 	volatile unsigned long btnstat;
-	AVR32_GPIO.port[LED1_PORT].ovrt = LED1_BIT_VALUE;
+	int ledNumbers; 
+	unsigned int endPress = 0;
 	while(1)
 	{
-		/*if(((int)time/10) != localTime) //Timer for delay, run tc5 and RC on 56250 for one sec trig
-		{
-			AVR32_GPIO.port[LED0_PORT].ovrt = LED0_BIT_VALUE;
-			localTime = (int)time/10;
-
-		}*/
+		
 		if(lockdown == 1)
 		{
 			AVR32_GPIO.port[LED0_PORT].ovrt = LED0_BIT_VALUE;
-			//tc_stop(tc,0);
+			ledNumbers = binbun();
+			lightLED(ledNumbers,definePORTs,defineBITVALUEs);
+			closeLED(254-ledNumbers,definePORTs,defineBITVALUEs);
+			do
+			{
+				endPress= hej->pvr & BUTTON0_PIN;
+			}
+			while(endPress == 0);
 			
 			lockdown = 0;
 			tc_start(tc,0);

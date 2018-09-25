@@ -5,8 +5,6 @@
 	#include "tc.h"
 	#include "avr32\uc3a0512.h"
 	unsigned int time; //Counts 10ths of seconds. Is incremented during watch_interrupt
-	unsigned int presses[2];
-	int firstPress;
 	int lockdown;
 	unsigned int buttin[7];
 	avr32_gpio_port_t* hej;

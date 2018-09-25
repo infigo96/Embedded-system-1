@@ -296,6 +296,12 @@
     <Compile Include="src\ASF\avr32\drivers\tc\tc.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\LED.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\LED.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\USART_driver.c">
       <SubType>compile</SubType>
     </Compile>
