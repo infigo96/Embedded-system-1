@@ -1,10 +1,13 @@
 #ifndef PWM_LED_H_
 #define PWM_LED_H_
 #include "stdio.h"
+#define itp32 (unsigned int*) //Used to convert to addresses
+#define WRAP_VALUE 0x0F //15 results in 1 ms duty cycle. WRAP_VALUE is a 32bit number.
+
+/*			*/
 // All LEDs are on PB
 // PB19 - PB22 & PB27 - PB30
 // GPIO_PORT1 0x0100
-#define itp32 (unsigned int*)
 #define GPIO_ADRESS 0xFFFF1000  // Found on page 38
 #define GPIO_LED_PORT 0x0100
 #define GPIO_LED_CONTROL (GPIO_ADRESS + GPIO_LED_PORT)
@@ -26,5 +29,28 @@
 #define GPIO_ODER 0x40
 #define GPIO_OVR 0x50
 
-void initLED(void);
+/*			*/
+
+#define PM_ADRESS 0xFFFF0C00
+#define O32KZCR 0x0030 //
+#define MCCTRL 0x0000 // Main clock control
+#define O0CTRL 0x0028 // Oscillator 0 control
+
+/*			*/
+
+// RTC clock is on PC
+#define RTC_ADRESS 0xFFFF0D00
+//RTC UI
+#define RTC_CONTROL 0x00
+#define RTC_VALUE 0x04
+#define RTC_TOP 0x08
+#define RTC_INTERUPT_ENABLE 0x10
+#define RTC_INTERUPT_STATUS 0x1C
+#define RTC_INTERUPT_CLEAR 0x20
+
+void initLED(int PIN);
+void initRTC(void);
+void initMAINCLK(void);
+int readRTC(void);
+int PWM(float duty_cycle);
 #endif /* PWM_LED_H_ */
