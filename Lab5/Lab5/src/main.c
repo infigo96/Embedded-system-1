@@ -7,13 +7,16 @@
 
 #include "led_tasks.h"
 
-int main(){
+int main()
+{
+	static unsigned char ucParameterToPass;
+	int i = 0;
 	xTaskHandle xHandle;
-	xTaskCreate(vBlinkLED1,"Blink1",configMINIMAL_STACK_SIZE,void,tskIDLE_PRIORITY + 1,&xHandle);
+	xTaskCreate(vBlinkLED1,"Blink1",configMINIMAL_STACK_SIZE,&ucParameterToPass,tskIDLE_PRIORITY + 1,&xHandle);
 	vTaskStartScheduler();
 	while(1)
 	{
-		
+		i++;
 	}
 	
 	
