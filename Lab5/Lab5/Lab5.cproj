@@ -431,6 +431,12 @@
     <Folder Include="src\config\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\led_tasks.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\led_tasks.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\main.c">
       <SubType>compile</SubType>
     </Compile>
