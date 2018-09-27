@@ -14,9 +14,9 @@ void initLED()
 	led_port->gpers = 1 << LED1_PIN;
 	led_port->gpers = 1 << LED2_PIN;
 
-	led_port->ovrs = 1 << LED0_PIN;
-	led_port->ovrs = 1 << LED1_PIN;
-	led_port->ovrs = 1 << LED2_PIN;
+	led_port->ovrc = 1 << LED0_PIN;
+	led_port->ovrc = 1 << LED1_PIN;
+	led_port->ovrc = 1 << LED2_PIN;
 
 	led_port->oders = 1 << LED0_PIN;
 	led_port->oders = 1 << LED1_PIN;
@@ -25,10 +25,36 @@ void initLED()
 
 void vBlinkLED1( void * pvParameters )
 {
-	while (1)
-	{
-		AVR32_GPIO.port[LED_PORT].ovrt = (1 << LED0_PIN);
-		vTaskDelay(100);
-	}
+	unsigned short * pxPreviousWakeTime1 = xTaskGetTickCount(); 
+	portTickType xTimeIncrement1 = 1000;
+	for(;;) 
+	{ 
+		AVR32_GPIO.port[LED_PORT].ovrt = (1 << LED0_PIN); 
+		//vTaskDelayUntil(pxPreviousWakeTime1, xTimeIncrement1); 
+		vTaskDelay(1000);
+	} 
+		
+}
+void vBlinkLED2( void * pvParameters )
+{
+	unsigned short * pxPreviousWakeTime = xTaskGetTickCount(); 
+	portTickType xTimeIncrement = 2000;
+	for(;;)
+	{ 
+		AVR32_GPIO.port[LED_PORT].ovrt = (1 << LED1_PIN); 
+		//vTaskDelayUntil(pxPreviousWakeTime, xTimeIncrement); 
+		vTaskDelay(2000);
+	} 
+		
+}
+void vBlinkLED3( void * pvParameters )
+{
+	unsigned short *pxPreviousWakeTime; 
+	const unsigned short xTimeIncrement = 3000;
+	while (1) 
+	{ 
+		AVR32_GPIO.port[LED_PORT].ovrt = (1 << LED2_PIN); 
+		vTaskDelay(4000);
+	} 
 		
 }

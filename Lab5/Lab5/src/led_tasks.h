@@ -21,6 +21,8 @@
 # define LED2_PIN 29
 void initLED();
 void vBlinkLED1( void * pvParameters );
+void vBlinkLED2( void * pvParameters );
+void vBlinkLED3( void * pvParameters );
 
 
 #endif /* LED_TASKS_H_ */
