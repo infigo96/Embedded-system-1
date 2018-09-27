@@ -58,11 +58,11 @@
 	#define EXAMPLE_TARGET_MCUCLK_FREQ_HZ   12000000  // MCU clock target frequency, in Hz
 	#define EXAMPLE_TARGET_PBACLK_FREQ_HZ   12000000  // PBA clock target frequency, in Hz
 
-	#define configCPU_CLOCK_HZ        ( 115200 ) /* Hz clk gen */
-	#define configPBA_CLOCK_HZ        ( 115200 )
+	#define configCPU_CLOCK_HZ        ( FOSC0 ) /* Hz clk gen */
+	#define configPBA_CLOCK_HZ        ( FOSC0 )
 #else
-	#define configCPU_CLOCK_HZ        ( 115200 ) /* Hz clk gen */
-	#define configPBA_CLOCK_HZ        ( 115200 )
+	#define configCPU_CLOCK_HZ        ( FOSC0 ) /* Hz clk gen */
+	#define configPBA_CLOCK_HZ        ( FOSC0 )
 #endif
 #define configTICK_RATE_HZ        ( ( portTickType ) 1000 )
 #define configMAX_PRIORITIES      ( ( unsigned portBASE_TYPE ) 8 )

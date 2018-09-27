@@ -25,13 +25,10 @@ void initLED()
 
 void vBlinkLED1( void * pvParameters )
 {
-	unsigned short *pxPreviousWakeTime;
-	const unsigned short xTimeIncrement = 100;
 	while (1)
 	{
-		pxPreviousWakeTime = xTaskGetTickCount();
 		AVR32_GPIO.port[LED_PORT].ovrt = (1 << LED0_PIN);
-		vTaskDelayUntil(pxPreviousWakeTime, xTimeIncrement);
+		vTaskDelay(100);
 	}
 		
 }
