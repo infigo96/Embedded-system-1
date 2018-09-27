@@ -11,13 +11,6 @@ int main()
 	xTaskCreate(vBlinkLED1,"Blink1",configMINIMAL_STACK_SIZE,&ucParameterToPass,tskIDLE_PRIORITY + 1,&xHandle);
 	
 	vTaskStartScheduler();
-	while(1)
-	{
-		i++;
-	}
-	
-	
-	
 	
 	return 0;
 }
