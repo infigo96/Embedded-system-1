@@ -37,54 +37,60 @@ void initBUTTON()
 
 void vBlinkLED1( void * pvParameters )
 {
-	unsigned short * pxPreviousWakeTime1 = xTaskGetTickCount(); 
-	portTickType xTimeIncrement1 = 1000;
 	for(;;) 
 	{ 
-		AVR32_GPIO.port[LED_PORT].ovrt = (1 << LED0_PIN); 
-		//vTaskDelayUntil(pxPreviousWakeTime1, xTimeIncrement1); 
+		AVR32_GPIO.port[LED_PORT].ovrt = (1 << LED0_PIN);
+		writeUSART("Blink1 - Toggle LED0\r\n");
 		vTaskDelay(1000);
 	} 
 		
 }
 void vBlinkLED2( void * pvParameters )
 {
-	unsigned short * pxPreviousWakeTime = xTaskGetTickCount(); 
-	portTickType xTimeIncrement = 2000;
 	for(;;)
 	{ 
 		AVR32_GPIO.port[LED_PORT].ovrt = (1 << LED1_PIN); 
-		//vTaskDelayUntil(pxPreviousWakeTime, xTimeIncrement); 
+		writeUSART("Blink2 - Toggle LED1\r\n");
 		vTaskDelay(2000);
 	} 
 		
 }
 void vBlinkLED3( void * pvParameters )
 {
-	unsigned short *pxPreviousWakeTime; 
-	const unsigned short xTimeIncrement = 3000;
 	while (1) 
 	{ 
-		AVR32_GPIO.port[LED_PORT].ovrt = (1 << LED2_PIN); 
+		AVR32_GPIO.port[LED_PORT].ovrt = (1 << LED2_PIN);
+		writeUSART("Blink3 - Toggle LED2\r\n");
 		vTaskDelay(4000);
 	}
 }
 void vReadButtons(void * pvParameters)
 {
-	
+	unsigned int btn_state[3];
+	unsigned int prev_btn_state[3];
 	for(;;)
 	{
-		if((AVR32_GPIO.port[BUTTON_PORT].pvr & (1 << BUTTON0_PIN))==0)
+		btn_state[0] = AVR32_GPIO.port[BUTTON_PORT].pvr & (1 << BUTTON0_PIN);
+		btn_state[1] = AVR32_GPIO.port[BUTTON_PORT].pvr & (1 << BUTTON1_PIN);
+		btn_state[2] = AVR32_GPIO.port[BUTTON_PORT].pvr & (1 << BUTTON2_PIN);
+		if(btn_state[0]==0 && btn_state[0] != prev_btn_state[0])
 		{
 			vTaskResume(((xTaskHandle*)pvParameters)[0]);
+			writeUSART("Button - Resuming Light1\r\n");
 		}
-		if((AVR32_GPIO.port[BUTTON_PORT].pvr & (1 << BUTTON1_PIN))==0)
+		if(btn_state[1]==0 && btn_state[1] != prev_btn_state[1])
 		{
 			vTaskResume(((xTaskHandle*)pvParameters)[1]);
+			writeUSART("Button - Resuming Light2\r\n");
 		}
-		if((AVR32_GPIO.port[BUTTON_PORT].pvr & (1 << BUTTON2_PIN))==0)
+		if(btn_state[2]==0 && btn_state[2] != prev_btn_state[2])
 		{
 			vTaskResume(((xTaskHandle*)pvParameters)[2]);
+			writeUSART("Button - Resuming Light3\r\n");
+		}
+		for (int i=0;i<3;i++)
+		{
+			prev_btn_state[i] = btn_state[i];
 		}
 		vTaskDelay(100);
 	}
@@ -94,9 +100,11 @@ void vLightLED1( void * pvParameters )
 	for(;;)
 	{
 		vTaskSuspend(*((xTaskHandle*)pvParameters)); //Stop the blinking
+		writeUSART("Light1 - Suspending Blink1\r\n");
 		AVR32_GPIO.port[LED_PORT].ovrc = (1 << LED0_PIN); //Turn on the light
 		vTaskDelay(10*1000); //Wait 10 sec
 		vTaskResume(*((xTaskHandle*)pvParameters)); //Resume blinking
+		writeUSART("Light1 - Resuming Blink1\r\n");
 		vTaskSuspend(NULL); //Suspend this task
 	}
 }
@@ -105,9 +113,11 @@ void vLightLED2( void * pvParameters )
 	for(;;)
 	{
 		vTaskSuspend(*((xTaskHandle*)pvParameters)); //Stop the blinking
+		writeUSART("Light2 - Suspending Blink2\r\n");
 		AVR32_GPIO.port[LED_PORT].ovrc = (1 << LED1_PIN); //Turn on the light
 		vTaskDelay(10*1000); //Wait 10 sec
 		vTaskResume(*((xTaskHandle*)pvParameters)); //Resume blinking
+		writeUSART("Light2 - Resuming Blink2\r\n");
 		vTaskSuspend(NULL); //Suspend this task
 	}
 }
@@ -116,9 +126,11 @@ void vLightLED3( void * pvParameters )
 	for(;;)
 	{
 		vTaskSuspend(*((xTaskHandle*)pvParameters)); //Stop the blinking
+		writeUSART("Light3 - Suspending Blink3\r\n");
 		AVR32_GPIO.port[LED_PORT].ovrc = (1 << LED2_PIN); //Turn on the light
 		vTaskDelay(10*1000); //Wait 10 sec
 		vTaskResume(*((xTaskHandle*)pvParameters)); //Resume blinking
+		writeUSART("Light3 - Resuming Blink3\r\n");
 		vTaskSuspend(NULL); //Suspend this task
 	}
 }

@@ -14,7 +14,7 @@
 #include "gpio.h"
 #include "pm.h"
 #include "usart.h"
-
+#include "USART_driver.h"
 //The LED addresses
 # define LED_PORT ( LED0_GPIO / 32 )
 # define LED0_PIN 27

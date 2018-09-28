@@ -9,7 +9,8 @@ int main()
 
 	pcl_switch_to_osc(PCL_OSC0,FOSC0,OSC0_STARTUP); //Set the main clock to 12MHz
 	//Init the GPIO units
-	initLED(); initBUTTON();
+	initLED(); initBUTTON();initUSART();
+
 	xTaskHandle *xTaskHandle_blink = malloc(sizeof(xTaskHandle)*3);
 	xTaskHandle *xTaskHandle_light = malloc(sizeof(xTaskHandle)*3);
 
