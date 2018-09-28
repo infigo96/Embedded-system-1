@@ -93,10 +93,10 @@ void vLightLED1( void * pvParameters )
 {
 	for(;;)
 	{
-		vTaskSuspend(xTaskHandle_blink1); //Stop the blinking
+		vTaskSuspend(*((xTaskHandle*)pvParameters)); //Stop the blinking
 		AVR32_GPIO.port[LED_PORT].ovrc = (1 << LED0_PIN); //Turn on the light
 		vTaskDelay(10*1000); //Wait 10 sec
-		vTaskResume(xTaskHandle_blink1); //Resume blinking
+		vTaskResume(*((xTaskHandle*)pvParameters)); //Resume blinking
 		vTaskSuspend(NULL); //Suspend this task
 	}
 }
@@ -104,10 +104,10 @@ void vLightLED2( void * pvParameters )
 {
 	for(;;)
 	{
-		vTaskSuspend(xTaskHandle_blink2); //Stop the blinking
+		vTaskSuspend(*((xTaskHandle*)pvParameters)); //Stop the blinking
 		AVR32_GPIO.port[LED_PORT].ovrc = (1 << LED1_PIN); //Turn on the light
 		vTaskDelay(10*1000); //Wait 10 sec
-		vTaskResume(xTaskHandle_blink2); //Resume blinking
+		vTaskResume(*((xTaskHandle*)pvParameters)); //Resume blinking
 		vTaskSuspend(NULL); //Suspend this task
 	}
 }
@@ -115,10 +115,10 @@ void vLightLED3( void * pvParameters )
 {
 	for(;;)
 	{
-		vTaskSuspend(xTaskHandle_blink3); //Stop the blinking
+		vTaskSuspend(*((xTaskHandle*)pvParameters)); //Stop the blinking
 		AVR32_GPIO.port[LED_PORT].ovrc = (1 << LED2_PIN); //Turn on the light
 		vTaskDelay(10*1000); //Wait 10 sec
-		vTaskResume(xTaskHandle_blink3); //Resume blinking
+		vTaskResume(*((xTaskHandle*)pvParameters)); //Resume blinking
 		vTaskSuspend(NULL); //Suspend this task
 	}
 }

@@ -27,7 +27,7 @@
 #define BUTTON2_PIN (GPIO_PUSH_BUTTON_2 & 0x1f)
 
 //Used to ref back to the tasks
-xTaskHandle xTaskHandle_blink1,xTaskHandle_blink2,xTaskHandle_blink3;
+
 xTaskHandle xTaskHandle_light1,xTaskHandle_light2,xTaskHandle_light3;
 int status[3]; //Saves the current state of the three LEDs
 
