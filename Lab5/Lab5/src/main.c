@@ -3,7 +3,7 @@
 #include "tc.h"
 #include "pm.h"
 #include "power_clocks_lib.h"
-#include "USART_driver.h"
+
 int main()
 {
 
