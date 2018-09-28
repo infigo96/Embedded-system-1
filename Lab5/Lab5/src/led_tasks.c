@@ -76,15 +76,15 @@ void vReadButtons(void * pvParameters)
 	{
 		if((AVR32_GPIO.port[BUTTON_PORT].pvr & (1 << BUTTON0_PIN))==0)
 		{
-			vTaskResume(xTaskHandle_light1);
+			vTaskResume(((xTaskHandle*)pvParameters)[0]);
 		}
 		if((AVR32_GPIO.port[BUTTON_PORT].pvr & (1 << BUTTON1_PIN))==0)
 		{
-			vTaskResume(xTaskHandle_light2);
+			vTaskResume(((xTaskHandle*)pvParameters)[1]);
 		}
 		if((AVR32_GPIO.port[BUTTON_PORT].pvr & (1 << BUTTON2_PIN))==0)
 		{
-			vTaskResume(xTaskHandle_light3);
+			vTaskResume(((xTaskHandle*)pvParameters)[2]);
 		}
 		vTaskDelay(100);
 	}

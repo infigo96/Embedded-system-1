@@ -28,7 +28,6 @@
 
 //Used to ref back to the tasks
 
-xTaskHandle xTaskHandle_light1,xTaskHandle_light2,xTaskHandle_light3;
 int status[3]; //Saves the current state of the three LEDs
 
 void initLED();
