@@ -17,9 +17,10 @@ int main (void)
 		1,1,2,2,2,2,3,3,3,4,4,4,5,5,5,6,6,7,7,7,8,8,9,9,10,10,11,11,12,12};	//156 datapoints of 0-23
 	
 	
-	while(1){
+	while(1)
+	{
 		
-		rPWM = PWM(lookup_table[i]; //read if led should be on (0) or off (1)
+		rPWM = PWM(lookup_table[i]); //read if led should be on (0) or off (1)
 		if(rPWM < lastPWM)		//If we last have wrapped down to on state again 
 		{
 			i++;
@@ -29,7 +30,7 @@ int main (void)
 			}
 		}
 		lastPWM = rPWM;
-		*(itp32(GPIO_LED_CONTROL + GPIO_OVR)) ^= ((-rPWM) ^ *(itp32(GPIO_LED_CONTROL + GPIO_OVR))) & (0x1 << GPIO_LED0_PIN));
+		*(itp32(GPIO_LED_CONTROL + GPIO_OVR)) ^= (((-rPWM) ^ *(itp32(GPIO_LED_CONTROL + GPIO_OVR))) & (0x1 << GPIO_LED0_PIN));
 		
 	}
 }
