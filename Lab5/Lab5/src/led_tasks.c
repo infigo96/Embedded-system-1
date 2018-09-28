@@ -15,9 +15,9 @@ void initLED()
 	led_port->gpers = 1 << LED1_PIN;
 	led_port->gpers = 1 << LED2_PIN;
 
-	led_port->ovrc = 1 << LED0_PIN;
-	led_port->ovrc = 1 << LED1_PIN;
-	led_port->ovrc = 1 << LED2_PIN;
+	led_port->ovrs = 1 << LED0_PIN;
+	led_port->ovrs = 1 << LED1_PIN;
+	led_port->ovrs = 1 << LED2_PIN;
 
 	led_port->oders = 1 << LED0_PIN;
 	led_port->oders = 1 << LED1_PIN;
@@ -39,31 +39,42 @@ void initBUTTON()
 
 void vBlinkLED1( void * pvParameters )
 {
+	portTickType xLastWakeTime;
+	const portTickType xFrequency = 1000;
+	xLastWakeTime = xTaskGetTickCount();
 	for(;;) 
 	{ 
+		vTaskDelayUntil(&xLastWakeTime,xFrequency);
 		AVR32_GPIO.port[LED_PORT].ovrt = (1 << LED0_PIN);
 		writeUSART_CRT("Blink1 - Toggle LED0\r\n");
-		vTaskDelay(1000);
 	} 
 		
 }
 void vBlinkLED2( void * pvParameters )
 {
+	portTickType xLastWakeTime;
+	const portTickType xFrequency = 2000;
+	xLastWakeTime = xTaskGetTickCount();
 	for(;;)
 	{ 
+		vTaskDelayUntil(&xLastWakeTime,xFrequency);
 		AVR32_GPIO.port[LED_PORT].ovrt = (1 << LED1_PIN); 
 		writeUSART_CRT("Blink2 - Toggle LED1\r\n");
-		vTaskDelay(2000);
+		
 	} 
 		
 }
 void vBlinkLED3( void * pvParameters )
 {
+	portTickType xLastWakeTime;
+	const portTickType xFrequency = 4000;
+	xLastWakeTime = xTaskGetTickCount();
 	while (1) 
 	{ 
+		vTaskDelayUntil(&xLastWakeTime,xFrequency);
 		AVR32_GPIO.port[LED_PORT].ovrt = (1 << LED2_PIN);
 		writeUSART_CRT("Blink3 - Toggle LED2\r\n");
-		vTaskDelay(4000);
+		
 	}
 }
 void vReadButtons(void * pvParameters)
