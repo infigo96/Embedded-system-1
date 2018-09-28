@@ -453,6 +453,9 @@
     <Compile Include="src\main.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\USART_drive.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\USART_driver.h">
       <SubType>compile</SubType>
     </Compile>

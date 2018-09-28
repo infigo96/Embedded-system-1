@@ -3,13 +3,13 @@
 #include "tc.h"
 #include "pm.h"
 #include "power_clocks_lib.h"
-
+#include "USART_driver.h"
 int main()
 {
 
 	pcl_switch_to_osc(PCL_OSC0,FOSC0,OSC0_STARTUP); //Set the main clock to 12MHz
 	//Init the GPIO units
-	initLED(); initBUTTON();
+	initLED(); initBUTTON();initUSART();
 	
 	//The tasks for handling blinking of the three LEDs
 	xTaskCreate(vBlinkLED1,"Blink1",configMINIMAL_STACK_SIZE,NULL,tskIDLE_PRIORITY + 2,&xTaskHandle_blink1);

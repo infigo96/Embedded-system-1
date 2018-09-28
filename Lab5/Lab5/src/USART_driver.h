@@ -8,6 +8,10 @@
 
 #ifndef USART_DRIVER_H_
 #define USART_DRIVER_H_
+# include "board.h"
+# include "gpio.h"
+# include "pm.h"
+# include "usart.h"
 
 #define configDBG 1
 #define configDBG_USART (&AVR32_USART1)
@@ -26,5 +30,6 @@
 
 
 
-
+void initUSART();
+void writeUSART(const char * message);
 #endif /* USART_DRIVER_H_ */
