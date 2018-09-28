@@ -75,18 +75,18 @@ void vReadButtons(void * pvParameters)
 		btn_state[2] = AVR32_GPIO.port[BUTTON_PORT].pvr & (1 << BUTTON2_PIN);
 		if(btn_state[0]==0 && btn_state[0] != prev_btn_state[0])
 		{
-			vTaskResume(((xTaskHandle*)pvParameters)[0]);
 			writeUSART("Button - Resuming Light1\r\n");
+			vTaskResume(((xTaskHandle*)pvParameters)[0]);
 		}
 		if(btn_state[1]==0 && btn_state[1] != prev_btn_state[1])
 		{
-			vTaskResume(((xTaskHandle*)pvParameters)[1]);
 			writeUSART("Button - Resuming Light2\r\n");
+			vTaskResume(((xTaskHandle*)pvParameters)[1]);
 		}
 		if(btn_state[2]==0 && btn_state[2] != prev_btn_state[2])
 		{
-			vTaskResume(((xTaskHandle*)pvParameters)[2]);
 			writeUSART("Button - Resuming Light3\r\n");
+			vTaskResume(((xTaskHandle*)pvParameters)[2]);
 		}
 		for (int i=0;i<3;i++)
 		{
@@ -103,8 +103,8 @@ void vLightLED1( void * pvParameters )
 		writeUSART("Light1 - Suspending Blink1\r\n");
 		AVR32_GPIO.port[LED_PORT].ovrc = (1 << LED0_PIN); //Turn on the light
 		vTaskDelay(10*1000); //Wait 10 sec
-		vTaskResume(*((xTaskHandle*)pvParameters)); //Resume blinking
 		writeUSART("Light1 - Resuming Blink1\r\n");
+		vTaskResume(*((xTaskHandle*)pvParameters)); //Resume blinking
 		vTaskSuspend(NULL); //Suspend this task
 	}
 }
@@ -116,8 +116,8 @@ void vLightLED2( void * pvParameters )
 		writeUSART("Light2 - Suspending Blink2\r\n");
 		AVR32_GPIO.port[LED_PORT].ovrc = (1 << LED1_PIN); //Turn on the light
 		vTaskDelay(10*1000); //Wait 10 sec
-		vTaskResume(*((xTaskHandle*)pvParameters)); //Resume blinking
 		writeUSART("Light2 - Resuming Blink2\r\n");
+		vTaskResume(*((xTaskHandle*)pvParameters)); //Resume blinking
 		vTaskSuspend(NULL); //Suspend this task
 	}
 }
@@ -129,8 +129,8 @@ void vLightLED3( void * pvParameters )
 		writeUSART("Light3 - Suspending Blink3\r\n");
 		AVR32_GPIO.port[LED_PORT].ovrc = (1 << LED2_PIN); //Turn on the light
 		vTaskDelay(10*1000); //Wait 10 sec
-		vTaskResume(*((xTaskHandle*)pvParameters)); //Resume blinking
 		writeUSART("Light3 - Resuming Blink3\r\n");
+		vTaskResume(*((xTaskHandle*)pvParameters)); //Resume blinking
 		vTaskSuspend(NULL); //Suspend this task
 	}
 }
