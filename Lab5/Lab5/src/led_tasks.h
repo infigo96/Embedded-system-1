@@ -26,10 +26,6 @@
 #define BUTTON1_PIN (GPIO_PUSH_BUTTON_1 & 0x1f)
 #define BUTTON2_PIN (GPIO_PUSH_BUTTON_2 & 0x1f)
 
-//Used to ref back to the tasks
-
-int status[3]; //Saves the current state of the three LEDs
-
 void initLED();
 void initBUTTON();
 void vReadButtons(void * pvParameters);
@@ -39,5 +35,5 @@ void vBlinkLED3( void * pvParameters );
 void vLightLED1( void * pvParameters );
 void vLightLED2( void * pvParameters );
 void vLightLED3( void * pvParameters );
-
+void writeUSART_CRT(const char * message);
 #endif /* LED_TASKS_H_ */
