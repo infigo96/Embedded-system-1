@@ -33,7 +33,7 @@ int readRTC(void)
 //Generates the PWM
 int PWM(float duty_cycle)
 {
-	if(readRTC() > WRAP_VALUE * duty_cycle)
+	if(readRTC() > duty_cycle)
 		return 1;
 	else
 		return 0;

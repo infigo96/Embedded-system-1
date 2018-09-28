@@ -2,7 +2,7 @@
 #define PWM_LED_H_
 #include "stdio.h"
 #define itp32 (unsigned int*) //Used to convert to addresses
-#define WRAP_VALUE 0x0E //15 results in 1 ms duty cycle on 32KHz clock. WRAP_VALUE is a 32bit number.
+#define WRAP_VALUE 0x18 //15 results in 1 ms duty cycle on 32KHz clock. WRAP_VALUE is a 32bit number.
 
 // All LEDs are on Port B
 // PB19 - PB22 & PB27 - PB30, Found on page 46
