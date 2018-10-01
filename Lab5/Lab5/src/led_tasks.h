@@ -1,11 +1,3 @@
-/*
- * led_tasks.h
- *
- * Created: 2018-09-27 11:19:59
- *  Author: Albert
- */ 
-
-
 #ifndef LED_TASKS_H_
 #define LED_TASKS_H_
 #include "FreeRTOS.h"
@@ -22,9 +14,9 @@
 # define LED2_PIN 29
 
 //The button addresses
-#define BUTTON_PORT (GPIO_PUSH_BUTTON_0 >> 5)#define BUTTON0_PIN (GPIO_PUSH_BUTTON_0 & 0x1f)
-#define BUTTON1_PIN (GPIO_PUSH_BUTTON_1 & 0x1f)
-#define BUTTON2_PIN (GPIO_PUSH_BUTTON_2 & 0x1f)
+#define BUTTON_PORT (GPIO_PUSH_BUTTON_0 >> 5)#define BUTTON0_PIN 1 << (GPIO_PUSH_BUTTON_0 & 0x1f)
+#define BUTTON1_PIN 1 << (GPIO_PUSH_BUTTON_1 & 0x1f)
+#define BUTTON2_PIN 1 << (GPIO_PUSH_BUTTON_2 & 0x1f)
 
 void initLED();
 void initBUTTON();

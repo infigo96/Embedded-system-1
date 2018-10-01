@@ -1,9 +1,3 @@
-/*
- * led_tasks.c
- *
- * Created: 2018-09-27 11:19:40
- *  Author: Albert
- */ 
 #include "led_tasks.h"
 
 void initLED()
@@ -84,9 +78,9 @@ void vReadButtons(void * pvParameters)
 	for(;;)
 	{
 		//Read the state of the buttons
-		btn_state[0] = AVR32_GPIO.port[BUTTON_PORT].pvr & (1 << BUTTON0_PIN);
-		btn_state[1] = AVR32_GPIO.port[BUTTON_PORT].pvr & (1 << BUTTON1_PIN);
-		btn_state[2] = AVR32_GPIO.port[BUTTON_PORT].pvr & (1 << BUTTON2_PIN);
+		btn_state[0] = AVR32_GPIO.port[BUTTON_PORT].pvr & BUTTON0_PIN;
+		btn_state[1] = AVR32_GPIO.port[BUTTON_PORT].pvr & BUTTON1_PIN;
+		btn_state[2] = AVR32_GPIO.port[BUTTON_PORT].pvr & BUTTON2_PIN;
 		//Only goes into the state the first time of a button press 
 		if(btn_state[0]==0 && btn_state[0] != prev_btn_state[0])
 		{
