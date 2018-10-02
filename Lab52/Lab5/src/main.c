@@ -8,7 +8,11 @@ int main()
 
 	//Allocate the space for the task_struct array which contains time information about the tasks
 	task_struct * t_s = (task_struct*)calloc(NR_OF_TASKS,sizeof(task_struct));
-	
+	xSemaphore = vSemaphoreCreateBinary();
+	if( xSemaphore != NULL )
+	{
+		writeUSART("Semaphore created\r\n");
+	}
 	//Set th periods for the tasks
 	setPeriod(1000, &t_s[0]);
 	setPeriod(2000, &t_s[1]);
@@ -18,8 +22,9 @@ int main()
 	xTaskCreate(vBlinkLED1,"Blink1",configMINIMAL_STACK_SIZE,&t_s[0],tskIDLE_PRIORITY + 1,NULL);
 	xTaskCreate(vBlinkLED2,"Blink2",configMINIMAL_STACK_SIZE,&t_s[1],tskIDLE_PRIORITY + 2,NULL);
 	xTaskCreate(vBlinkLED3,"Blink3",configMINIMAL_STACK_SIZE,&t_s[2],tskIDLE_PRIORITY + 3,NULL);
-	
-	xTaskCreate(vOverseer,"Overseer",configMINIMAL_STACK_SIZE,t_s,tskIDLE_PRIORITY + 4,NULL);
+	xTaskCreate(vReadButtons,"Buttons",configMINIMAL_STACK_SIZE,NULL,tskIDLE_PRIORITY + 4,NULL);
+
+	xTaskCreate(vOverseer,"Overseer",configMINIMAL_STACK_SIZE,t_s,tskIDLE_PRIORITY + 5,NULL);
 
 	vTaskStartScheduler();
 	

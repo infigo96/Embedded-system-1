@@ -5,6 +5,7 @@
 #include "task.h"
 #include "semphr.h"
 
+
 #include "tc.h"
 #include <stdio.h>
 #define NR_OF_TASKS 3
@@ -24,11 +25,15 @@
 typedef struct task_struct
 {
 	portTickType last_waketime;
+	portTickType last_donetime;
 	portTickType task_period;
-	//portTickType next_period;
+	portTickType next_period;
 }task_struct;
+xSemaphoreHandle xSemaphore;
+
 void setPeriod(int period,task_struct * ts);
 void vOverseer(void * pvParameters);
+void mdelay(int ms, int pin);
 void initLED();
 void initBUTTON();
 void vReadButtons(void * pvParameters);
