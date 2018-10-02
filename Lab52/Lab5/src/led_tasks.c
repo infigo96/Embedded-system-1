@@ -1,5 +1,9 @@
 #include "led_tasks.h"
 
+void setPeriod(int period,task_struct * ts){
+	ts->task_period = period;
+	//ts->next_period = period;
+}
 void initLED()
 {
 	volatile avr32_gpio_port_t *led_port;
@@ -17,7 +21,8 @@ void initLED()
 	led_port->oders = 1 << LED1_PIN;
 	led_port->oders = 1 << LED2_PIN;
 }
-void initBUTTON()
+void initBUTTON(void);
+void initBUTTON(void)
 {
 	volatile avr32_gpio_port_t *button_port;
 	button_port = & AVR32_GPIO.port[BUTTON_PORT];
@@ -33,12 +38,10 @@ void initBUTTON()
 
 void vBlinkLED1( void * pvParameters )
 {
-	portTickType xLastWakeTime;
-	const portTickType xFrequency = 1000;
-	xLastWakeTime = xTaskGetTickCount();
-	for(;;) 
-	{ 
-		vTaskDelayUntil(&xLastWakeTime,xFrequency);
+	((task_struct *)pvParameters)->last_waketime = xTaskGetTickCount();
+	while (1)
+	{
+		vTaskDelayUntil(&((task_struct *)pvParameters)->last_waketime,((task_struct *)pvParameters)->task_period);
 		AVR32_GPIO.port[LED_PORT].ovrt = (1 << LED0_PIN);
 		writeUSART_CRT("Blink1 - Toggle LED0\r\n");
 	} 
@@ -46,12 +49,10 @@ void vBlinkLED1( void * pvParameters )
 }
 void vBlinkLED2( void * pvParameters )
 {
-	portTickType xLastWakeTime;
-	const portTickType xFrequency = 2000;
-	xLastWakeTime = xTaskGetTickCount();
-	for(;;)
-	{ 
-		vTaskDelayUntil(&xLastWakeTime,xFrequency);
+	((task_struct *)pvParameters)->last_waketime = xTaskGetTickCount();
+	while (1)
+	{
+		vTaskDelayUntil(&((task_struct *)pvParameters)->last_waketime,((task_struct *)pvParameters)->task_period);
 		AVR32_GPIO.port[LED_PORT].ovrt = (1 << LED1_PIN); 
 		writeUSART_CRT("Blink2 - Toggle LED1\r\n");
 		
@@ -60,15 +61,12 @@ void vBlinkLED2( void * pvParameters )
 }
 void vBlinkLED3( void * pvParameters )
 {
-	portTickType xLastWakeTime;
-	const portTickType xFrequency = 4000;
-	xLastWakeTime = xTaskGetTickCount();
+	((task_struct *)pvParameters)->last_waketime = xTaskGetTickCount();
 	while (1) 
 	{ 
-		vTaskDelayUntil(&xLastWakeTime,xFrequency);
+		vTaskDelayUntil(&((task_struct *)pvParameters)->last_waketime,((task_struct *)pvParameters)->task_period);
 		AVR32_GPIO.port[LED_PORT].ovrt = (1 << LED2_PIN);
 		writeUSART_CRT("Blink3 - Toggle LED2\r\n");
-		
 	}
 }
 void vReadButtons(void * pvParameters)
@@ -105,17 +103,25 @@ void vReadButtons(void * pvParameters)
 		vTaskDelay(100);
 	}
 }	
-void overseer(void * pvParameters)
+void vOverseer(void * pvParameters)
 {
 	portTickType xLastWakeTime;
-	const portTickType xFrequency = 1000;
+	const portTickType xFrequency = 500;
+	char text[50];
 	xLastWakeTime = xTaskGetTickCount();
+	portTickType taskLastWake, taskPeriod,overseer;
 	for (;;)
 	{
-		for (int i=0;i<NR_OF_TASKS;i++)
+		for (int i=0;i<1;i++)
 		{
-			if(((task_struct *)pvParameters)[i].last_waketime + ((task_struct *)pvParameters)[i].task_period > xTaskGetTickCount())
-				writeUSART_CRT(sprintf("Missed deadline on task %d\r\n",i+1));
+			taskLastWake = ((task_struct *)pvParameters)[i].last_waketime;
+			taskPeriod = ((task_struct *)pvParameters)[i].task_period;
+			overseer = xTaskGetTickCount();
+			if(taskLastWake + taskPeriod < overseer)
+			{
+				sprintf(text,"Missed deadline on task %d\r\n",i+1);
+				writeUSART_CRT(text);
+			}
 		}
 		vTaskDelayUntil(&xLastWakeTime,xFrequency);
 	}

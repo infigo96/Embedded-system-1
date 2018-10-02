@@ -8,7 +8,7 @@
 #include "tc.h"
 #include <stdio.h>
 #define NR_OF_TASKS 3
-
+#define MARGIN 4
 //The LED addresses
 # define LED_PORT ( LED0_GPIO / 32 )
 # define LED0_PIN 27
@@ -25,8 +25,10 @@ typedef struct task_struct
 {
 	portTickType last_waketime;
 	portTickType task_period;
+	//portTickType next_period;
 }task_struct;
-
+void setPeriod(int period,task_struct * ts);
+void vOverseer(void * pvParameters);
 void initLED();
 void initBUTTON();
 void vReadButtons(void * pvParameters);
