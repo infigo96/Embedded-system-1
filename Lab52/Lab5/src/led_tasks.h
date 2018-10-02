@@ -28,12 +28,13 @@ typedef struct task_struct
 	portTickType last_donetime;
 	portTickType task_period;
 	portTickType next_period;
+	portTickType start_delay;
 }task_struct;
 xSemaphoreHandle xSemaphore;
 
-void setPeriod(int period,task_struct * ts);
+void configTaskTime(int period,int deley, task_struct * ts);
 void vOverseer(void * pvParameters);
-void mdelay(int ms, int pin);
+void blinkdelay(int ms, int pin);
 void initLED();
 void initBUTTON();
 void vReadButtons(void * pvParameters);
