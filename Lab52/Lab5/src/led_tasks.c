@@ -105,47 +105,24 @@ void vReadButtons(void * pvParameters)
 		vTaskDelay(100);
 	}
 }	
-void vLightLED1( void * pvParameters )
+void overseer(void * pvParameters)
 {
-	for(;;)
+	portTickType xLastWakeTime;
+	const portTickType xFrequency = 1000;
+	xLastWakeTime = xTaskGetTickCount();
+	for (;;)
 	{
-		vTaskSuspend(*((xTaskHandle*)pvParameters)); //Stop the blinking
-		writeUSART_CRT("Light1 - Suspending Blink1\r\n");
-		AVR32_GPIO.port[LED_PORT].ovrc = (1 << LED0_PIN); //Turn on the light
-		vTaskDelay(10*1000); //Wait 10 seca
-		writeUSART_CRT("Light1 - Resuming Blink1\r\n");
-		vTaskResume(*((xTaskHandle*)pvParameters)); //Resume blinking
-		vTaskSuspend(NULL); //Suspend this task
-	}
-}
-void vLightLED2( void * pvParameters )
-{
-	for(;;)
-	{
-		vTaskSuspend(*((xTaskHandle*)pvParameters)); //Stop the blinking
-		writeUSART_CRT("Light2 - Suspending Blink2\r\n");
-		AVR32_GPIO.port[LED_PORT].ovrc = (1 << LED1_PIN); //Turn on the light
-		vTaskDelay(10*1000); //Wait 10 sec
-		writeUSART_CRT("Light2 - Resuming Blink2\r\n");
-		vTaskResume(*((xTaskHandle*)pvParameters)); //Resume blinking
-		vTaskSuspend(NULL); //Suspend this task
-	}
-}
-void vLightLED3( void * pvParameters )
-{
-	for(;;)
-	{
-		vTaskSuspend(*((xTaskHandle*)pvParameters)); //Stop the blinking
-		writeUSART_CRT("Light3 - Suspending Blink3\r\n");
-		AVR32_GPIO.port[LED_PORT].ovrc = (1 << LED2_PIN); //Turn on the light
-		vTaskDelay(10*1000); //Wait 10 sec
-		writeUSART_CRT("Light3 - Resuming Blink3\r\n");
-		vTaskResume(*((xTaskHandle*)pvParameters)); //Resume blinking
-		vTaskSuspend(NULL); //Suspend this task
+		for (int i=0;i<NR_OF_TASKS;i++)
+		{
+			if(((task_struct *)pvParameters)[i].last_waketime + ((task_struct *)pvParameters)[i].task_period > xTaskGetTickCount())
+				writeUSART_CRT(sprintf("Missed deadline on task %d\r\n",i+1));
+		}
+		vTaskDelayUntil(&xLastWakeTime,xFrequency);
 	}
 }
 
-void writeUSART_CRT(const char * message){
+void writeUSART_CRT(const char * message)
+{
 	//Prevent task writing over each other by entering critical state during writing
 	taskENTER_CRITICAL();
 	writeUSART(message);
