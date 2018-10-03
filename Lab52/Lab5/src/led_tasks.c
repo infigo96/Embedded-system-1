@@ -1,24 +1,27 @@
 #include "led_tasks.h"
 
-
-void blinkdelay(int ms, int pin){
+//Lights a LED at PIN for MS.
+void holdLED(int ms, int pin){
 	long volatile cycles = 970*ms;
 	AVR32_GPIO.port[LED_PORT].ovrc = (1 << pin);
 	portTickType start = xTaskGetTickCount();
 	while (cycles != 0)
 	{
-		
 		cycles--;
 	}
 	portTickType end = xTaskGetTickCount();
 	AVR32_GPIO.port[LED_PORT].ovrs = (1 << pin);
 }
+
+//Initiate timing information for a task.
 void configTaskTime(int period,int deley, task_struct * ts){
 	ts->task_period = period;
 	ts->next_period = period + deley;
 	ts->last_donetime = 0;
 	ts->start_delay = deley;
 }
+
+
 void initLED()
 {
 	volatile avr32_gpio_port_t *led_port;
@@ -36,7 +39,8 @@ void initLED()
 	led_port->oders = 1 << LED1_PIN;
 	led_port->oders = 1 << LED2_PIN;
 }
-void initBUTTON(void);
+
+
 void initBUTTON(void)
 {
 	volatile avr32_gpio_port_t *button_port;
@@ -51,6 +55,7 @@ void initBUTTON(void)
 	button_port->oderc = 1 << BUTTON2_PIN;
 }
 
+
 void vBlinkLED1( void * pvParameters )
 {
 	task_struct * ts = (task_struct *)pvParameters;
@@ -59,8 +64,13 @@ void vBlinkLED1( void * pvParameters )
 	while (1)
 	{
 		writeUSART_CRT("Blink1 - Start\r\n");
-		if( xSemaphoreTake( xSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE ){
-			blinkdelay(2000,LED0_PIN);
+		//Takes xSemaphore if available. If not available go to sleep until xSemaphore is available.	
+		if( xSemaphoreTake( xSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
+		{
+			//Block for 2000 ms then return xSemaphore.
+			writeUSART_CRT("Blink1 - Take Semaphore\r\n");
+			holdLED(2000,LED0_PIN);
+			writeUSART_CRT("Blink1 - Release Semaphore\r\n");
 			xSemaphoreGive( xSemaphore );
 		}
 		writeUSART_CRT("Blink1 - End\r\n");
@@ -70,6 +80,8 @@ void vBlinkLED1( void * pvParameters )
 	} 
 		
 }
+
+
 void vBlinkLED2( void * pvParameters )
 {
 	task_struct * ts = (task_struct *)pvParameters;
@@ -77,16 +89,17 @@ void vBlinkLED2( void * pvParameters )
 	((task_struct *)pvParameters)->last_waketime = xTaskGetTickCount();
 	while (1)
 	{
+		//Block for 2000 ms.
 		writeUSART_CRT("Blink2 - Start\r\n");
-		blinkdelay(2000,LED1_PIN);
+		holdLED(2000,LED1_PIN);
 		writeUSART_CRT("Blink2 - End\r\n");
+		//Sleep for remaining time (about 4000 ms if not interupted.)
 		vTaskDelayUntil(&((task_struct *)pvParameters)->last_waketime,((task_struct *)pvParameters)->task_period);
 		vTaskSuspend(NULL);
-		//writeUSART_CRT("Blink2 - Toggle LED1\r\n");
-		
-	} 
-		
+	} 		
 }
+
+
 void vBlinkLED3( void * pvParameters )
 {
 	task_struct * ts = (task_struct *)pvParameters;
@@ -94,17 +107,24 @@ void vBlinkLED3( void * pvParameters )
 	((task_struct *)pvParameters)->last_waketime = xTaskGetTickCount();
 	while (1) 
 	{ 
-		writeUSART_CRT("Blink3 - Start\r\n");	
+		writeUSART_CRT("Blink3 - Start\r\n");
+		
+		//Takes xSemaphore if available. If not available go to sleep until xSemaphore is available.	
 		if( xSemaphoreTake( xSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
         {
-			blinkdelay(200,LED2_PIN);
+			//Block for 200 ms then return xSemaphore.
+			writeUSART_CRT("Blink3 - Take Semaphore\r\n");
+			holdLED(200,LED2_PIN);
             xSemaphoreGive( xSemaphore );
+			writeUSART_CRT("Blink3 - Release Semaphore\r\n");
         }
 		writeUSART_CRT("Blink3 - End\r\n");
 		vTaskSuspend(NULL);
 		vTaskDelayUntil(&((task_struct *)pvParameters)->last_waketime,((task_struct *)pvParameters)->task_period);
 	}
 }
+
+// Used for debug purposes.
 void vReadButtons(void * pvParameters)
 {
 	const portTickType xFrequency = 100;
@@ -115,11 +135,10 @@ void vReadButtons(void * pvParameters)
 	unsigned int prev_btn_state[3];
 	for(;;)
 	{
-		//Read the state of the buttons
+		//Read the state of the button 0
 		btn_state[0] = AVR32_GPIO.port[BUTTON_PORT].pvr & BUTTON0_PIN;
-		btn_state[1] = AVR32_GPIO.port[BUTTON_PORT].pvr & BUTTON1_PIN;
-		btn_state[2] = AVR32_GPIO.port[BUTTON_PORT].pvr & BUTTON2_PIN;
-		//Only goes into the state the first time of a button press 
+		
+		// Blocking State as long as button is pressed.
 		while(btn_state[0]==0)
 		{
 			 i++;
@@ -128,45 +147,60 @@ void vReadButtons(void * pvParameters)
 		vTaskDelayUntil(&xLastWakeTime, 100);
 	}
 }	
+
+
 void vOverseer(void * pvParameters)
 {
-	portTickType xLastWakeTime;
-	const portTickType xFrequency = 100;
+	// Buffer for messaging.
 	char text[50];
+	
+	//Timing information for Overseer.
+	portTickType xLastWakeTime;
 	xLastWakeTime = xTaskGetTickCount();
+	const portTickType xFrequency = 100;
+
+	//Task information.
 	task_struct * ts;
-	portTickType LWT, TASK_D,P,curr_t;
+	portTickType P,CURR_TIME;
 	
 	for (;;)
 	{
 		for (int i=0;i<3;i++)
 		{
 			ts = &((task_struct *)pvParameters)[i];
-			LWT = ts->last_waketime;
 			P = ts->task_period;
-			TASK_D = ts->last_donetime;
-			curr_t = xTaskGetTickCount();
-			//if((curr_t > LWT && TASK_D < LWT- P) || curr_t > LWT + 2*P)
 
-			//Has the task performed the work within the period
+			//Current system time when overseer starts operating on said task.
+			CURR_TIME = xTaskGetTickCount();
+
+			//Has the task performed the work within the required time interval T->T+p
 			if(ts->last_donetime >= ts->next_period - P && ts->last_donetime < ts->next_period)
 			{
 				//The work was done within the period, move the nest deadline
 				ts->next_period += ts->task_period;
 			}
-			//Has the deadline been passed
-			else if(curr_t>ts->next_period)
+			//No work finished in this time period. Has the deadline passed?
+			else if(CURR_TIME>ts->next_period)
 			{
+				// Let user know deadline has been passed.
 				sprintf(text,"Missed deadline on task %d\r\n",i+1);
 				writeUSART_CRT(text);
-				ts->next_period += ts->task_period;
-				i--;//Run the check again, to see if 
+
+				// Move to next deadline.
+				ts->next_period += P;
+
+				//Rerun this i in case this task missed several deadlines (overseer must have been blocked for this 2 happen).
+				i--;
 			}
 		}
+
+		//Sleep Overseer for xFrequency.
 		vTaskDelayUntil(&xLastWakeTime,xFrequency);
 	}
 }
 
+
+//Calls writeUsart(const char * message) from a critical state to prvent message overlapping.
 void writeUSART_CRT(const char * message)
 {
 	//Prevent task writing over each other by entering critical state during writing

@@ -24,17 +24,17 @@
 //Struct used to check deadlines
 typedef struct task_struct
 {
-	portTickType last_waketime;
-	portTickType last_donetime;
-	portTickType task_period;
-	portTickType next_period;
+	portTickType last_waketime;  //Stores return of vTaskDelayUntil()
+	portTickType last_donetime;  //Stores the lastest time the task called vTaskDelayUntil() (task finnished execution)  
+	portTickType task_period;    //The desired periodicity of the task. 
+	portTickType next_period;    //
 	portTickType start_delay;
 }task_struct;
 xSemaphoreHandle xSemaphore;
 
 void configTaskTime(int period,int deley, task_struct * ts);
 void vOverseer(void * pvParameters);
-void blinkdelay(int ms, int pin);
+void holdLED(int ms, int pin);
 void initLED();
 void initBUTTON();
 void vReadButtons(void * pvParameters);
@@ -44,5 +44,6 @@ void vBlinkLED3( void * pvParameters );
 void vLightLED1( void * pvParameters );
 void vLightLED2( void * pvParameters );
 void vLightLED3( void * pvParameters );
+void initBUTTON(void);
 void writeUSART_CRT(const char * message);
 #endif /* LED_TASKS_H_ */
