@@ -24,7 +24,7 @@ int main (void)
 		if(rPWM < lastPWM)		//If we last have wrapped down to on state again 
 		{
 			i++;
-			if(i == WRAP_VALUE)		//Back to 0 if we reach wrap value. 
+			if(i == 156)		//Back to 0 if we reach wrap value. 
 			{
 				i = 0;
 			}

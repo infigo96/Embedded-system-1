@@ -15,15 +15,15 @@ void initRTC(void)
 	*(itp32(PM_ADDRESS + O32KZCR ))|= (0x01 << 8); //Oscillator Mode
  	*(itp32(PM_ADDRESS + O32KZCR ))|= (0x02 << 16); //Oscillator Startup Time
 	 
-	*(itp32(RTC_ADDRESS + RTC_TOP)) = WRAP_VALUE; //Value to wrap around on
-	*(itp32(RTC_ADDRESS + RTC_VALUE)) = 0x00;
+
 	 //Enable the real time clock
 	 
 	*(itp32(RTC_ADDRESS + RTC_CONTROL ))|= (0x01 << 0); // RTC enable
 	*(itp32(RTC_ADDRESS + RTC_CONTROL ))|= (0x01 << 3); // CLK32, use the 32KHz oscillator as clock source
 	*(itp32(RTC_ADDRESS + RTC_CONTROL ))|= (0x01 << 16); // CLKEN enable
 
-
+	*(itp32(RTC_ADDRESS + RTC_TOP)) = WRAP_VALUE; //Value to wrap around on
+	*(itp32(RTC_ADDRESS + RTC_VALUE)) = 0x00;
 }
 // Returns the reading of the RTC clock
 int readRTC(void)
