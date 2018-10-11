@@ -4,12 +4,10 @@
 void holdLED(int ms, int pin){
 	long volatile cycles = 970*ms;
 	AVR32_GPIO.port[LED_PORT].ovrc = (1 << pin);
-	portTickType start = xTaskGetTickCount();
 	while (cycles != 0)
 	{
 		cycles--;
 	}
-	portTickType end = xTaskGetTickCount();
 	AVR32_GPIO.port[LED_PORT].ovrs = (1 << pin);
 }
 
@@ -93,7 +91,7 @@ void vBlinkLED2( void * pvParameters )
 		writeUSART_CRT("Blink2 - Start\r\n");
 		holdLED(2000,LED1_PIN);
 		writeUSART_CRT("Blink2 - End\r\n");
-		//Sleep for remaining time (about 4000 ms if not interupted.)
+		//Sleep for remaining time (about 4000 ms if not interrupted.)
 		vTaskDelayUntil(&((task_struct *)pvParameters)->last_waketime,((task_struct *)pvParameters)->task_period);
 		vTaskSuspend(NULL);
 	} 		
