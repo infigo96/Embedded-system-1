@@ -63,4 +63,7 @@ void display_init(void)
 	dip204_clear_display();
 	dip204_hide_cursor();
 	dip204_set_cursor_position(1,1);
+	
+	dip204_set_cursor_position(1,1);
+	dip204_printf_string("HelloWorldk");
 }

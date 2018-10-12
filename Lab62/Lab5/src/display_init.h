@@ -11,7 +11,7 @@
 // Include Files
 #include "board.h"
 #include "compiler.h"
-//#include "adc.h"
+#include "adc.h"
 #include "delay.h"
 #include "dip204.h"
 #include "gpio.h"

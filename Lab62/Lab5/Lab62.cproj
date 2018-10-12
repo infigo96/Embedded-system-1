@@ -31,9 +31,11 @@
     <AsfFrameworkConfig>
       <framework-data>
   <options>
+    <option id="avr32.drivers.adc" value="Add" config="" content-id="Atmel.ASF" />
     <option id="avr32.drivers.gpio" value="Add" config="" content-id="Atmel.ASF" />
     <option id="avr32.drivers.intc" value="Add" config="" content-id="Atmel.ASF" />
     <option id="avr32.drivers.pm" value="Add" config="" content-id="Atmel.ASF" />
+    <option id="avr32.drivers.spi" value="Add" config="" content-id="Atmel.ASF" />
     <option id="avr32.drivers.tc" value="Add" config="" content-id="Atmel.ASF" />
     <option id="avr32.drivers.usart" value="Add" config="" content-id="Atmel.ASF" />
     <option id="common.boards" value="Add" config="" content-id="Atmel.ASF" />
@@ -170,12 +172,14 @@
     <file path="src/ASF/thirdparty/freertos/freertos-7.0.0/source/timers.c" framework="" version="" source="thirdparty/freertos/freertos-7.0.0/source/timers.c" changed="False" content-id="Atmel.ASF" />
     <file path="src/ASF/avr32/drivers/flashc/flashc.c" framework="" version="3.40.0" source="avr32\drivers\flashc\flashc.c" changed="False" content-id="Atmel.ASF" />
     <file path="src/ASF/avr32/drivers/flashc/flashc.h" framework="" version="3.40.0" source="avr32\drivers\flashc\flashc.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/avr32/drivers/spi/spi.c" framework="" version="3.40.0" source="avr32\drivers\spi\spi.c" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/avr32/drivers/spi/spi.h" framework="" version="3.40.0" source="avr32\drivers\spi\spi.h" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/avr32/drivers/adc/adc.c" framework="" version="3.40.0" source="avr32\drivers\adc\adc.c" changed="False" content-id="Atmel.ASF" />
+    <file path="src/ASF/avr32/drivers/adc/adc.h" framework="" version="3.40.0" source="avr32\drivers\adc\adc.h" changed="False" content-id="Atmel.ASF" />
     <file path="src/ASF/avr32/components/display/dip204/dip204.c" framework="" version="3.40.0" source="avr32\components\display\dip204\dip204.c" changed="False" content-id="Atmel.ASF" />
     <file path="src/ASF/avr32/components/display/dip204/dip204.h" framework="" version="3.40.0" source="avr32\components\display\dip204\dip204.h" changed="False" content-id="Atmel.ASF" />
     <file path="src/Config/conf_dip204.h" framework="" version="3.40.0" source="avr32\components\display\dip204\module_config\conf_dip204.h" changed="False" content-id="Atmel.ASF" />
     <file path="src/ASF/avr32/drivers/cpu/cycle_counter/cycle_counter.h" framework="" version="3.40.0" source="avr32\drivers\cpu\cycle_counter\cycle_counter.h" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/avr32/drivers/spi/spi.c" framework="" version="3.40.0" source="avr32\drivers\spi\spi.c" changed="False" content-id="Atmel.ASF" />
-    <file path="src/ASF/avr32/drivers/spi/spi.h" framework="" version="3.40.0" source="avr32\drivers\spi\spi.h" changed="False" content-id="Atmel.ASF" />
     <file path="src/ASF/avr32/drivers/pwm/pwm.c" framework="" version="3.40.0" source="avr32\drivers\pwm\pwm.c" changed="False" content-id="Atmel.ASF" />
     <file path="src/ASF/avr32/drivers/pwm/pwm.h" framework="" version="3.40.0" source="avr32\drivers\pwm\pwm.h" changed="False" content-id="Atmel.ASF" />
     <file path="src/ASF/common/services/clock/uc3a0_a1/sysclk.c" framework="" version="3.40.0" source="common\services\clock\uc3a0_a1\sysclk.c" changed="False" content-id="Atmel.ASF" />
@@ -250,9 +254,10 @@
       <Value>../src/config</Value>
       <Value>../src/ASF/avr32/drivers/flashc</Value>
       <Value>../src/ASF/avr32/drivers/pm</Value>
+      <Value>../src/ASF/avr32/drivers/spi</Value>
+      <Value>../src/ASF/avr32/drivers/adc</Value>
       <Value>../src/ASF/avr32/components/display/dip204</Value>
       <Value>../src/ASF/avr32/drivers/cpu/cycle_counter</Value>
-      <Value>../src/ASF/avr32/drivers/spi</Value>
       <Value>../src/ASF/avr32/drivers/pwm</Value>
       <Value>../src/ASF/common/services/clock</Value>
       <Value>../src/ASF/common/services/delay</Value>
@@ -296,9 +301,10 @@
       <Value>../src/config</Value>
       <Value>../src/ASF/avr32/drivers/flashc</Value>
       <Value>../src/ASF/avr32/drivers/pm</Value>
+      <Value>../src/ASF/avr32/drivers/spi</Value>
+      <Value>../src/ASF/avr32/drivers/adc</Value>
       <Value>../src/ASF/avr32/components/display/dip204</Value>
       <Value>../src/ASF/avr32/drivers/cpu/cycle_counter</Value>
-      <Value>../src/ASF/avr32/drivers/spi</Value>
       <Value>../src/ASF/avr32/drivers/pwm</Value>
       <Value>../src/ASF/common/services/clock</Value>
       <Value>../src/ASF/common/services/delay</Value>
@@ -327,9 +333,10 @@
       <Value>../src/config</Value>
       <Value>../src/ASF/avr32/drivers/flashc</Value>
       <Value>../src/ASF/avr32/drivers/pm</Value>
+      <Value>../src/ASF/avr32/drivers/spi</Value>
+      <Value>../src/ASF/avr32/drivers/adc</Value>
       <Value>../src/ASF/avr32/components/display/dip204</Value>
       <Value>../src/ASF/avr32/drivers/cpu/cycle_counter</Value>
-      <Value>../src/ASF/avr32/drivers/spi</Value>
       <Value>../src/ASF/avr32/drivers/pwm</Value>
       <Value>../src/ASF/common/services/clock</Value>
       <Value>../src/ASF/common/services/delay</Value>
@@ -374,9 +381,10 @@
       <Value>../src/config</Value>
       <Value>../src/ASF/avr32/drivers/flashc</Value>
       <Value>../src/ASF/avr32/drivers/pm</Value>
+      <Value>../src/ASF/avr32/drivers/spi</Value>
+      <Value>../src/ASF/avr32/drivers/adc</Value>
       <Value>../src/ASF/avr32/components/display/dip204</Value>
       <Value>../src/ASF/avr32/drivers/cpu/cycle_counter</Value>
-      <Value>../src/ASF/avr32/drivers/spi</Value>
       <Value>../src/ASF/avr32/drivers/pwm</Value>
       <Value>../src/ASF/common/services/clock</Value>
       <Value>../src/ASF/common/services/delay</Value>
@@ -420,9 +428,10 @@
       <Value>../src/config</Value>
       <Value>../src/ASF/avr32/drivers/flashc</Value>
       <Value>../src/ASF/avr32/drivers/pm</Value>
+      <Value>../src/ASF/avr32/drivers/spi</Value>
+      <Value>../src/ASF/avr32/drivers/adc</Value>
       <Value>../src/ASF/avr32/components/display/dip204</Value>
       <Value>../src/ASF/avr32/drivers/cpu/cycle_counter</Value>
-      <Value>../src/ASF/avr32/drivers/spi</Value>
       <Value>../src/ASF/avr32/drivers/pwm</Value>
       <Value>../src/ASF/common/services/clock</Value>
       <Value>../src/ASF/common/services/delay</Value>
@@ -452,9 +461,10 @@
       <Value>../src/config</Value>
       <Value>../src/ASF/avr32/drivers/flashc</Value>
       <Value>../src/ASF/avr32/drivers/pm</Value>
+      <Value>../src/ASF/avr32/drivers/spi</Value>
+      <Value>../src/ASF/avr32/drivers/adc</Value>
       <Value>../src/ASF/avr32/components/display/dip204</Value>
       <Value>../src/ASF/avr32/drivers/cpu/cycle_counter</Value>
-      <Value>../src/ASF/avr32/drivers/spi</Value>
       <Value>../src/ASF/avr32/drivers/pwm</Value>
       <Value>../src/ASF/common/services/clock</Value>
       <Value>../src/ASF/common/services/delay</Value>
@@ -474,6 +484,7 @@
     <Folder Include="src\ASF\avr32\components\display\" />
     <Folder Include="src\ASF\avr32\components\display\dip204\" />
     <Folder Include="src\ASF\avr32\drivers\" />
+    <Folder Include="src\ASF\avr32\drivers\adc\" />
     <Folder Include="src\ASF\avr32\drivers\cpu\" />
     <Folder Include="src\ASF\avr32\drivers\cpu\cycle_counter\" />
     <Folder Include="src\ASF\avr32\drivers\flashc\" />
@@ -520,6 +531,12 @@
       <SubType>compile</SubType>
     </Compile>
     <None Include="src\ASF\avr32\components\display\dip204\dip204.h">
+      <SubType>compile</SubType>
+    </None>
+    <Compile Include="src\ASF\avr32\drivers\adc\adc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <None Include="src\ASF\avr32\drivers\adc\adc.h">
       <SubType>compile</SubType>
     </None>
     <None Include="src\ASF\avr32\drivers\cpu\cycle_counter\cycle_counter.h">

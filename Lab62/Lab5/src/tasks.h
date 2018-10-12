@@ -5,9 +5,8 @@
 #include "task.h"
 #include "semphr.h"
 #include "display_init.h"
-
-
 #include "tc.h"
+
 #include <stdio.h>
 #define NR_OF_TASKS 3
 #define MARGIN 4

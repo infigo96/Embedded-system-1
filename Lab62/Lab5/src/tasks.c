@@ -1,14 +1,5 @@
 #include "tasks.h"
-
-__attribute__((__interrupt__)) static void readana(void)
-{
-	//Every time a Usart interupt for rxrdy is triggered this is run.
-	vTaskResume(pHandle);
-	(&AVR32_USART1)->IMR.rxrdy;		//Reads the Interrupt Mask register to clear this interrupt.
-	(&AVR32_USART1)->IDR.rxrdy = 1;
-
-}
-
+#include "dip204.h"
 void initLED()
 {
 	volatile avr32_gpio_port_t *led_port;
@@ -62,9 +53,9 @@ void Producer(void * pvParameters)
 	{
 			//---------------display-------------Print every row separate
 		dip204_set_cursor_position(1,1);
-		dip204_printf_string("HelloWorldk");
+		dip204_printf_string("Mudfucka");
 
-		if(xQueueSendToBack(Qhandle,&byte,0) == 1)
+		/*if(xQueueSendToBack(Qhandle,&byte,0) == 1)
 		{
 			byte++;
 			nQueue++;
@@ -81,7 +72,7 @@ void Producer(void * pvParameters)
 			vTaskSuspend(NULL);
 			writeUSART("producer woken \r\n");
 			xLastWakeTime = xTaskGetTickCount();
-		}
+		}*/
 		vTaskDelayUntil(&xLastWakeTime, 300);
 	}
 }
