@@ -33,6 +33,9 @@ typedef struct task_struct
 
 xSemaphoreHandle xSemaphore;
 xQueueHandle Qhandle;
+xTaskHandle pHandle,cHandle;
+int nQueue;
+int sizeQ;
 
 void initLED();
 void initBUTTON(void);

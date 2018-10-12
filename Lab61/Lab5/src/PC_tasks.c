@@ -54,14 +54,22 @@ void Producer(void * pvParameters)
 		if(xQueueSendToBack(Qhandle,&byte,0) == 1)
 		{
 			byte++;
+			nQueue++;
+			if(nQueue >= (sizeQ-1))
+			{
+				vTaskResume(cHandle);
+				//writeUSART("Wake cons\r\n");
+			}
 		}
 		else
 		{
-			writeUSART_CRT("Queue is full \r\n");
+			writeUSART("Queue is full, producer goes to sleep\r\n");
+			//vTaskResume(cHandle);
 			vTaskSuspend(NULL);
+			writeUSART("producer woken \r\n");
 			xLastWakeTime = xTaskGetTickCount();
 		}
-		vTaskDelayUntil(&xLastWakeTime, 1000);
+		vTaskDelayUntil(&xLastWakeTime, 300);
 	}
 }
 
@@ -70,15 +78,32 @@ void Consumer(void * pvParameters)
 	int byteCount;
 	char byte[2];
 	byte[2] = 0;
+	//vTaskDelay(900);
 	portTickType xLastWakeTime = xTaskGetTickCount();
 	
 	for(;;)
 	{
-		if(xQueueReceive(Qhandle,&(byte[0]),10) == 1)
+		if(xQueueReceive(Qhandle,&(byte[0]),0) == 1)
 		{
-			writeUSART_CRT(&byte);
-			vTaskDelayUntil(&xLastWakeTime, 1500);
+			writeUSART(&byte);
+			nQueue--;
+			if(nQueue <= (1))
+			{
+				vTaskResume(pHandle);
+				//writeUSART("Wake prod\r\n");
+
+			}
 		}
+		else
+		{
+			writeUSART("Queue is empty, consumer goes to sleep\r\n");
+			//vTaskResume(pHandle);
+			vTaskSuspend(NULL);
+			writeUSART("Consumer woken \r\n");
+			xLastWakeTime = xTaskGetTickCount();
+		}
+		vTaskDelayUntil(&xLastWakeTime, 320);
+
 		
 	}
 }
