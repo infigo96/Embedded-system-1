@@ -48,12 +48,14 @@ void Producer(void * pvParameters)
 	int byteCount;
 	char byte = '0';
 	portTickType xLastWakeTime = xTaskGetTickCount();
-	
+	char message[60];
 	for(;;)
 	{
 			//---------------display-------------Print every row separate
+		vTaskSuspend(NULL);
+		USART_getString(message,60);
 		dip204_set_cursor_position(1,1);
-		dip204_printf_string("Mudfucka");
+		dip204_printf_string(message);
 
 		/*if(xQueueSendToBack(Qhandle,&byte,0) == 1)
 		{
@@ -73,7 +75,7 @@ void Producer(void * pvParameters)
 			writeUSART("producer woken \r\n");
 			xLastWakeTime = xTaskGetTickCount();
 		}*/
-		vTaskDelayUntil(&xLastWakeTime, 300);
+		//vTaskDelayUntil(&xLastWakeTime, 300);
 	}
 }
 

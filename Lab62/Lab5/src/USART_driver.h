@@ -32,4 +32,6 @@
 
 void initUSART();
 void writeUSART(const char * message);
+void USART_getString(char *message, int maxLength);
+
 #endif /* USART_DRIVER_H_ */
