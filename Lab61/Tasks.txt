@@ -1,0 +1,18 @@
+Ledx_PeriodBlink - Makes the led x blink at a set rate
+
+ButtonPress_X - Reads the buttons and starts the corresponding task
+
+USART - Sends information on current state
+
+
+Ledx_Blink
+	if(takeSemaphor(x) != taken)
+		toggle light
+		giveSemaphor(x)
+	delayuntil(1 sec)
+	
+Ledx_Hold
+	takeSemaphor(x)
+	Set light
+	delay(10 sec)
+	giveSemaphor(x)
