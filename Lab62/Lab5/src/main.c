@@ -15,7 +15,7 @@ int main()
 	//Set the main clock to 12MHz
 	pm_switch_to_osc0(&AVR32_PM,FOSC0,OSC0_STARTUP); 
 	//InitStuff
-	initLED(); initBUTTON(); initUSART(); 
+	initLED(); initBUTTON(); initUSART(); display_init();
 	nQueue = 0;
 	
 	Disable_global_interrupt();

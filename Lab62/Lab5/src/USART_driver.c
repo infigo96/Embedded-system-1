@@ -40,16 +40,16 @@ void writeUSART(const char * message){
 char USART_getChar()
 {
 	char toTRX ;
-	volatile avr32_gpio_port_t *a = &AVR32_GPIO.port[BUTTON0_PORT];
+	//volatile avr32_gpio_port_t *a = &AVR32_GPIO.port[BUTTON0_PORT];
 	volatile unsigned long btnstat;
 	while(AVR32_USART1.CSR.rxrdy==0)
 	{
 		// Reset funktion bound to button_0
-		btnstat = a->pvr & BUTTON0_PIN;
+/*		btnstat = a->pvr & BUTTON0_PIN;
 		if(btnstat == 0)
 		{
 			USART_reset();
-		}
+		}*/
 	}
 	toTRX = (char)AVR32_USART1.RHR.rxchr;
 	

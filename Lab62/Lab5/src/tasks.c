@@ -60,6 +60,10 @@ void Producer(void * pvParameters)
 	
 	for(;;)
 	{
+			//---------------display-------------Print every row separate
+		dip204_set_cursor_position(1,1);
+		dip204_printf_string("HelloWorldk");
+
 		if(xQueueSendToBack(Qhandle,&byte,0) == 1)
 		{
 			byte++;
