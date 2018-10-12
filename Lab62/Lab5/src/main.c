@@ -1,5 +1,13 @@
 
 #include "tasks.h"
+__attribute__((__interrupt__)) static void readana(void)
+{
+	//Every time a Usart interupt for rxrdy is triggered this is run.
+	//usart_read_char()
+	(&AVR32_USART1)->IMR.rxrdy;		//Reads the Interrupt Mask register to clear this interrupt.
+	(&AVR32_USART1)->IDR.rxrdy = 1;
+
+}
 
 
 int main()
@@ -9,6 +17,13 @@ int main()
 	//InitStuff
 	initLED(); initBUTTON(); initUSART(); 
 	nQueue = 0;
+	
+	Disable_global_interrupt();
+	INTC_init_interrupts();
+	INTC_register_interrupt(&readana, AVR32_USART1_IRQ, AVR32_INTC_INT0);
+	(&AVR32_USART1)->IER.rxrdy = 1;
+	
+	Enable_global_interrupt();
 	
 	/*vSemaphoreCreateBinary(xSemaphore);
 	if( xSemaphore != NULL )
