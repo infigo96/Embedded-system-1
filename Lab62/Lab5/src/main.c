@@ -25,11 +25,11 @@ int main()
 	
 	Enable_global_interrupt();
 	
-	/*vSemaphoreCreateBinary(xSemaphore);
+	vSemaphoreCreateBinary(xSemaphore);
 	if( xSemaphore != NULL )
 	{
 		writeUSART("Semaphore created\r\n");
-	}*/
+	}
 	sizeQ = 8;
 	Qhandle = xQueueCreate(sizeQ,1);
 	xTaskCreate(Producer,"producer",configMINIMAL_STACK_SIZE,NULL,tskIDLE_PRIORITY + 1,&pHandle);
