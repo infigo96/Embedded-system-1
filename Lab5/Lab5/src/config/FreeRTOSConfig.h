@@ -64,7 +64,7 @@
 	#define configCPU_CLOCK_HZ        ( FOSC0 ) /* Hz clk gen */
 	#define configPBA_CLOCK_HZ        ( FOSC0 )
 #endif
-#define configTICK_RATE_HZ        ( ( portTickType ) 1000 )
+#define configTICK_RATE_HZ        ( ( portTickType ) 20000 )
 #define configMAX_PRIORITIES      ( ( unsigned portBASE_TYPE ) 8 )
 #define configMINIMAL_STACK_SIZE  ( ( unsigned portSHORT ) 256 )
 /* configTOTAL_HEAP_SIZE is not used when heap_3.c is used. */
