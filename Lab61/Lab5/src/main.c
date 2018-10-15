@@ -15,8 +15,12 @@ int main()
 	{
 		writeUSART("Semaphore created\r\n");
 	}*/
+	//Size of Queue buffer
 	sizeQ = 8;
+	//Size of queue, size of a slot
 	Qhandle = xQueueCreate(sizeQ,1);
+	
+	//Create tasks.
 	xTaskCreate(Producer,"producer",configMINIMAL_STACK_SIZE,NULL,tskIDLE_PRIORITY + 1,&pHandle);
 	xTaskCreate(Consumer,"consumer",configMINIMAL_STACK_SIZE,NULL,tskIDLE_PRIORITY + 1,&cHandle);
 

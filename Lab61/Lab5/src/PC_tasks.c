@@ -1,5 +1,6 @@
 #include "PC_tasks.h"
 
+//Initiates LED 0, 1 and 2.
 void initLED()
 {
 	volatile avr32_gpio_port_t *led_port;
@@ -18,7 +19,7 @@ void initLED()
 	led_port->oders = 1 << LED2_PIN;
 }
 
-
+//Initiates Button 0, 1 and 2.
 void initBUTTON(void)
 {
 	volatile avr32_gpio_port_t *button_port;
@@ -43,6 +44,7 @@ void writeUSART_CRT(const char * message)
 	taskEXIT_CRITICAL();
 }
 
+//Producer task. Sends bytes to the queue.
 void Producer(void * pvParameters)
 {
 	int byteCount;
@@ -51,9 +53,12 @@ void Producer(void * pvParameters)
 	
 	for(;;)
 	{
+		//Check if there is space in the queue (1 if there is space, 0 else) and if there is, write to it..
 		if(xQueueSendToBack(Qhandle,&byte,0) == 1)
 		{
+			//Byte was written, now update to next byte (0, 1, 2, 3....)
 			byte++;
+			//Global variable that keeps track of absolute space in queue.
 			nQueue++;
 			if(nQueue >= (sizeQ-1))
 			{
@@ -67,25 +72,30 @@ void Producer(void * pvParameters)
 			//vTaskResume(cHandle);
 			vTaskSuspend(NULL);
 			writeUSART("producer woken \r\n");
+			//Update last wake time. 
 			xLastWakeTime = xTaskGetTickCount();
 		}
-		vTaskDelayUntil(&xLastWakeTime, 300);
+		//vTaskDelayUntil(&xLastWakeTime, 300);
 	}
 }
 
+//Reads bytes from a queue.
 void Consumer(void * pvParameters)
 {
 	int byteCount;
 	char byte[2];
 	byte[2] = 0;
-	//vTaskDelay(900);
+
 	portTickType xLastWakeTime = xTaskGetTickCount();
 	
 	for(;;)
 	{
+		//Read from queue if there is stuff there.
 		if(xQueueReceive(Qhandle,&(byte[0]),0) == 1)
 		{
+			//Write what was in the queue.
 			writeUSART(&byte);
+			//Update global
 			nQueue--;
 			if(nQueue <= (1))
 			{
@@ -102,7 +112,7 @@ void Consumer(void * pvParameters)
 			writeUSART("Consumer woken \r\n");
 			xLastWakeTime = xTaskGetTickCount();
 		}
-		vTaskDelayUntil(&xLastWakeTime, 320);
+		//vTaskDelayUntil(&xLastWakeTime, 320);
 
 		
 	}
