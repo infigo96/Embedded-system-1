@@ -21,6 +21,9 @@
 #define BUTTON1_PIN 1 << (GPIO_PUSH_BUTTON_1 & 0x1f)
 #define BUTTON2_PIN 1 << (GPIO_PUSH_BUTTON_2 & 0x1f)
 
+#define sizeQ 16
+#define nrTasks 4
+
 //Struct used to check deadlines
 typedef struct task_struct
 {
@@ -33,7 +36,6 @@ typedef struct task_struct
 xSemaphoreHandle GloReadSemaphore, GloTranSemaphore, GloAllSemaphore;
 xQueueHandle Qhandle;
 int nQueue;
-int sizeQ;
 
 void initLED();
 void initBUTTON(void);

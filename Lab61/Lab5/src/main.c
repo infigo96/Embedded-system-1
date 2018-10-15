@@ -1,6 +1,5 @@
 
 #include "PC_tasks.h"
-#define nrTasks 1
 
 int main()
 {
@@ -13,14 +12,13 @@ int main()
 	task_struct *TS = malloc(nrTasks*(sizeof(task_struct)));
 	
 	//Size of Queue buffer
-	sizeQ = 8;
 	//Size of queue, size of a slot
 	Qhandle = xQueueCreate(sizeQ,1);
 	vSemaphoreCreateBinary(GloReadSemaphore);
 	vSemaphoreCreateBinary(GloTranSemaphore);
 	vSemaphoreCreateBinary(GloAllSemaphore);
 	
-	for(int i = 0; i < 1; i++);
+	for(int i = 0; i < nrTasks; i++);
 	{
 		vSemaphoreCreateBinary((TS[i].xSemaphore));
 		TS[i].PairNr = i;
