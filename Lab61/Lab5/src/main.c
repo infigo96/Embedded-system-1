@@ -10,11 +10,11 @@ int main()
 	initLED(); initBUTTON(); initUSART(); 
 	nQueue = 0;
 	
-	/*vSemaphoreCreateBinary(xSemaphore);
+	vSemaphoreCreateBinary(xSemaphore);
 	if( xSemaphore != NULL )
 	{
 		writeUSART("Semaphore created\r\n");
-	}*/
+	}
 	//Size of Queue buffer
 	sizeQ = 8;
 	//Size of queue, size of a slot

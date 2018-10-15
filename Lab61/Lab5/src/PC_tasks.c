@@ -62,16 +62,29 @@ void Producer(void * pvParameters)
 			nQueue++;
 			if(nQueue >= (sizeQ-1))
 			{
-				vTaskResume(cHandle);
+				if( xSemaphoreTake( xSemaphore, ( portTickType ) 10) == pdFALSE )
+				{
+					vTaskResume(cHandle);
+
+				}
+				else
+				{
+					xSemaphoreGive(xSemaphore);
+				}
 				//writeUSART("Wake cons\r\n");
 			}
 		}
 		else
 		{
-			writeUSART("Queue is full, producer goes to sleep\r\n");
-			//vTaskResume(cHandle);
-			vTaskSuspend(NULL);
-			writeUSART("producer woken \r\n");
+			
+			if( xSemaphoreTake( xSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
+			{
+				writeUSART_CRT("Queue is full, producer goes to sleep\r\n");
+				//vTaskResume(cHandle);
+				vTaskSuspend(NULL);
+				writeUSART_CRT("producer woken \r\n");
+				xSemaphoreGive(xSemaphore);
+			}
 			//Update last wake time. 
 			xLastWakeTime = xTaskGetTickCount();
 		}
@@ -83,9 +96,10 @@ void Producer(void * pvParameters)
 void Consumer(void * pvParameters)
 {
 	int byteCount;
-	char byte[2];
-	byte[2] = 0;
-
+	char byte[4];
+	byte[1] = '\r';
+	byte[2] = '\n';
+	byte[3] = 0;
 	portTickType xLastWakeTime = xTaskGetTickCount();
 	
 	for(;;)
@@ -94,22 +108,35 @@ void Consumer(void * pvParameters)
 		if(xQueueReceive(Qhandle,&(byte[0]),0) == 1)
 		{
 			//Write what was in the queue.
-			writeUSART(&byte);
+			writeUSART_CRT(&byte);
 			//Update global
 			nQueue--;
 			if(nQueue <= (1))
 			{
-				vTaskResume(pHandle);
-				//writeUSART("Wake prod\r\n");
+				if( xSemaphoreTake( xSemaphore, ( portTickType ) 10) == pdFALSE )
+				{
+					vTaskResume(pHandle);
 
+				}
+				else
+				{
+					xSemaphoreGive(xSemaphore);
+				}
+				
 			}
 		}
 		else
 		{
-			writeUSART("Queue is empty, consumer goes to sleep\r\n");
-			//vTaskResume(pHandle);
-			vTaskSuspend(NULL);
-			writeUSART("Consumer woken \r\n");
+			if( xSemaphoreTake( xSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
+			{
+				writeUSART_CRT("Queue is empty, consumer goes to sleep\r\n");
+				//vTaskResume(pHandle);
+				vTaskSuspend(NULL);
+				writeUSART_CRT("Consumer woken \r\n");
+				xSemaphoreGive(xSemaphore);
+			}
+
+			
 			xLastWakeTime = xTaskGetTickCount();
 		}
 		//vTaskDelayUntil(&xLastWakeTime, 320);
