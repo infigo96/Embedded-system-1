@@ -47,6 +47,7 @@ void writeUSART_CRT(const char * message)
 //Producer task. Sends bytes to the queue.
 void Producer(void * pvParameters)
 {
+	task_struct *TS = (task_struct *)pvParameters;
 	int byteCount;
 	char byte = '0';
 	portTickType xLastWakeTime = xTaskGetTickCount();
@@ -62,14 +63,14 @@ void Producer(void * pvParameters)
 			nQueue++;
 			if(nQueue >= (sizeQ-1))
 			{
-				if( xSemaphoreTake( xSemaphore, ( portTickType ) 10) == pdFALSE )
+				if( xSemaphoreTake( TS->xSemaphore, ( portTickType ) 10) == pdFALSE )
 				{
-					vTaskResume(cHandle);
+					vTaskResume(TS->cHandle);
 
 				}
 				else
 				{
-					xSemaphoreGive(xSemaphore);
+					xSemaphoreGive(TS->xSemaphore);
 				}
 				//writeUSART("Wake cons\r\n");
 			}
@@ -77,13 +78,13 @@ void Producer(void * pvParameters)
 		else
 		{
 			
-			if( xSemaphoreTake( xSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
+			if( xSemaphoreTake( TS->xSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
 			{
 				writeUSART_CRT("Queue is full, producer goes to sleep\r\n");
 				//vTaskResume(cHandle);
 				vTaskSuspend(NULL);
 				writeUSART_CRT("producer woken \r\n");
-				xSemaphoreGive(xSemaphore);
+				xSemaphoreGive(TS->xSemaphore);
 			}
 			//Update last wake time. 
 			xLastWakeTime = xTaskGetTickCount();
@@ -95,6 +96,7 @@ void Producer(void * pvParameters)
 //Reads bytes from a queue.
 void Consumer(void * pvParameters)
 {
+	task_struct *TS = (task_struct *)pvParameters;
 	int byteCount;
 	char byte[4];
 	byte[1] = '\r';
@@ -113,27 +115,27 @@ void Consumer(void * pvParameters)
 			nQueue--;
 			if(nQueue <= (1))
 			{
-				if( xSemaphoreTake( xSemaphore, ( portTickType ) 10) == pdFALSE )
+				if( xSemaphoreTake( TS->xSemaphore, ( portTickType ) 10) == pdFALSE )
 				{
-					vTaskResume(pHandle);
+					vTaskResume(TS->pHandle);
 
 				}
 				else
 				{
-					xSemaphoreGive(xSemaphore);
+					xSemaphoreGive(TS->xSemaphore);
 				}
 				
 			}
 		}
 		else
 		{
-			if( xSemaphoreTake( xSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
+			if( xSemaphoreTake( TS->xSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
 			{
 				writeUSART_CRT("Queue is empty, consumer goes to sleep\r\n");
 				//vTaskResume(pHandle);
 				vTaskSuspend(NULL);
 				writeUSART_CRT("Consumer woken \r\n");
-				xSemaphoreGive(xSemaphore);
+				xSemaphoreGive(TS->xSemaphore);
 			}
 
 			

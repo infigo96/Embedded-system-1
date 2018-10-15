@@ -24,16 +24,12 @@
 //Struct used to check deadlines
 typedef struct task_struct
 {
-	portTickType last_waketime;  //Stores return of vTaskDelayUntil()
-	portTickType last_donetime;  //Stores the lastest time the task called vTaskDelayUntil() (task finnished execution)  
-	portTickType task_period;    //The desired periodicity of the task. 
-	portTickType next_period;    //
-	portTickType start_delay;
+	xSemaphoreHandle xSemaphore;
+	xTaskHandle pHandle,cHandle;
+
 }task_struct;
 
-xSemaphoreHandle xSemaphore;
 xQueueHandle Qhandle;
-xTaskHandle pHandle,cHandle;
 int nQueue;
 int sizeQ;
 
