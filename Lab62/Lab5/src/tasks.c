@@ -71,9 +71,9 @@ void ReaderTask(void * pvParameters)
 	for(;;)
 	{
 		//---------------display-------------Print every row separate
-		if( xSemaphoreTake( xSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
+		if( xSemaphoreTake( xSemaphoreReader, ( portTickType ) portMAX_DELAY) == pdTRUE )
 		{
-			if( xSemaphoreTake( xSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
+			if( xSemaphoreTake( xSemaphoreReader, ( portTickType ) portMAX_DELAY) == pdTRUE )
 			{
 				USART_getString(message,60);
 				len = strlen(message)-2;
@@ -83,8 +83,8 @@ void ReaderTask(void * pvParameters)
 				dip204_clear_display();
 				dip204_write_string(message);
 				(&AVR32_USART1)->IER.rxrdy = 1;
-				xSemaphoreGive(xSemaphore);
-				xSemaphoreGive(xSemaphore2);
+				xSemaphoreGive(xSemaphoreReader);
+				xSemaphoreGive(xSemaphoreStatus);
 			}
 		}
 	}
@@ -95,7 +95,7 @@ void StatusTask(void * pvParameters)
 	for(;;)
 	{
 		//---------------display-------------Print every row separate
-		if( xSemaphoreTake( xSemaphore2, ( portTickType ) portMAX_DELAY) == pdTRUE )
+		if( xSemaphoreTake( xSemaphoreStatus, ( portTickType ) portMAX_DELAY) == pdTRUE )
 		{
 			writeNrOfChars(charSum);
 		}

@@ -31,7 +31,7 @@ typedef struct task_struct
 	portTickType start_delay;
 }task_struct;
 
-xSemaphoreHandle xSemaphore,xSemaphore2;
+xSemaphoreHandle xSemaphoreReader,xSemaphoreStatus;
 xQueueHandle Qhandle;
 xTaskHandle rHandle,sHandle;
 int nQueue;

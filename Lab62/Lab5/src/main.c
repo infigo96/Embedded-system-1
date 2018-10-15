@@ -3,7 +3,7 @@
 __attribute__((__interrupt__)) static void readana(void)
 {
 	//Every time a Usart interupt for rxrdy is triggered this is run.
-	xSemaphoreGiveFromISR( xSemaphore,&rHandle);
+	xSemaphoreGiveFromISR( xSemaphoreReader,&rHandle);
 	//(&AVR32_USART1)->IMR.rxrdy;		//Reads the Interrupt Mask register to clear this interrupt.
 	(&AVR32_USART1)->IDR.rxrdy = 1;
 
@@ -26,15 +26,15 @@ int main()
 	
 	Enable_global_interrupt();
 	
-	vSemaphoreCreateBinary(xSemaphore);
-	if( xSemaphore != NULL )
+	vSemaphoreCreateBinary(xSemaphoreReader);
+	if( xSemaphoreReader != NULL )
 	{
 		writeUSART("Semaphore created\r\n");
 	}
-	vSemaphoreCreateBinary(xSemaphore2);
-	if( xSemaphore2 != NULL )
+	vSemaphoreCreateBinary(xSemaphoreStatus);
+	if( xSemaphoreStatus != NULL )
 	{
-		writeUSART("Semaphore2 created\r\n");
+		writeUSART("Semaphore created\r\n");
 	}
 	sizeQ = 8;
 	charSum = 0;
