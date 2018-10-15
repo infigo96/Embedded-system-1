@@ -65,5 +65,5 @@ void display_init(void)
 	dip204_set_cursor_position(1,1);
 	
 	dip204_set_cursor_position(1,1);
-	dip204_printf_string("HelloWorld");
+	//dip204_printf_string("HelloWorld");
 }

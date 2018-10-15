@@ -1,5 +1,24 @@
 #include "tasks.h"
 #include "dip204.h"
+
+void writedisp(char *m){
+	dip204_set_cursor_position(1,1);
+	dip204_write_string("          ");
+	dip204_set_cursor_position(1,2);
+	dip204_write_string("          ");
+	dip204_set_cursor_position(1,3);
+	dip204_write_string("          ");
+	dip204_set_cursor_position(1,1);
+	dip204_write_string(m);
+}
+void writeNrOfChars(unsigned int i){
+	char temp[60];
+	sprintf(temp,"Nr of chars:%d",i);
+	dip204_set_cursor_position(1,4);
+	dip204_write_string("          ");
+	dip204_set_cursor_position(1,4);
+	dip204_write_string(temp);
+}
 void initLED()
 {
 	volatile avr32_gpio_port_t *led_port;
@@ -43,87 +62,64 @@ void writeUSART_CRT(const char * message)
 	taskEXIT_CRITICAL();
 }
 
-void Reader(void * pvParameters)
+void ReaderTask(void * pvParameters)
 {
 	int byteCount;
 	char byte = '0';
 	portTickType xLastWakeTime = xTaskGetTickCount();
-	char message[60];
 	int len;
 	for(;;)
 	{
-			//---------------display-------------Print every row separate
+		//---------------display-------------Print every row separate
 		if( xSemaphoreTake( xSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
 		{
 			if( xSemaphoreTake( xSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
 			{
 				USART_getString(message,60);
-				len =strlen(message)-2;
+				len = strlen(message)-2;
 				charSum += len;
 				message[len] = 0;
 				dip204_set_cursor_position(1,1);
 				dip204_clear_display();
 				dip204_write_string(message);
-				//dip204_printf_string(message); //FUCKTARD FUNCTION
 				(&AVR32_USART1)->IER.rxrdy = 1;
 				xSemaphoreGive(xSemaphore);
-				
+				xSemaphoreGive(xSemaphore2);
 			}
 		}
-		
-		/*if(xQueueSendToBack(Qhandle,&byte,0) == 1)
-		{
-			byte++;
-			nQueue++;
-			if(nQueue >= (sizeQ-1))
-			{
-				vTaskResume(cHandle);
-				//writeUSART("Wake cons\r\n");
-			}
-		}
-		else
-		{
-			writeUSART("Queue is full, producer goes to sleep\r\n");
-			//vTaskResume(cHandle);
-			vTaskSuspend(NULL);
-			writeUSART("producer woken \r\n");
-			xLastWakeTime = xTaskGetTickCount();
-		}*/
-		//vTaskDelayUntil(&xLastWakeTime, 300);
 	}
 }
 
-void Consumer(void * pvParameters)
+void StatusTask(void * pvParameters)
 {
-	int byteCount;
-	char byte[2];
-	byte[2] = 0;
-	//vTaskDelay(900);
-	portTickType xLastWakeTime = xTaskGetTickCount();
-	
 	for(;;)
 	{
-		if(xQueueReceive(Qhandle,&(byte[0]),0) == 1)
+		//---------------display-------------Print every row separate
+		if( xSemaphoreTake( xSemaphore2, ( portTickType ) portMAX_DELAY) == pdTRUE )
 		{
-			writeUSART(&byte);
-			nQueue--;
-			if(nQueue <= (1))
-			{
-				vTaskResume(pHandle);
-				//writeUSART("Wake prod\r\n");
-
-			}
+			writeNrOfChars(charSum);
 		}
-		else
+	}
+}
+
+void SwitchTask(void * pvParameters)
+{
+	unsigned int btn_state;
+	portTickType xLastWakeTime = xTaskGetTickCount();
+	for(;;)
+	{
+		btn_state = AVR32_GPIO.port[BUTTON_PORT].pvr & BUTTON0_PIN;
+		if(btn_state==0)
 		{
-			writeUSART("Queue is empty, consumer goes to sleep\r\n");
-			//vTaskResume(pHandle);
-			vTaskSuspend(NULL);
-			writeUSART("Consumer woken \r\n");
-			xLastWakeTime = xTaskGetTickCount();
+			writeNrOfChars(charSum);
+			vTaskResume(sHandle);
+			
+			vTaskDelay(10000);
+			
+			vTaskSuspend(sHandle);
+			dip204_set_cursor_position(1,4);
+			dip204_write_string("          ");
 		}
-		vTaskDelayUntil(&xLastWakeTime, 320);
-
-		
+		vTaskDelayUntil(&xLastWakeTime, 100);
 	}
 }

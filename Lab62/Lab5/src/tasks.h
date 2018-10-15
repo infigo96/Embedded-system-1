@@ -31,16 +31,18 @@ typedef struct task_struct
 	portTickType start_delay;
 }task_struct;
 
-xSemaphoreHandle xSemaphore;
+xSemaphoreHandle xSemaphore,xSemaphore2;
 xQueueHandle Qhandle;
-xTaskHandle pHandle,cHandle;
+xTaskHandle rHandle,sHandle;
 int nQueue;
 int sizeQ;
-
+char message[60];
+unsigned int charSum;
 void initLED();
 void initBUTTON(void);
 void writeUSART_CRT(const char * message);
-void Reader(void * pvParameters);
-void Consumer(void * pvParameters);
+void ReaderTask(void * pvParameters);
+void StatusTask(void * pvParameters);
+void SwitchTask(void * pvParameters);
 
 #endif /* LED_TASKS_H_ */
