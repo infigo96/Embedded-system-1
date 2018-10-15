@@ -15,7 +15,7 @@ void writeNrOfChars(unsigned int i){
 	char temp[60];
 	sprintf(temp,"Nr of chars:%d",i);
 	dip204_set_cursor_position(1,4);
-	dip204_write_string("          ");
+	dip204_write_string("                    ");
 	dip204_set_cursor_position(1,4);
 	dip204_write_string(temp);
 }
@@ -67,7 +67,9 @@ void ReaderTask(void * pvParameters)
 	int byteCount;
 	char byte = '0';
 	portTickType xLastWakeTime = xTaskGetTickCount();
+	char message[64];
 	int len;
+	char clearMsg[60] = "                                                            ";
 	for(;;)
 	{
 		//---------------display-------------Print every row separate
@@ -75,16 +77,22 @@ void ReaderTask(void * pvParameters)
 		{
 			if( xSemaphoreTake( xSemaphoreReader, ( portTickType ) portMAX_DELAY) == pdTRUE )
 			{
-				USART_getString(message,60);
-				len = strlen(message)-2;
+
+				USART_getString(message,63);
+				len =strlen(message)-2;
 				charSum += len;
 				message[len] = 0;
+				strncat(message, clearMsg,60-len);
+
 				dip204_set_cursor_position(1,1);
-				dip204_clear_display();
 				dip204_write_string(message);
+
+				(&AVR32_USART1)->IMR.rxrdy;		//Reads the Interrupt Mask register to clear this interrupt.
 				(&AVR32_USART1)->IER.rxrdy = 1;
+
 				xSemaphoreGive(xSemaphoreReader);
 				xSemaphoreGive(xSemaphoreStatus);
+				
 			}
 		}
 	}
@@ -118,7 +126,7 @@ void SwitchTask(void * pvParameters)
 			
 			vTaskSuspend(sHandle);
 			dip204_set_cursor_position(1,4);
-			dip204_write_string("          ");
+			dip204_write_string("                    ");
 		}
 		vTaskDelayUntil(&xLastWakeTime, 100);
 	}
