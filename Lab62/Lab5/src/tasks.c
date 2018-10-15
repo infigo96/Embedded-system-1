@@ -59,7 +59,7 @@ void Reader(void * pvParameters)
 			if( xSemaphoreTake( xSemaphoreReader, ( portTickType ) portMAX_DELAY) == pdTRUE )
 			{
 
-				USART_getString(message,62);
+				USART_getString(message,63);
 				len =strlen(message)-2;
 				charSum += len;
 				message[len] = 0;
@@ -67,10 +67,6 @@ void Reader(void * pvParameters)
 
 				dip204_set_cursor_position(1,1);
 				dip204_write_string(message);
-				//dip204_printf_string(message); //FUCKTARD FUNCTION
-				
-				dip204_set_cursor_position(1,4);
-				dip204_write_string("hej Jag klhlk");
 
 				(&AVR32_USART1)->IMR.rxrdy;		//Reads the Interrupt Mask register to clear this interrupt.
 				(&AVR32_USART1)->IER.rxrdy = 1;
