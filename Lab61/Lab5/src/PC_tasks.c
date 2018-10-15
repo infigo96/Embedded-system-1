@@ -109,10 +109,11 @@ void Consumer(void * pvParameters)
 		//Read from queue if there is stuff there.
 		if(xQueueReceive(Qhandle,&(byte[0]),0) == 1)
 		{
-			//Write what was in the queue.
-			writeUSART_CRT(&byte);
 			//Update global
 			nQueue--;
+			//Write what was in the queue.
+			writeUSART_CRT(&byte);
+			
 			if(nQueue <= (1))
 			{
 				if( xSemaphoreTake( TS->xSemaphore, ( portTickType ) 10) == pdFALSE )

@@ -26,9 +26,11 @@ typedef struct task_struct
 {
 	xSemaphoreHandle xSemaphore;
 	xTaskHandle pHandle,cHandle;
+	int PairNr;
 
 }task_struct;
 
+xSemaphoreHandle GloReadSemaphore, GloTranSemaphore;
 xQueueHandle Qhandle;
 int nQueue;
 int sizeQ;
