@@ -17,6 +17,7 @@ int main()
 	//InitStuff
 	initLED(); initBUTTON(); initUSART(); display_init();
 	nQueue = 0;
+	charSum = 0;
 	
 	Disable_global_interrupt();
 	INTC_init_interrupts();

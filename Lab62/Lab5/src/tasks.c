@@ -58,8 +58,13 @@ void Reader(void * pvParameters)
 			if( xSemaphoreTake( xSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
 			{
 				USART_getString(message,60);
+				len =strlen(message)-2;
+				charSum += len;
+				message[len] = 0;
 				dip204_set_cursor_position(1,1);
-				dip204_printf_string(message);
+				dip204_clear_display();
+				dip204_write_string(message);
+				//dip204_printf_string(message); //FUCKTARD FUNCTION
 				(&AVR32_USART1)->IER.rxrdy = 1;
 				xSemaphoreGive(xSemaphore);
 				
