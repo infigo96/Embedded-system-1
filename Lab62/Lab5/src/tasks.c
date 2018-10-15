@@ -43,12 +43,13 @@ void writeUSART_CRT(const char * message)
 	taskEXIT_CRITICAL();
 }
 
-void Producer(void * pvParameters)
+void Reader(void * pvParameters)
 {
 	int byteCount;
 	char byte = '0';
 	portTickType xLastWakeTime = xTaskGetTickCount();
 	char message[60];
+	int len;
 	for(;;)
 	{
 			//---------------display-------------Print every row separate
@@ -59,6 +60,9 @@ void Producer(void * pvParameters)
 				USART_getString(message,60);
 				dip204_set_cursor_position(1,1);
 				dip204_printf_string(message);
+				(&AVR32_USART1)->IER.rxrdy = 1;
+				xSemaphoreGive(xSemaphore);
+				
 			}
 		}
 		

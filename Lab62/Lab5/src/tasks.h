@@ -6,10 +6,10 @@
 #include "semphr.h"
 #include "display_init.h"
 #include "tc.h"
-
+#include <string.h>
 #include <stdio.h>
-#define NR_OF_TASKS 3
-#define MARGIN 4
+
+
 //The LED addresses
 # define LED_PORT ( LED0_GPIO / 32 )
 # define LED0_PIN 27
@@ -40,7 +40,7 @@ int sizeQ;
 void initLED();
 void initBUTTON(void);
 void writeUSART_CRT(const char * message);
-void Producer(void * pvParameters);
+void Reader(void * pvParameters);
 void Consumer(void * pvParameters);
 
 #endif /* LED_TASKS_H_ */

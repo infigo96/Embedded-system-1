@@ -3,8 +3,8 @@
 __attribute__((__interrupt__)) static void readana(void)
 {
 	//Every time a Usart interupt for rxrdy is triggered this is run.
-	xSemaphoreGive( xSemaphore );
-	(&AVR32_USART1)->IMR.rxrdy;		//Reads the Interrupt Mask register to clear this interrupt.
+	xSemaphoreGiveFromISR( xSemaphore,&pHandle);
+	//(&AVR32_USART1)->IMR.rxrdy;		//Reads the Interrupt Mask register to clear this interrupt.
 	(&AVR32_USART1)->IDR.rxrdy = 1;
 
 }
@@ -32,7 +32,7 @@ int main()
 	}
 	sizeQ = 8;
 	Qhandle = xQueueCreate(sizeQ,1);
-	xTaskCreate(Producer,"producer",configMINIMAL_STACK_SIZE,NULL,tskIDLE_PRIORITY + 1,&pHandle);
+	xTaskCreate(Reader,"producer",configMINIMAL_STACK_SIZE,NULL,tskIDLE_PRIORITY + 1,&pHandle);
 	//xTaskCreate(Consumer,"consumer",configMINIMAL_STACK_SIZE,NULL,tskIDLE_PRIORITY + 1,&cHandle);
 
 	vTaskStartScheduler();
