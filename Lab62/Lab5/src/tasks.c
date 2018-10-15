@@ -52,11 +52,16 @@ void Producer(void * pvParameters)
 	for(;;)
 	{
 			//---------------display-------------Print every row separate
-		vTaskSuspend(NULL);
-		USART_getString(message,60);
-		dip204_set_cursor_position(1,1);
-		dip204_printf_string(message);
-
+		if( xSemaphoreTake( xSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
+		{
+			if( xSemaphoreTake( xSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
+			{
+				USART_getString(message,60);
+				dip204_set_cursor_position(1,1);
+				dip204_printf_string(message);
+			}
+		}
+		
 		/*if(xQueueSendToBack(Qhandle,&byte,0) == 1)
 		{
 			byte++;

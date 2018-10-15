@@ -3,7 +3,7 @@
 __attribute__((__interrupt__)) static void readana(void)
 {
 	//Every time a Usart interupt for rxrdy is triggered this is run.
-	xTaskResumeFromISR(pHandle);
+	xSemaphoreGive( xSemaphore );
 	(&AVR32_USART1)->IMR.rxrdy;		//Reads the Interrupt Mask register to clear this interrupt.
 	(&AVR32_USART1)->IDR.rxrdy = 1;
 
