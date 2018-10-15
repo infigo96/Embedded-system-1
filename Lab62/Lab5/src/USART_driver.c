@@ -61,14 +61,22 @@ char USART_getChar()
 void USART_getString(char *message, int maxLength)
 {
 	int i=0;
+	int j = 0;
+	char temp = 0;
 	do
 	{
-		message[i] = USART_getChar();
-		i++;
+		if(i < (maxLength-1))
+		{
+			message[i] = USART_getChar();
+			i++;
+		}
+		else
+		{
+			temp = USART_getChar();
+		}
 	}
-	while(message[i-1]!='\n' && i < maxLength);
-	if(i < maxLength)
-	{
-		message[i] = 0; //Sets last char as null char for USART_putString() purposes.
-	}
+	while(message[i-1]!='\n' && temp != '\n');
+	message[i] = 0; //Sets last char as null char for USART_putString() purposes.
+	
+
 }

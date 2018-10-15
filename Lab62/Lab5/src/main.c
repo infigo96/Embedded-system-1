@@ -2,11 +2,10 @@
 #include "tasks.h"
 __attribute__((__interrupt__)) static void readana(void)
 {
-	//Every time a Usart interupt for rxrdy is triggered this is run.
-	xSemaphoreGiveFromISR( xSemaphore,&pHandle);
-	//(&AVR32_USART1)->IMR.rxrdy;		//Reads the Interrupt Mask register to clear this interrupt.
+	//Every time a Usart interrupt for rxrdy is triggered this is run.
+	xSemaphoreGiveFromISR( xSemaphoreReader,&pHandle);
+	(&AVR32_USART1)->IMR.rxrdy;		//Reads the Interrupt Mask register to clear this interrupt.
 	(&AVR32_USART1)->IDR.rxrdy = 1;
-
 }
 
 
@@ -26,8 +25,8 @@ int main()
 	
 	Enable_global_interrupt();
 	
-	vSemaphoreCreateBinary(xSemaphore);
-	if( xSemaphore != NULL )
+	vSemaphoreCreateBinary(xSemaphoreReader);
+	if( xSemaphoreReader != NULL )
 	{
 		writeUSART("Semaphore created\r\n");
 	}
