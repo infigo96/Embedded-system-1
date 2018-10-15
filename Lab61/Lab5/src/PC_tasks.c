@@ -54,13 +54,18 @@ void Producer(void * pvParameters)
 	
 	for(;;)
 	{
+		xSemaphoreTake( GloTranSemaphore,  ( portTickType ) portMAX_DELAY);
 		//Check if there is space in the queue (1 if there is space, 0 else) and if there is, write to it..
 		if(xQueueSendToBack(Qhandle,&byte,0) == 1)
 		{
-			//Byte was written, now update to next byte (0, 1, 2, 3....)
-			byte++;
+			xSemaphoreGive( GloTranSemaphore );			
+			xSemaphoreTake( GloAllSemaphore,  ( portTickType ) portMAX_DELAY);
 			//Global variable that keeps track of absolute space in queue.
 			nQueue++;
+			xSemaphoreGive( GloAllSemaphore );
+			//Byte was written, now update to next byte (0, 1, 2, 3....)
+			byte++;
+			
 			if(nQueue >= (sizeQ-1))
 			{
 				if( xSemaphoreTake( TS->xSemaphore, ( portTickType ) 10) == pdFALSE )
@@ -77,7 +82,7 @@ void Producer(void * pvParameters)
 		}
 		else
 		{
-			
+			xSemaphoreGive( GloTranSemaphore );
 			if( xSemaphoreTake( TS->xSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
 			{
 				writeUSART_CRT("Queue is full, producer goes to sleep\r\n");
@@ -106,11 +111,15 @@ void Consumer(void * pvParameters)
 	
 	for(;;)
 	{
+		xSemaphoreTake( GloReadSemaphore,  ( portTickType ) portMAX_DELAY);
 		//Read from queue if there is stuff there.
 		if(xQueueReceive(Qhandle,&(byte[0]),0) == 1)
 		{
+			xSemaphoreGive( GloReadSemaphore );
+			xSemaphoreTake( GloAllSemaphore,  ( portTickType ) portMAX_DELAY);
 			//Update global
 			nQueue--;
+			xSemaphoreGive( GloAllSemaphore );
 			//Write what was in the queue.
 			writeUSART_CRT(&byte);
 			
@@ -130,6 +139,7 @@ void Consumer(void * pvParameters)
 		}
 		else
 		{
+			xSemaphoreGive( GloReadSemaphore );
 			if( xSemaphoreTake( TS->xSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
 			{
 				writeUSART_CRT("Queue is empty, consumer goes to sleep\r\n");

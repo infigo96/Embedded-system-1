@@ -30,7 +30,7 @@ typedef struct task_struct
 
 }task_struct;
 
-xSemaphoreHandle GloReadSemaphore, GloTranSemaphore;
+xSemaphoreHandle GloReadSemaphore, GloTranSemaphore, GloAllSemaphore;
 xQueueHandle Qhandle;
 int nQueue;
 int sizeQ;

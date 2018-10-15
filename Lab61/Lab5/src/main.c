@@ -18,6 +18,7 @@ int main()
 	Qhandle = xQueueCreate(sizeQ,1);
 	vSemaphoreCreateBinary(GloReadSemaphore);
 	vSemaphoreCreateBinary(GloTranSemaphore);
+	vSemaphoreCreateBinary(GloAllSemaphore);
 	
 	for(int i = 0; i < 1; i++);
 	{
