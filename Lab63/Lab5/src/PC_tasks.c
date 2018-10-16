@@ -68,7 +68,6 @@ void potentSensorTask(void * pvParameters)
 					if( xSemaphoreTake( TS->consumerSuspendSemaphore, ( portTickType ) 10) == pdFALSE )
 					{
 						vTaskResume(TS->cHandle);
-
 					}
 					else
 					{
@@ -200,7 +199,7 @@ void sensorReaderTask(void * pvParameters)
 {
 	task_struct *TS = (task_struct *)pvParameters;
 	value_type_struct VT;
-	int light_value, potent_value, temp_value;
+	int light_value, potent_value, temp_value = 0;
 	char charBuff[60];
 	int l, p , t = 0;
 
@@ -211,6 +210,7 @@ void sensorReaderTask(void * pvParameters)
 		{
 			nQueue--;
 			//We read from queue, find out what we read.
+			/*
 			if(VT.taskType == 'l')
 			{
 				//Light Sensor data in queue.
@@ -223,12 +223,14 @@ void sensorReaderTask(void * pvParameters)
 				potent_value = VT.taskValue;
 				p++;
 			}
+			*/
 			if (VT.taskType == 'p')
 			{
 				//Potentiometer data in queue.
 				temp_value = VT.taskValue;
 				t++;
 			}
+			/*
 			if (l-p >= 3|| l-t >=3)
 			{
 				vTaskSuspend(TS->producerHandles.lHandle);
@@ -247,21 +249,22 @@ void sensorReaderTask(void * pvParameters)
 				vTaskResume(TS->producerHandles.lHandle);
 				vTaskResume(TS->producerHandles.pHandle);
 			}
+			*/
 		}
 		else
 		{
 			if( xSemaphoreTake( TS->consumerSuspendSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
 			{
 				//Queue is empty. Wake producers and Go to sleep
-				vTaskResume(TS->producerHandles.lHandle);
+				//vTaskResume(TS->producerHandles.lHandle);
 				vTaskResume(TS->producerHandles.pHandle);
-				vTaskResume(TS->producerHandles.tHandle);
+				//vTaskResume(TS->producerHandles.tHandle);
 				l, t, p = 0;
 				vTaskSuspend(NULL);
 				xSemaphoreGive(TS->consumerSuspendSemaphore);
 			}
 		}
-		sprintf(charBuff, "LightValue: %4.d , PotentiometerValue: %4.d , Temperature Value %3.d\n\n\n\n\n\n", light_value, potent_value, temp_value);
+		sprintf(charBuff, "LightValue: %4d , PotentiometerValue: %4d , Temperature Value %3d\n\n\n\n\n\n", light_value, potent_value, temp_value);
 		writeUSART_CRT(charBuff);
 	}
 }

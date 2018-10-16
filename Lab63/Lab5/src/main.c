@@ -35,8 +35,8 @@ int main()
 	//}
 	//Create tasks.
 	xTaskCreate(potentSensorTask,"potentSensorTask",configMINIMAL_STACK_SIZE*4,TS,tskIDLE_PRIORITY + 1,&(TS->producerHandles.pHandle));
-	xTaskCreate(tempSensorTask,"tempSensorTask",configMINIMAL_STACK_SIZE*4,TS,tskIDLE_PRIORITY + 1,&(TS->producerHandles.tHandle));
-	xTaskCreate(lightSensorTask,"lightSensorTask",configMINIMAL_STACK_SIZE*4,TS,tskIDLE_PRIORITY + 1,&(TS->producerHandles.lHandle));
+	//xTaskCreate(tempSensorTask,"tempSensorTask",configMINIMAL_STACK_SIZE*4,TS,tskIDLE_PRIORITY + 1,&(TS->producerHandles.tHandle));
+	//xTaskCreate(lightSensorTask,"lightSensorTask",configMINIMAL_STACK_SIZE*4,TS,tskIDLE_PRIORITY + 1,&(TS->producerHandles.lHandle));
 	xTaskCreate(sensorReaderTask,"sensorReaderTask",configMINIMAL_STACK_SIZE*4,TS,tskIDLE_PRIORITY + 1,&(TS->cHandle));
 
 	vTaskStartScheduler();
