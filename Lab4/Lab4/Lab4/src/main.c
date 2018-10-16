@@ -31,11 +31,6 @@ int main(void)
 	adc_enable(&AVR32_ADC, ADC_POTENTIOMETER_CHANNEL);
     adc_enable(&AVR32_ADC, ADC_LIGHT_CHANNEL);
 	adc_enable(&AVR32_ADC, ADC_TEMPERATURE_CHANNEL);
-	
-
-	
-
-
 
 	delay_init();
 	display_init();
