@@ -3,36 +3,36 @@
 //Initiates LED 0, 1 and 2.
 void PrintUsart(unsigned int iPot, unsigned int iTemp, unsigned int iLight)
 {
-	char temp[64];
-	sprintf(temp,"Pot:%d\nTemp%d\nLight:%d\n", iPot, iTemp, iLight);
+	char *temp = malloc(128);
+	sprintf(temp,"Pot:%d\nTemp:%d\nLight:%d\n", iPot, iTemp, iLight);
 	writeUSART_CRT(temp);
 }
 
 void PrintLight(unsigned int i)
 {
-	char temp[64];
+	char *temp = malloc(64);
 	sprintf(temp,"Light value:%d",i);
-	dip204_set_cursor_position(1,1);
+	dip204_set_cursor_position(1,3);
 	dip204_write_string("                    ");
-	dip204_set_cursor_position(1,1);
+	dip204_set_cursor_position(1,3);
 	dip204_write_string(temp);
 }
 void PrintPot(unsigned int i)
 {
-	char temp[64];
+	char *temp = malloc(64);
 	sprintf(temp,"Pot Value:%d",i);
-	dip204_set_cursor_position(1,2);
+	dip204_set_cursor_position(1,1);
 	dip204_write_string("                    ");
-	dip204_set_cursor_position(1,2);
+	dip204_set_cursor_position(1,1);
 	dip204_write_string(temp);
 }
 void PrintTemp(unsigned int i)
 {
-	char temp[64];
+	char *temp = malloc(64);
 	sprintf(temp,"Temp Value:%d",i);
-	dip204_set_cursor_position(1,3);
+	dip204_set_cursor_position(1,2);
 	dip204_write_string("                    ");
-	dip204_set_cursor_position(1,3);
+	dip204_set_cursor_position(1,2);
 	dip204_write_string(temp);
 }
 void initLED()
@@ -84,8 +84,6 @@ void LightProducer(void * pvParameters)
 	Task_Info *TI = (Task_Info *) pvParameters;
 	task_struct *TS = TI->Ts;
 	unsigned int Value = TI->task_nr;
-	char byte = 48+(TI->task_nr);
-	portTickType xLastWakeTime = xTaskGetTickCount();
 	
 	for(;;)
 	{
@@ -128,15 +126,11 @@ void LightProducer(void * pvParameters)
 			if( xSemaphoreTake( xSuspSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
 			{
 				//writeUSART_CRT("Queue is full, producer goes to sleep\r\n");
-				//vTaskResume(cHandle);
 				vTaskSuspend(NULL);
 				//writeUSART_CRT("producer woken \r\n");
 				xSemaphoreGive(xSuspSemaphore);
 			}
-			//Update last wake time. 
-			xLastWakeTime = xTaskGetTickCount();
 		}
-		//vTaskDelayUntil(&xLastWakeTime, 300);
 	}
 }
 void TempProducer(void * pvParameters)
@@ -144,8 +138,6 @@ void TempProducer(void * pvParameters)
 	Task_Info *TI = (Task_Info *) pvParameters;
 	task_struct *TS = TI->Ts;
 	unsigned int Value = TI->task_nr;
-	char byte = 48+(TI->task_nr);
-	portTickType xLastWakeTime = xTaskGetTickCount();
 	
 	for(;;)
 	{
@@ -189,15 +181,11 @@ void TempProducer(void * pvParameters)
 			if( xSemaphoreTake( xSuspSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
 			{
 				//writeUSART_CRT("Queue is full, producer goes to sleep\r\n");
-				//vTaskResume(cHandle);
 				vTaskSuspend(NULL);
 				//writeUSART_CRT("producer woken \r\n");
 				xSemaphoreGive(xSuspSemaphore);
 			}
-			//Update last wake time.
-			xLastWakeTime = xTaskGetTickCount();
 		}
-		//vTaskDelayUntil(&xLastWakeTime, 300);
 	}
 }
 void PotProducer(void * pvParameters)
@@ -205,8 +193,6 @@ void PotProducer(void * pvParameters)
 	Task_Info *TI = (Task_Info *) pvParameters;
 	task_struct *TS = TI->Ts;
 	unsigned int Value = TI->task_nr;
-	char byte = 48+(TI->task_nr);
-	portTickType xLastWakeTime = xTaskGetTickCount();
 	
 	for(;;)
 	{
@@ -249,26 +235,19 @@ void PotProducer(void * pvParameters)
 			if( xSemaphoreTake( xSuspSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
 			{
 				//writeUSART_CRT("Queue is full, producer goes to sleep\r\n");
-				//vTaskResume(cHandle);
 				vTaskSuspend(NULL);
 				//writeUSART_CRT("producer woken \r\n");
 				xSemaphoreGive(xSuspSemaphore);
 			}
-			//Update last wake time.
-			xLastWakeTime = xTaskGetTickCount();
 		}
-		//vTaskDelayUntil(&xLastWakeTime, 300);
 	}
 }
 //Reads bytes from a queue.
 void Consumer(void * pvParameters)
 {
 	Task_Info *TI = (Task_Info *) pvParameters;
-	task_struct *TS = TI->Ts;
-	unsigned int Value;
-	char byte[4];
+	unsigned int Value = TI->task_nr;
 	int iPot = 0, iTemp = 0, iLight = 0; 
-	portTickType xLastWakeTime = xTaskGetTickCount();
 	
 	for(;;)
 	{
@@ -300,7 +279,7 @@ void Consumer(void * pvParameters)
 				iLight = Value; 
 				PrintLight(iLight);
 			}
-			PrintUsart(iPot,iTemp,iLight);
+			PrintUsart(iPot,iTemp,iLight); //This Fucktard is creating Issues. 
 			
 			
 			if(nQueue <= (1))
@@ -309,7 +288,7 @@ void Consumer(void * pvParameters)
 				{
 					for(int i = 0; i < nrProd; i++)
 					{
-						vTaskResume(TS->pHandle[i]);					
+						vTaskResume(TI->Ts->pHandle[i]);					
 					}
 
 				}
@@ -326,17 +305,10 @@ void Consumer(void * pvParameters)
 			if( xSemaphoreTake( xSuspSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
 			{
 				//writeUSART_CRT("Queue is empty, consumer goes to sleep\r\n");
-				//vTaskResume(pHandle);
 				vTaskSuspend(NULL);
 				//writeUSART_CRT("Consumer woken \r\n");
 				xSemaphoreGive(xSuspSemaphore);
 			}
-
-			
-			xLastWakeTime = xTaskGetTickCount();
 		}
-		//vTaskDelayUntil(&xLastWakeTime, 320);
-
-		
 	}
 }
