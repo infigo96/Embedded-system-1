@@ -9,22 +9,34 @@ int main()
 	//InitStuff
 	initLED(); initBUTTON(); initUSART(); 
 	nQueue = 0;
-	task_struct *TS = malloc(nrTasks*(sizeof(task_struct)));
+	nrProd = 3;
+	nrCons = 2;
+	Task_Info *TI = malloc((nrProd+nrCons)*(sizeof(Task_Info)));
+	task_struct *TS = malloc(sizeof(task_struct));
+	TS->cHandle = malloc(nrCons*(sizeof(xTaskHandle)));
+	TS->pHandle = malloc(nrProd*(sizeof(xTaskHandle)));
 	
 	//Size of Queue buffer
 	//Size of queue, size of a slot
 	Qhandle = xQueueCreate(sizeQ,1);
 	vSemaphoreCreateBinary(GloReadSemaphore);
 	vSemaphoreCreateBinary(GloTranSemaphore);
-	vSemaphoreCreateBinary(GloAllSemaphore);
+	vSemaphoreCreateBinary(GloQueueSemaphore);
+	//vSemaphoreCreateBinary(xSuspSemaphore);
+	xSuspSemaphore = xSemaphoreCreateMutex();
 	
-	for(int i = 0; i < nrTasks; i++);
+	for(int i = 0; i < nrProd; i++)
 	{
-		vSemaphoreCreateBinary((TS[i].xSemaphore));
-		TS[i].PairNr = i;
 		//Create tasks.
-		xTaskCreate(Producer,"producer",configMINIMAL_STACK_SIZE,&(TS[i]),tskIDLE_PRIORITY + 1,&(TS[i].pHandle));
-		xTaskCreate(Consumer,"consumer",configMINIMAL_STACK_SIZE,&(TS[i]),tskIDLE_PRIORITY + 1,&(TS[i].cHandle));
+		TI[i].task_nr = i;
+		TI[i].Ts = TS;
+		xTaskCreate(Producer,"producer",configMINIMAL_STACK_SIZE,&(TI[i]),tskIDLE_PRIORITY + 1,&(TS->pHandle[i]));
+	}
+	for(int i = 0; i < nrCons; i++)
+	{
+		TI[i+nrProd].task_nr = i;
+		TI[i+ nrProd].Ts = TS;
+		xTaskCreate(Consumer,"consumer",configMINIMAL_STACK_SIZE,&(TI[i+nrProd]),tskIDLE_PRIORITY + 1,&(TS->cHandle[i]));
 	}
 	vTaskStartScheduler();
 	

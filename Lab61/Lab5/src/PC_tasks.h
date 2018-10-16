@@ -25,17 +25,24 @@
 #define nrTasks 4
 
 //Struct used to check deadlines
-typedef struct task_struct
+typedef struct _task_struct
 {
-	xSemaphoreHandle xSemaphore;
-	xTaskHandle pHandle,cHandle;
-	int PairNr;
-
+	xTaskHandle *pHandle;
+	xTaskHandle *cHandle;
 }task_struct;
 
-xSemaphoreHandle GloReadSemaphore, GloTranSemaphore, GloAllSemaphore;
+typedef struct _task_info
+{
+	task_struct *Ts;
+	int task_nr;
+}Task_Info;
+
+
+xSemaphoreHandle xSuspSemaphore;
+xSemaphoreHandle GloReadSemaphore, GloTranSemaphore, GloQueueSemaphore;
 xQueueHandle Qhandle;
 int nQueue;
+int nrProd,nrCons;
 
 void initLED();
 void initBUTTON(void);
