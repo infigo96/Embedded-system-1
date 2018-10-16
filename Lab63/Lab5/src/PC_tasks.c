@@ -3,9 +3,9 @@
 //Initiates LED 0, 1 and 2.
 void PrintUsart(unsigned int iPot, unsigned int iTemp, unsigned int iLight)
 {
-	char temp[128];
-	sprintf(temp,"Pot value:%d \r\n Temp value: %d \r\n Light value: %d \r\n\n\n\n\n\n\n\n", iPot, iTemp, iLight);
-	writeUSART(temp);
+	char temp[64];
+	sprintf(temp,"Pot:%d\nTemp%d\nLight:%d\n", iPot, iTemp, iLight);
+	writeUSART_CRT(temp);
 }
 
 void PrintLight(unsigned int i)
@@ -89,11 +89,12 @@ void LightProducer(void * pvParameters)
 	
 	for(;;)
 	{
-		xSemaphoreTake( GloTranSemaphore,  ( portTickType ) portMAX_DELAY);
-		//Check if there is space in the queue (1 if there is space, 0 else) and if there is, write to it..
+		vTaskDelay(100);
 		adc_start(&AVR32_ADC); // Start a ADC sampling of all active channels
 		Value = adc_get_value(&AVR32_ADC, ADC_LIGHT_CHANNEL);
 		Value |= (1 << 14);
+		xSemaphoreTake( GloTranSemaphore,  ( portTickType ) portMAX_DELAY);
+		//Check if there is space in the queue (1 if there is space, 0 else) and if there is, write to it.
 		if(xQueueSendToBack(Qhandle,&Value,0) == 1)
 		{
 			xSemaphoreGive( GloTranSemaphore );			
@@ -103,7 +104,6 @@ void LightProducer(void * pvParameters)
 			xSemaphoreGive( GloQueueSemaphore );
 			//Byte was written, now update to next byte (0, 1, 2, 3....)
 			//byte++;
-			vTaskDelay(35);
 
 			if(nQueue >= (sizeQ-1))
 			{
@@ -149,11 +149,13 @@ void TempProducer(void * pvParameters)
 	
 	for(;;)
 	{
+		vTaskDelay(100);
 		adc_start(&AVR32_ADC); // Start a ADC sampling of all active channels
 		Value = adc_get_value(&AVR32_ADC, ADC_TEMPERATURE_CHANNEL);
 		Value |= (1 << 13);
 		xSemaphoreTake( GloTranSemaphore,  ( portTickType ) portMAX_DELAY);
 		//Check if there is space in the queue (1 if there is space, 0 else) and if there is, write to it..
+		
 		if(xQueueSendToBack(Qhandle,&Value,0) == 1)
 		{
 			xSemaphoreGive( GloTranSemaphore );
@@ -163,7 +165,6 @@ void TempProducer(void * pvParameters)
 			xSemaphoreGive( GloQueueSemaphore );
 			//Byte was written, now update to next byte (0, 1, 2, 3....)
 			//byte++;
-			vTaskDelay(35);
 
 			if(nQueue >= (sizeQ-1))
 			{
@@ -209,11 +210,12 @@ void PotProducer(void * pvParameters)
 	
 	for(;;)
 	{
-		xSemaphoreTake( GloTranSemaphore,  ( portTickType ) portMAX_DELAY);
-		//Check if there is space in the queue (1 if there is space, 0 else) and if there is, write to it..
+		vTaskDelay(100);
 		adc_start(&AVR32_ADC); // Start a ADC sampling of all active channels
 		Value = adc_get_value(&AVR32_ADC, ADC_POTENTIOMETER_CHANNEL);
 		Value |= (1 << 12);
+		xSemaphoreTake( GloTranSemaphore,  ( portTickType ) portMAX_DELAY);
+		//Check if there is space in the queue (1 if there is space, 0 else) and if there is, write to it..
 		if(xQueueSendToBack(Qhandle,&Value,0) == 1)
 		{
 			xSemaphoreGive( GloTranSemaphore );
@@ -223,7 +225,6 @@ void PotProducer(void * pvParameters)
 			xSemaphoreGive( GloQueueSemaphore );
 			//Byte was written, now update to next byte (0, 1, 2, 3....)
 			//byte++;
-			vTaskDelay(35);
 			
 			if(nQueue >= (sizeQ-1))
 			{
@@ -299,7 +300,7 @@ void Consumer(void * pvParameters)
 				iLight = Value; 
 				PrintLight(iLight);
 			}
-			//PrintUsart(iPot,iTemp,iLight);
+			PrintUsart(iPot,iTemp,iLight);
 			
 			
 			if(nQueue <= (1))
