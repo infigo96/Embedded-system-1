@@ -1,6 +1,15 @@
 #include "PC_tasks.h"
 
 //Initiates LED 0, 1 and 2.
+void writeNrOfChars(unsigned int i){
+	char temp[60];
+	sprintf(temp,"Nr of chars:%d",i);
+	dip204_set_cursor_position(1,4);
+	dip204_write_string("                    ");
+	dip204_set_cursor_position(1,4);
+	dip204_write_string(temp);
+}
+
 void initLED()
 {
 	volatile avr32_gpio_port_t *led_port;
@@ -45,11 +54,11 @@ void writeUSART_CRT(const char * message)
 }
 
 //Producer task. Sends bytes to the queue.
-void Producer(void * pvParameters)
+void LightProducer(void * pvParameters)
 {
 	Task_Info *TI = (Task_Info *) pvParameters;
 	task_struct *TS = TI->Ts;
-	int byteCount;
+	int byteCount = TI->task_nr;
 	char byte = 48+(TI->task_nr);
 	portTickType xLastWakeTime = xTaskGetTickCount();
 	
@@ -57,7 +66,7 @@ void Producer(void * pvParameters)
 	{
 		xSemaphoreTake( GloTranSemaphore,  ( portTickType ) portMAX_DELAY);
 		//Check if there is space in the queue (1 if there is space, 0 else) and if there is, write to it..
-		if(xQueueSendToBack(Qhandle,&byte,0) == 1)
+		if(xQueueSendToBack(Qhandle,&byteCount,0) == 1)
 		{
 			xSemaphoreGive( GloTranSemaphore );			
 			xSemaphoreTake( GloQueueSemaphore,  ( portTickType ) portMAX_DELAY);
@@ -66,6 +75,121 @@ void Producer(void * pvParameters)
 			xSemaphoreGive( GloQueueSemaphore );
 			//Byte was written, now update to next byte (0, 1, 2, 3....)
 			//byte++;
+			vTaskDelay(10);
+
+			if(nQueue >= (sizeQ-1))
+			{
+				if( xSemaphoreTake( xSuspSemaphore, ( portTickType ) 1) == pdFALSE )
+				{
+					for(int i = 0; i < nrCons; i++)
+					{
+						vTaskResume(TS->cHandle[i]);
+					}
+
+				}
+				else
+				{
+					xSemaphoreGive(xSuspSemaphore);
+				}
+				//writeUSART("Wake cons\r\n");
+			}
+		}
+		else
+		{
+			xSemaphoreGive( GloTranSemaphore );
+			if( xSemaphoreTake( xSuspSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
+			{
+				//writeUSART_CRT("Queue is full, producer goes to sleep\r\n");
+				//vTaskResume(cHandle);
+				vTaskSuspend(NULL);
+				//writeUSART_CRT("producer woken \r\n");
+				xSemaphoreGive(xSuspSemaphore);
+			}
+			//Update last wake time. 
+			xLastWakeTime = xTaskGetTickCount();
+		}
+		//vTaskDelayUntil(&xLastWakeTime, 300);
+	}
+}
+void TempProducer(void * pvParameters)
+{
+	Task_Info *TI = (Task_Info *) pvParameters;
+	task_struct *TS = TI->Ts;
+	int byteCount = TI->task_nr;
+	char byte = 48+(TI->task_nr);
+	portTickType xLastWakeTime = xTaskGetTickCount();
+	
+	for(;;)
+	{
+		xSemaphoreTake( GloTranSemaphore,  ( portTickType ) portMAX_DELAY);
+		//Check if there is space in the queue (1 if there is space, 0 else) and if there is, write to it..
+		if(xQueueSendToBack(Qhandle,&byteCount,0) == 1)
+		{
+			xSemaphoreGive( GloTranSemaphore );
+			xSemaphoreTake( GloQueueSemaphore,  ( portTickType ) portMAX_DELAY);
+			//Global variable that keeps track of absolute space in queue.
+			nQueue++;
+			xSemaphoreGive( GloQueueSemaphore );
+			//Byte was written, now update to next byte (0, 1, 2, 3....)
+			//byte++;
+			vTaskDelay(10);
+
+			if(nQueue >= (sizeQ-1))
+			{
+				if( xSemaphoreTake( xSuspSemaphore, ( portTickType ) 1) == pdFALSE )
+				{
+					for(int i = 0; i < nrCons; i++)
+					{
+						vTaskResume(TS->cHandle[i]);
+					}
+
+				}
+				else
+				{
+					xSemaphoreGive(xSuspSemaphore);
+				}
+				//writeUSART("Wake cons\r\n");
+			}
+		}
+		else
+		{
+			xSemaphoreGive( GloTranSemaphore );
+			if( xSemaphoreTake( xSuspSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
+			{
+				//writeUSART_CRT("Queue is full, producer goes to sleep\r\n");
+				//vTaskResume(cHandle);
+				vTaskSuspend(NULL);
+				//writeUSART_CRT("producer woken \r\n");
+				xSemaphoreGive(xSuspSemaphore);
+			}
+			//Update last wake time.
+			xLastWakeTime = xTaskGetTickCount();
+		}
+		//vTaskDelayUntil(&xLastWakeTime, 300);
+	}
+}
+void PotProducer(void * pvParameters)
+{
+	Task_Info *TI = (Task_Info *) pvParameters;
+	task_struct *TS = TI->Ts;
+	int byteCount = TI->task_nr;
+	char byte = 48+(TI->task_nr);
+	portTickType xLastWakeTime = xTaskGetTickCount();
+	
+	for(;;)
+	{
+		xSemaphoreTake( GloTranSemaphore,  ( portTickType ) portMAX_DELAY);
+		//Check if there is space in the queue (1 if there is space, 0 else) and if there is, write to it..
+		if(xQueueSendToBack(Qhandle,&byteCount,0) == 1)
+		{
+			xSemaphoreGive( GloTranSemaphore );
+			xSemaphoreTake( GloQueueSemaphore,  ( portTickType ) portMAX_DELAY);
+			//Global variable that keeps track of absolute space in queue.
+			nQueue++;
+			xSemaphoreGive( GloQueueSemaphore );
+			//Byte was written, now update to next byte (0, 1, 2, 3....)
+			//byte++;
+			vTaskDelay(10);
 			
 			if(nQueue >= (sizeQ-1))
 			{
@@ -89,19 +213,18 @@ void Producer(void * pvParameters)
 			xSemaphoreGive( GloTranSemaphore );
 			if( xSemaphoreTake( xSuspSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
 			{
-				writeUSART_CRT("Queue is full, producer goes to sleep\r\n");
+				//writeUSART_CRT("Queue is full, producer goes to sleep\r\n");
 				//vTaskResume(cHandle);
 				vTaskSuspend(NULL);
-				writeUSART_CRT("producer woken \r\n");
+				//writeUSART_CRT("producer woken \r\n");
 				xSemaphoreGive(xSuspSemaphore);
 			}
-			//Update last wake time. 
+			//Update last wake time.
 			xLastWakeTime = xTaskGetTickCount();
 		}
 		//vTaskDelayUntil(&xLastWakeTime, 300);
 	}
 }
-
 //Reads bytes from a queue.
 void Consumer(void * pvParameters)
 {
@@ -109,6 +232,7 @@ void Consumer(void * pvParameters)
 	task_struct *TS = TI->Ts;
 	int byteCount;
 	char byte[4];
+	byte[0] = 'a';
 	byte[1] = '\r';
 	byte[2] = '\n';
 	byte[3] = 0;
@@ -118,7 +242,7 @@ void Consumer(void * pvParameters)
 	{
 		xSemaphoreTake( GloReadSemaphore,  ( portTickType ) portMAX_DELAY);
 		//Read from queue if there is stuff there.
-		if(xQueueReceive(Qhandle,&(byte[0]),0) == 1)
+		if(xQueueReceive(Qhandle,&byteCount,0) == 1)
 		{
 			xSemaphoreGive( GloReadSemaphore );
 			xSemaphoreTake( GloQueueSemaphore,  ( portTickType ) portMAX_DELAY);
@@ -126,7 +250,8 @@ void Consumer(void * pvParameters)
 			nQueue--;
 			xSemaphoreGive( GloQueueSemaphore );
 			//Write what was in the queue.
-			writeUSART_CRT(&byte);
+			writeNrOfChars(byteCount);
+			writeUSART_CRT(byte);
 			
 			if(nQueue <= (1))
 			{
@@ -150,10 +275,10 @@ void Consumer(void * pvParameters)
 			xSemaphoreGive( GloReadSemaphore );
 			if( xSemaphoreTake( xSuspSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
 			{
-				writeUSART_CRT("Queue is empty, consumer goes to sleep\r\n");
+				//writeUSART_CRT("Queue is empty, consumer goes to sleep\r\n");
 				//vTaskResume(pHandle);
 				vTaskSuspend(NULL);
-				writeUSART_CRT("Consumer woken \r\n");
+				//writeUSART_CRT("Consumer woken \r\n");
 				xSemaphoreGive(xSuspSemaphore);
 			}
 

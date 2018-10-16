@@ -53,7 +53,9 @@ int nrProd,nrCons;
 void initLED();
 void initBUTTON(void);
 void writeUSART_CRT(const char * message);
-void Producer(void * pvParameters);
+void LightProducer(void * pvParameters);
+void TempProducer(void * pvParameters);
+void PotProducer(void * pvParameters);
 void Consumer(void * pvParameters);
 
 #endif /* LED_TASKS_H_ */
