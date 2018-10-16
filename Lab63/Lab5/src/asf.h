@@ -52,9 +52,18 @@
  * running the ASF driver selector tool. Any changes will be discarded.
  */
 
+// From module: ADC - Analog to Digital Converter
+#include <adc.h>
+
+// From module: CPU Cycle Counter
+#include <cycle_counter.h>
+
 // From module: Compiler abstraction layer and code utilities
 #include <compiler.h>
 #include <status_codes.h>
+
+// From module: Delay routines
+#include <delay.h>
 
 // From module: EVK1100
 #include <led.h>
@@ -87,9 +96,15 @@
 // From module: Interrupt management - UC3 implementation
 #include <interrupt.h>
 
+// From module: LCD Display - DIP204B-4ORT01
+#include <dip204.h>
+
 // From module: PM Power Manager- UC3 A0/A1/A3/A4/B0/B1 implementation
 #include <power_clocks_lib.h>
 #include <sleep.h>
+
+// From module: PWM - UC3 A/B implementation
+#include <pwm.h>
 
 // From module: Part identification macros
 #include <parts.h>
@@ -122,6 +137,12 @@
 #include <recmutex.h>
 #include <semtest.h>
 #include <serial.h>
+
+// From module: SPI - Serial Peripheral Interface
+#include <spi.h>
+
+// From module: System Clock Control - UC3 A implementation
+#include <sysclk.h>
 
 // From module: TC - Timer/Counter
 #include <tc.h>

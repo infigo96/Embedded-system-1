@@ -4,8 +4,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "semphr.h"
-
-
+#include "adc.h"
+#include "display_init.h"
 #include "tc.h"
 #include <stdio.h>
 #define NR_OF_TASKS 3
@@ -21,22 +21,20 @@
 #define BUTTON1_PIN 1 << (GPIO_PUSH_BUTTON_1 & 0x1f)
 #define BUTTON2_PIN 1 << (GPIO_PUSH_BUTTON_2 & 0x1f)
 
-//Struct used to check deadlines
-typedef struct task_struct
-{
-	xSemaphoreHandle xSemaphore;
-	xTaskHandle pHandle,cHandle;
+struct AMessage
+ {
+    char ucMessageID;
+    char ucData[ 20 ];
+ } xMessage;
 
-}task_struct;
-
-xQueueHandle Qhandle;
-int nQueue;
-int sizeQ;
+xQueueHandle QLight,QTemp,QPotent;
 
 void initLED();
 void initBUTTON(void);
 void writeUSART_CRT(const char * message);
-void Producer(void * pvParameters);
-void Consumer(void * pvParameters);
+void LightTask(void * pvParameters);
+void TempTask(void * pvParameters);
+void PotenTask(void * pvParameters);
+void DisplayTask(void * pvParameters);
 
 #endif /* LED_TASKS_H_ */

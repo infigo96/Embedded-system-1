@@ -44,105 +44,100 @@ void writeUSART_CRT(const char * message)
 	taskEXIT_CRITICAL();
 }
 
-//Producer task. Sends bytes to the queue.
-void Producer(void * pvParameters)
+//Light task. Reads light and sent it to queue
+void LightTask(void * pvParameters)
 {
-	task_struct *TS = (task_struct *)pvParameters;
-	int byteCount;
-	char byte = '0';
-	portTickType xLastWakeTime = xTaskGetTickCount();
-	
-	for(;;)
+	volatile int lig_value;
+	portTickType xLastWakeTime;
+	const portTickType xFrequency = 500;
+	xLastWakeTime = xTaskGetTickCount();
+	for (;;)
 	{
-		//Check if there is space in the queue (1 if there is space, 0 else) and if there is, write to it..
-		if(xQueueSendToBack(Qhandle,&byte,0) == 1)
-		{
-			//Byte was written, now update to next byte (0, 1, 2, 3....)
-			byte++;
-			//Global variable that keeps track of absolute space in queue.
-			nQueue++;
-			if(nQueue >= (sizeQ-1))
-			{
-				if( xSemaphoreTake( TS->xSemaphore, ( portTickType ) 10) == pdFALSE )
-				{
-					vTaskResume(TS->cHandle);
-
-				}
-				else
-				{
-					xSemaphoreGive(TS->xSemaphore);
-				}
-				//writeUSART("Wake cons\r\n");
-			}
-		}
-		else
-		{
-			
-			if( xSemaphoreTake( TS->xSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
-			{
-				writeUSART_CRT("Queue is full, producer goes to sleep\r\n");
-				//vTaskResume(cHandle);
-				vTaskSuspend(NULL);
-				writeUSART_CRT("producer woken \r\n");
-				xSemaphoreGive(TS->xSemaphore);
-			}
-			//Update last wake time. 
-			xLastWakeTime = xTaskGetTickCount();
-		}
-		//vTaskDelayUntil(&xLastWakeTime, 300);
+		adc_start(&AVR32_ADC);
+		lig_value = adc_get_value(&AVR32_ADC, ADC_LIGHT_CHANNEL); // Get the light sensor value
+        xQueueSendToBack( QLight, &lig_value, 0);
+		vTaskDelayUntil(&xLastWakeTime,xFrequency);
 	}
 }
 
-//Reads bytes from a queue.
-void Consumer(void * pvParameters)
+//Temp task. Reads temperature and sent it to queue
+void TempTask(void * pvParameters)
 {
-	task_struct *TS = (task_struct *)pvParameters;
-	int byteCount;
-	char byte[4];
-	byte[1] = '\r';
-	byte[2] = '\n';
-	byte[3] = 0;
-	portTickType xLastWakeTime = xTaskGetTickCount();
-	
-	for(;;)
+	volatile int temp_value;
+	portTickType xLastWakeTime;
+	const portTickType xFrequency = 2000;
+	xLastWakeTime = xTaskGetTickCount();
+	for (;;)
 	{
-		//Read from queue if there is stuff there.
-		if(xQueueReceive(Qhandle,&(byte[0]),0) == 1)
-		{
-			//Write what was in the queue.
-			writeUSART_CRT(&byte);
-			//Update global
-			nQueue--;
-			if(nQueue <= (1))
-			{
-				if( xSemaphoreTake( TS->xSemaphore, ( portTickType ) 10) == pdFALSE )
-				{
-					vTaskResume(TS->pHandle);
-
-				}
-				else
-				{
-					xSemaphoreGive(TS->xSemaphore);
-				}
-				
-			}
+		adc_start(&AVR32_ADC);
+		temp_value = adc_get_value(&AVR32_ADC, ADC_TEMPERATURE_CHANNEL); // Get the light sensor value
+		xQueueSendToBack( QTemp, &temp_value, 0);
+		vTaskDelayUntil(&xLastWakeTime,xFrequency);
+	}
+}
+//Potentiometer task. Reads the potentiometer and sent the value to the queue
+void PotenTask(void * pvParameters)
+{
+	volatile int pot_value;
+	portTickType xLastWakeTime;
+	const portTickType xFrequency = 50;
+	xLastWakeTime = xTaskGetTickCount();
+	for (;;)
+	{
+		adc_start(&AVR32_ADC);
+		pot_value = adc_get_value(&AVR32_ADC, ADC_POTENTIOMETER_CHANNEL); // Get the light sensor value
+		xQueueSendToBack( QPotent, &pot_value, 0);
+		vTaskDelayUntil(&xLastWakeTime,xFrequency);
+	}
+}
+//Display task. Reads the queues and if any value has changed, display it on LCD and USART
+void DisplayTask(void * pvParameters)
+{
+	volatile int pot_value; //Potentiometer
+	volatile int lig_value; //Light
+	volatile int tem_value; //Temperature
+	char text1[20];
+	char text2[20];
+	char text3[20];
+	char USARTtext[70];
+	int changed;
+	portTickType xLastWakeTime;
+	const portTickType xFrequency = 10;
+	xLastWakeTime = xTaskGetTickCount();
+	//Display start text
+	dip204_set_cursor_position(1,1);dip204_write_string("LIGHT:");
+	dip204_set_cursor_position(1,2);dip204_write_string("TEMP :");
+	dip204_set_cursor_position(1,3);dip204_write_string("POTEN:");
+	
+	
+	for (;;)
+	{
+		changed=0;
+        if( xQueueReceive( QLight,&lig_value, ( portTickType ) 0 ) )
+        {
+			dip204_set_cursor_position(1,1);
+			sprintf(text1,"LIGHT:%04d",lig_value);
+			dip204_printf_string(text1);
+			changed=1;
+        }
+        if( xQueueReceive( QTemp,&tem_value, ( portTickType ) 0 ) )
+        {
+	        dip204_set_cursor_position(1,2);
+	        sprintf(text2,"TEMP :%04d",tem_value);
+	        dip204_printf_string(text2);
+			changed=1;
+        }
+        if( xQueueReceive( QPotent,&pot_value, ( portTickType ) 0 ) )
+        {
+	        dip204_set_cursor_position(1,3);
+	        sprintf(text3,"POTEN:%04d",pot_value);
+	        dip204_printf_string(text3);
+			changed=1;
+        }
+		if(changed){
+			sprintf(USARTtext,"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n%s\n%s\n%s",text1,text2,text3);
+			writeUSART(USARTtext);
 		}
-		else
-		{
-			if( xSemaphoreTake( TS->xSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
-			{
-				writeUSART_CRT("Queue is empty, consumer goes to sleep\r\n");
-				//vTaskResume(pHandle);
-				vTaskSuspend(NULL);
-				writeUSART_CRT("Consumer woken \r\n");
-				xSemaphoreGive(TS->xSemaphore);
-			}
-
-			
-			xLastWakeTime = xTaskGetTickCount();
-		}
-		//vTaskDelayUntil(&xLastWakeTime, 320);
-
-		
+		vTaskDelayUntil(&xLastWakeTime,xFrequency);
 	}
 }
