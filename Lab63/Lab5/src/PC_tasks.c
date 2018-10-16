@@ -1,34 +1,39 @@
 #include "PC_tasks.h"
 
 //Initiates LED 0, 1 and 2.
-void PrintLight(unsigned int i){
-	char temp[60];
+void PrintUsart(unsigned int iPot, unsigned int iTemp, unsigned int iLight)
+{
+	char temp[128];
+	sprintf(temp,"Pot value:%d \r\n Temp value: %d \r\n Light value: %d \r\n\n\n\n\n\n\n\n", iPot, iTemp, iLight);
+	writeUSART(temp);
+}
+
+void PrintLight(unsigned int i)
+{
+	char temp[64];
 	sprintf(temp,"Light value:%d",i);
 	dip204_set_cursor_position(1,1);
 	dip204_write_string("                    ");
 	dip204_set_cursor_position(1,1);
 	dip204_write_string(temp);
-	//writeUSART_CRT(temp);
 }
-void PrintPot(unsigned int i){
-	char temp[60];
-	sprintf(temp,"PotValue:%d",i);
+void PrintPot(unsigned int i)
+{
+	char temp[64];
+	sprintf(temp,"Pot Value:%d",i);
 	dip204_set_cursor_position(1,2);
 	dip204_write_string("                    ");
 	dip204_set_cursor_position(1,2);
 	dip204_write_string(temp);
-	//writeUSART_CRT(temp);
-
 }
-void PrintTemp(unsigned int i){
-	char temp[60];
-	sprintf(temp,"TempValue:%d",i);
+void PrintTemp(unsigned int i)
+{
+	char temp[64];
+	sprintf(temp,"Temp Value:%d",i);
 	dip204_set_cursor_position(1,3);
 	dip204_write_string("                    ");
 	dip204_set_cursor_position(1,3);
 	dip204_write_string(temp);
-	//writeUSART_CRT(temp);
-
 }
 void initLED()
 {
@@ -78,7 +83,7 @@ void LightProducer(void * pvParameters)
 {
 	Task_Info *TI = (Task_Info *) pvParameters;
 	task_struct *TS = TI->Ts;
-	int Value = TI->task_nr;
+	unsigned int Value = TI->task_nr;
 	char byte = 48+(TI->task_nr);
 	portTickType xLastWakeTime = xTaskGetTickCount();
 	
@@ -98,7 +103,7 @@ void LightProducer(void * pvParameters)
 			xSemaphoreGive( GloQueueSemaphore );
 			//Byte was written, now update to next byte (0, 1, 2, 3....)
 			//byte++;
-			vTaskDelay(50);
+			vTaskDelay(35);
 
 			if(nQueue >= (sizeQ-1))
 			{
@@ -138,7 +143,7 @@ void TempProducer(void * pvParameters)
 {
 	Task_Info *TI = (Task_Info *) pvParameters;
 	task_struct *TS = TI->Ts;
-	int Value = TI->task_nr;
+	unsigned int Value = TI->task_nr;
 	char byte = 48+(TI->task_nr);
 	portTickType xLastWakeTime = xTaskGetTickCount();
 	
@@ -158,7 +163,7 @@ void TempProducer(void * pvParameters)
 			xSemaphoreGive( GloQueueSemaphore );
 			//Byte was written, now update to next byte (0, 1, 2, 3....)
 			//byte++;
-			vTaskDelay(50);
+			vTaskDelay(35);
 
 			if(nQueue >= (sizeQ-1))
 			{
@@ -198,7 +203,7 @@ void PotProducer(void * pvParameters)
 {
 	Task_Info *TI = (Task_Info *) pvParameters;
 	task_struct *TS = TI->Ts;
-	int Value = TI->task_nr;
+	unsigned int Value = TI->task_nr;
 	char byte = 48+(TI->task_nr);
 	portTickType xLastWakeTime = xTaskGetTickCount();
 	
@@ -218,7 +223,7 @@ void PotProducer(void * pvParameters)
 			xSemaphoreGive( GloQueueSemaphore );
 			//Byte was written, now update to next byte (0, 1, 2, 3....)
 			//byte++;
-			vTaskDelay(50);
+			vTaskDelay(35);
 			
 			if(nQueue >= (sizeQ-1))
 			{
@@ -259,12 +264,9 @@ void Consumer(void * pvParameters)
 {
 	Task_Info *TI = (Task_Info *) pvParameters;
 	task_struct *TS = TI->Ts;
-	int Value;
+	unsigned int Value;
 	char byte[4];
-	byte[0] = 'a';
-	byte[1] = '\r';
-	byte[2] = '\n';
-	byte[3] = 0;
+	int iPot = 0, iTemp = 0, iLight = 0; 
 	portTickType xLastWakeTime = xTaskGetTickCount();
 	
 	for(;;)
@@ -282,18 +284,22 @@ void Consumer(void * pvParameters)
 			if((Value & (1 << 12)) != 0)
 			{
 				Value &= ~(1<<12);
-				PrintPot(Value);
+				iPot = Value;
+				PrintPot(iPot);
 			}
 			else if((Value & (1 << 13)) != 0)
 			{
 				Value &= ~(1<<13);
-				PrintTemp(Value);
+				iTemp = Value;
+				PrintTemp(iTemp);
 			}
 			else if((Value & (1 << 14)) != 0)
 			{
 				Value &= ~(1<<14);
-				PrintLight(Value);
+				iLight = Value; 
+				PrintLight(iLight);
 			}
+			//PrintUsart(iPot,iTemp,iLight);
 			
 			
 			if(nQueue <= (1))
