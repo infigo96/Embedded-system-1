@@ -1,15 +1,35 @@
 #include "PC_tasks.h"
 
 //Initiates LED 0, 1 and 2.
-void writeNrOfChars(unsigned int i){
+void PrintLight(unsigned int i){
 	char temp[60];
-	sprintf(temp,"Nr of chars:%d",i);
-	dip204_set_cursor_position(1,4);
+	sprintf(temp,"Light value:%d",i);
+	dip204_set_cursor_position(1,1);
 	dip204_write_string("                    ");
-	dip204_set_cursor_position(1,4);
+	dip204_set_cursor_position(1,1);
 	dip204_write_string(temp);
+	writeUSART_CRT(temp);
 }
+void PrintPot(unsigned int i){
+	char temp[60];
+	sprintf(temp,"PotValue:%d",i);
+	dip204_set_cursor_position(1,2);
+	dip204_write_string("                    ");
+	dip204_set_cursor_position(1,2);
+	dip204_write_string(temp);
+	writeUSART_CRT(temp);
 
+}
+void PrintTemp(unsigned int i){
+	char temp[60];
+	sprintf(temp,"TempValue:%d",i);
+	dip204_set_cursor_position(1,3);
+	dip204_write_string("                    ");
+	dip204_set_cursor_position(1,3);
+	dip204_write_string(temp);
+	writeUSART_CRT(temp);
+
+}
 void initLED()
 {
 	volatile avr32_gpio_port_t *led_port;
@@ -180,6 +200,8 @@ void PotProducer(void * pvParameters)
 	{
 		xSemaphoreTake( GloTranSemaphore,  ( portTickType ) portMAX_DELAY);
 		//Check if there is space in the queue (1 if there is space, 0 else) and if there is, write to it..
+		adc_start(&AVR32_ADC); // Start a ADC sampling of all active channels
+		byteCount = adc_get_value(&AVR32_ADC, ADC_POTENTIOMETER_CHANNEL);
 		if(xQueueSendToBack(Qhandle,&byteCount,0) == 1)
 		{
 			xSemaphoreGive( GloTranSemaphore );
@@ -189,7 +211,7 @@ void PotProducer(void * pvParameters)
 			xSemaphoreGive( GloQueueSemaphore );
 			//Byte was written, now update to next byte (0, 1, 2, 3....)
 			//byte++;
-			vTaskDelay(10);
+			vTaskDelay(50);
 			
 			if(nQueue >= (sizeQ-1))
 			{
@@ -250,8 +272,8 @@ void Consumer(void * pvParameters)
 			nQueue--;
 			xSemaphoreGive( GloQueueSemaphore );
 			//Write what was in the queue.
-			writeNrOfChars(byteCount);
-			writeUSART_CRT(byte);
+			PrintPot(byteCount);
+			
 			
 			if(nQueue <= (1))
 			{
