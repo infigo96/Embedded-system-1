@@ -4,8 +4,8 @@
 void PrintUsart(unsigned int iPot, unsigned int iTemp, unsigned int iLight)
 {
 	char *temp = malloc(128);
-	sprintf(temp,"Pot:%d\nTemp:%d\nLight:%d\n", iPot, iTemp, iLight);
-	writeUSART_CRT(temp);
+	sprintf(temp,"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPotentiometer Value:%d\nTemp Value:%d\nLight Value:%d\n", iPot, iTemp, iLight);
+	writeUSART(temp);
 }
 
 void PrintLight(unsigned int i)
@@ -82,164 +82,71 @@ void writeUSART_CRT(const char * message)
 void LightProducer(void * pvParameters)
 {
 	Task_Info *TI = (Task_Info *) pvParameters;
-	task_struct *TS = TI->Ts;
 	unsigned int Value = TI->task_nr;
 	
 	for(;;)
 	{
-		vTaskDelay(100);
+		vTaskDelay(50);
 		adc_start(&AVR32_ADC); // Start a ADC sampling of all active channels
 		Value = adc_get_value(&AVR32_ADC, ADC_LIGHT_CHANNEL);
 		Value |= (1 << 14);
-		xSemaphoreTake( GloTranSemaphore,  ( portTickType ) portMAX_DELAY);
-		//Check if there is space in the queue (1 if there is space, 0 else) and if there is, write to it.
+		
 		if(xQueueSendToBack(Qhandle,&Value,0) == 1)
 		{
-			xSemaphoreGive( GloTranSemaphore );			
+			//xSemaphoreGive( GloTranSemaphore );			
 			xSemaphoreTake( GloQueueSemaphore,  ( portTickType ) portMAX_DELAY);
 			//Global variable that keeps track of absolute space in queue.
 			nQueue++;
-			xSemaphoreGive( GloQueueSemaphore );
-			//Byte was written, now update to next byte (0, 1, 2, 3....)
-			//byte++;
-
-			if(nQueue >= (sizeQ-1))
-			{
-				if( xSemaphoreTake( xSuspSemaphore, ( portTickType ) 1) == pdFALSE )
-				{
-					for(int i = 0; i < nrCons; i++)
-					{
-						vTaskResume(TS->cHandle[i]);
-					}
-
-				}
-				else
-				{
-					xSemaphoreGive(xSuspSemaphore);
-				}
-				//writeUSART("Wake cons\r\n");
-			}
+			xSemaphoreGive( GloQueueSemaphore );			
 		}
-		else
-		{
-			xSemaphoreGive( GloTranSemaphore );
-			if( xSemaphoreTake( xSuspSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
-			{
-				//writeUSART_CRT("Queue is full, producer goes to sleep\r\n");
-				vTaskSuspend(NULL);
-				//writeUSART_CRT("producer woken \r\n");
-				xSemaphoreGive(xSuspSemaphore);
-			}
-		}
+		
 	}
 }
 void TempProducer(void * pvParameters)
 {
 	Task_Info *TI = (Task_Info *) pvParameters;
-	task_struct *TS = TI->Ts;
 	unsigned int Value = TI->task_nr;
 	
 	for(;;)
 	{
-		vTaskDelay(100);
+		vTaskDelay(50);
 		adc_start(&AVR32_ADC); // Start a ADC sampling of all active channels
 		Value = adc_get_value(&AVR32_ADC, ADC_TEMPERATURE_CHANNEL);
 		Value |= (1 << 13);
-		xSemaphoreTake( GloTranSemaphore,  ( portTickType ) portMAX_DELAY);
+		//xSemaphoreTake( GloTranSemaphore,  ( portTickType ) portMAX_DELAY);
 		//Check if there is space in the queue (1 if there is space, 0 else) and if there is, write to it..
 		
 		if(xQueueSendToBack(Qhandle,&Value,0) == 1)
 		{
-			xSemaphoreGive( GloTranSemaphore );
+			//xSemaphoreGive( GloTranSemaphore );			
 			xSemaphoreTake( GloQueueSemaphore,  ( portTickType ) portMAX_DELAY);
 			//Global variable that keeps track of absolute space in queue.
 			nQueue++;
-			xSemaphoreGive( GloQueueSemaphore );
-			//Byte was written, now update to next byte (0, 1, 2, 3....)
-			//byte++;
-
-			if(nQueue >= (sizeQ-1))
-			{
-				if( xSemaphoreTake( xSuspSemaphore, ( portTickType ) 1) == pdFALSE )
-				{
-					for(int i = 0; i < nrCons; i++)
-					{
-						vTaskResume(TS->cHandle[i]);
-					}
-
-				}
-				else
-				{
-					xSemaphoreGive(xSuspSemaphore);
-				}
-				//writeUSART("Wake cons\r\n");
-			}
+			xSemaphoreGive( GloQueueSemaphore );			
 		}
-		else
-		{
-			xSemaphoreGive( GloTranSemaphore );
-			if( xSemaphoreTake( xSuspSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
-			{
-				//writeUSART_CRT("Queue is full, producer goes to sleep\r\n");
-				vTaskSuspend(NULL);
-				//writeUSART_CRT("producer woken \r\n");
-				xSemaphoreGive(xSuspSemaphore);
-			}
-		}
+		
 	}
 }
 void PotProducer(void * pvParameters)
 {
 	Task_Info *TI = (Task_Info *) pvParameters;
-	task_struct *TS = TI->Ts;
 	unsigned int Value = TI->task_nr;
 	
 	for(;;)
 	{
-		vTaskDelay(100);
+		vTaskDelay(50);
 		adc_start(&AVR32_ADC); // Start a ADC sampling of all active channels
 		Value = adc_get_value(&AVR32_ADC, ADC_POTENTIOMETER_CHANNEL);
 		Value |= (1 << 12);
-		xSemaphoreTake( GloTranSemaphore,  ( portTickType ) portMAX_DELAY);
-		//Check if there is space in the queue (1 if there is space, 0 else) and if there is, write to it..
 		if(xQueueSendToBack(Qhandle,&Value,0) == 1)
 		{
-			xSemaphoreGive( GloTranSemaphore );
+			//xSemaphoreGive( GloTranSemaphore );			
 			xSemaphoreTake( GloQueueSemaphore,  ( portTickType ) portMAX_DELAY);
 			//Global variable that keeps track of absolute space in queue.
 			nQueue++;
-			xSemaphoreGive( GloQueueSemaphore );
-			//Byte was written, now update to next byte (0, 1, 2, 3....)
-			//byte++;
-			
-			if(nQueue >= (sizeQ-1))
-			{
-				if( xSemaphoreTake( xSuspSemaphore, ( portTickType ) 1) == pdFALSE )
-				{
-					for(int i = 0; i < nrCons; i++)
-					{
-						vTaskResume(TS->cHandle[i]);
-					}
-
-				}
-				else
-				{
-					xSemaphoreGive(xSuspSemaphore);
-				}
-				//writeUSART("Wake cons\r\n");
-			}
+			xSemaphoreGive( GloQueueSemaphore );			
 		}
-		else
-		{
-			xSemaphoreGive( GloTranSemaphore );
-			if( xSemaphoreTake( xSuspSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
-			{
-				//writeUSART_CRT("Queue is full, producer goes to sleep\r\n");
-				vTaskSuspend(NULL);
-				//writeUSART_CRT("producer woken \r\n");
-				xSemaphoreGive(xSuspSemaphore);
-			}
-		}
+		
 	}
 }
 //Reads bytes from a queue.
@@ -251,16 +158,14 @@ void Consumer(void * pvParameters)
 	
 	for(;;)
 	{
-		xSemaphoreTake( GloReadSemaphore,  ( portTickType ) portMAX_DELAY);
 		//Read from queue if there is stuff there.
 		if(xQueueReceive(Qhandle,&Value,0) == 1)
 		{
-			xSemaphoreGive( GloReadSemaphore );
 			xSemaphoreTake( GloQueueSemaphore,  ( portTickType ) portMAX_DELAY);
 			//Update global
 			nQueue--;
 			xSemaphoreGive( GloQueueSemaphore );
-			//Write what was in the queue.
+			
 			if((Value & (1 << 12)) != 0)
 			{
 				Value &= ~(1<<12);
@@ -279,36 +184,12 @@ void Consumer(void * pvParameters)
 				iLight = Value; 
 				PrintLight(iLight);
 			}
-			PrintUsart(iPot,iTemp,iLight); //This Fucktard is creating Issues. 
+			PrintUsart(iPot,iTemp,iLight); 
 			
-			
-			if(nQueue <= (1))
-			{
-				if( xSemaphoreTake( xSuspSemaphore, ( portTickType ) 10) == pdFALSE )
-				{
-					for(int i = 0; i < nrProd; i++)
-					{
-						vTaskResume(TI->Ts->pHandle[i]);					
-					}
-
-				}
-				else
-				{
-					xSemaphoreGive(xSuspSemaphore);
-				}
-				
-			}
 		}
 		else
 		{
-			xSemaphoreGive( GloReadSemaphore );
-			if( xSemaphoreTake( xSuspSemaphore, ( portTickType ) portMAX_DELAY) == pdTRUE )
-			{
-				//writeUSART_CRT("Queue is empty, consumer goes to sleep\r\n");
-				vTaskSuspend(NULL);
-				//writeUSART_CRT("Consumer woken \r\n");
-				xSemaphoreGive(xSuspSemaphore);
-			}
+			vTaskDelay(100);
 		}
 	}
 }

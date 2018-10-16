@@ -31,19 +31,18 @@
 #define nrTasks 4
 
 //Struct used to check deadlines
-typedef struct _task_struct
-{
-	xTaskHandle *pHandle;
-	xTaskHandle *cHandle;
-}task_struct;
 
 typedef struct _task_info
 {
-	task_struct *Ts;
 	int task_nr;
 }Task_Info;
 
 
+
+xTaskHandle potHandle;
+xTaskHandle tempHandle;
+xTaskHandle lightHandle;
+xTaskHandle cHandle;
 xSemaphoreHandle xSuspSemaphore;
 xSemaphoreHandle GloReadSemaphore, GloTranSemaphore, GloQueueSemaphore;
 xQueueHandle Qhandle;
