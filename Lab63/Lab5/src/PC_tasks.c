@@ -92,12 +92,11 @@ void LightProducer(void * pvParameters)
 	{
 		vTaskDelay(50);
 		adc_start(&AVR32_ADC); // Start a ADC sampling of all active channels
-		Value = adc_get_value(&AVR32_ADC, ADC_LIGHT_CHANNEL);
-		Value |= (1 << 14);
+		Value = adc_get_value(&AVR32_ADC, ADC_LIGHT_CHANNEL);	//Only 10 bits used out of 32
+		Value |= (1 << 14);	//Adds a bit in the unused space in the uint for identifying this specific type of data
 		
 		if(xQueueSendToFront(Qhandle,&Value,50) == 1)
 		{
-			//xSemaphoreGive( GloTranSemaphore );			
 			xSemaphoreTake( GloQueueSemaphore,  ( portTickType ) portMAX_DELAY);
 			//Global variable that keeps track of absolute space in queue.
 			nQueue++;
@@ -116,13 +115,11 @@ void TempProducer(void * pvParameters)
 		vTaskDelay(50);
 		adc_start(&AVR32_ADC); // Start a ADC sampling of all active channels
 		Value = adc_get_value(&AVR32_ADC, ADC_TEMPERATURE_CHANNEL);
-		Value |= (1 << 13);
-		//xSemaphoreTake( GloTranSemaphore,  ( portTickType ) portMAX_DELAY);
-		//Check if there is space in the queue (1 if there is space, 0 else) and if there is, write to it..
+		Value |= (1 << 13);	//Adds a bit in the unused space in the uint for identifying this specific type of data
 		
+		//Check if there is space in the queue (1 if there is space, 0 else) and if there is, write to it..
 		if(xQueueSendToFront(Qhandle,&Value,50) == 1)
 		{
-			//xSemaphoreGive( GloTranSemaphore );			
 			xSemaphoreTake( GloQueueSemaphore,  ( portTickType ) portMAX_DELAY);
 			//Global variable that keeps track of absolute space in queue.
 			nQueue++;
@@ -141,10 +138,10 @@ void PotProducer(void * pvParameters)
 		vTaskDelay(50);
 		adc_start(&AVR32_ADC); // Start a ADC sampling of all active channels
 		Value = adc_get_value(&AVR32_ADC, ADC_POTENTIOMETER_CHANNEL);
-		Value |= (1 << 12);
+		Value |= (1 << 12);	//Adds a bit in the unused space in the uint for identifying this specific type of data
+		
 		if(xQueueSendToFront(Qhandle,&Value,50) == 1)
 		{
-			//xSemaphoreGive( GloTranSemaphore );			
 			xSemaphoreTake( GloQueueSemaphore,  ( portTickType ) portMAX_DELAY);
 			//Global variable that keeps track of absolute space in queue.
 			nQueue++;
@@ -163,14 +160,14 @@ void Consumer(void * pvParameters)
 	for(;;)
 	{
 		//Read from queue if there is stuff there.
-		if(xQueueReceive(Qhandle,&Value,0) == 1)
+		if(xQueueReceive(Qhandle,&Value,0) == 1)	//Some yeld issue internally here so a tick wait >0 gives issus, I just wait in the else instead. 
 		{
 			xSemaphoreTake( GloQueueSemaphore,  ( portTickType ) portMAX_DELAY);
 			//Update global
 			nQueue--;
 			xSemaphoreGive( GloQueueSemaphore );
 			
-			if((Value & (1 << 12)) != 0)
+			if((Value & (1 << 12)) != 0)	//Check which type of sensor the data is and print to correct LCD row
 			{
 				Value &= ~(1<<12);
 				iPot = Value;
@@ -188,7 +185,7 @@ void Consumer(void * pvParameters)
 				iLight = Value; 
 				PrintLight(iLight);
 			}
-			PrintUsart(iPot,iTemp,iLight); 
+			PrintUsart(iPot,iTemp,iLight);	//Print to USART always after new data is recieved 
 			
 		}
 		else

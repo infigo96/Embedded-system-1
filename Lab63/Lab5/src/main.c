@@ -15,19 +15,13 @@ int main()
 	adc_enable(&AVR32_ADC, ADC_TEMPERATURE_CHANNEL);
 	delay_init();
 
-	nQueue = 0;
+	nQueue = 0;	//Where in queue we are. 
 	nrProd = 3;
 	nrCons = 1;
 	Task_Info *TI = malloc((nrProd+nrCons)*(sizeof(Task_Info)));
 	
-	//Size of Queue buffer
-	//Size of queue, size of a slot
 	Qhandle = xQueueCreate(sizeQ,sizeof(int));
-	vSemaphoreCreateBinary(GloReadSemaphore);
-	vSemaphoreCreateBinary(GloTranSemaphore);
 	vSemaphoreCreateBinary(GloQueueSemaphore);
-	vSemaphoreCreateBinary(xSuspSemaphore);
-	//xSuspSemaphore = xSemaphoreCreateMutex();
 	
 	TI[0].task_nr = 0;
 	xTaskCreate(LightProducer,"producer",configMINIMAL_STACK_SIZE,&(TI[0]),tskIDLE_PRIORITY + 1,&lightHandle);
