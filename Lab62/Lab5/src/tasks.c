@@ -73,22 +73,26 @@ void ReaderTask(void * pvParameters)
 	for(;;)
 	{
 		//---------------display-------------Print every row separate
+		//Double semaphore will take and then wait for the semaphore to be released. 
+		//Leading to it sleeping until the USART interrupt releases the semaphore when a message is in the pipe
 		if( xSemaphoreTake( xSemaphoreReader, ( portTickType ) portMAX_DELAY) == pdTRUE )
 		{
 			if( xSemaphoreTake( xSemaphoreReader, ( portTickType ) portMAX_DELAY) == pdTRUE )
 			{
 
-				USART_getString(message,63);
-				len =strlen(message)-2;
-				charSum += len;
-				message[len] = 0;
-				strncat(message, clearMsg,60-len);
+				USART_getString(message,63);	//60 characters + \r + \n + \0.
+				
+				len =strlen(message)-2;	//Cut of so there is only 60 chars
+				charSum += len;		//Update the global total number of char recieved 
+				message[len] = 0;	//Moves the \0 to the end of the string
+				
+				strncat(message, clearMsg,60-len);	//Fill the remainder (if there is one that is) with empty space. 
 
 				dip204_set_cursor_position(1,1);
 				dip204_write_string(message);
 
 				(&AVR32_USART1)->IMR.rxrdy;		//Reads the Interrupt Mask register to clear this interrupt.
-				(&AVR32_USART1)->IER.rxrdy = 1;
+				(&AVR32_USART1)->IER.rxrdy = 1;		//Enables the interrupt again.
 
 				xSemaphoreGive(xSemaphoreReader);
 				xSemaphoreGive(xSemaphoreStatus);
@@ -105,7 +109,7 @@ void StatusTask(void * pvParameters)
 		//---------------display-------------Print every row separate
 		if( xSemaphoreTake( xSemaphoreStatus, ( portTickType ) portMAX_DELAY) == pdTRUE )
 		{
-			writeNrOfChars(charSum);
+			writeNrOfChars(charSum);	//Print the number of total recieved char on the LCD.
 		}
 	}
 }
@@ -119,15 +123,15 @@ void SwitchTask(void * pvParameters)
 		btn_state = AVR32_GPIO.port[BUTTON_PORT].pvr & BUTTON0_PIN;
 		if(btn_state==0)
 		{
-			writeNrOfChars(charSum);
+			writeNrOfChars(charSum);	//Write the first update of total number of char before StatusTasks switch on
 			vTaskResume(sHandle);
 			
-			vTaskDelay(10000);
+			vTaskDelay(10000);	//Let StatusTask run for 10 sec 
 			
-			vTaskSuspend(sHandle);
+			vTaskSuspend(sHandle);	//Then kill it again
 			dip204_set_cursor_position(1,4);
-			dip204_write_string("                    ");
+			dip204_write_string("                    ");		//Empty the display afterwards 
 		}
-		vTaskDelayUntil(&xLastWakeTime, 100);
+		vTaskDelayUntil(&xLastWakeTime, 100);	//Waits 100ms between checking the button
 	}
 }
