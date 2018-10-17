@@ -9,7 +9,7 @@ int main()
 	//InitStuff
 	initLED(); initBUTTON(); initUSART(); 
 	nQueue = 0;
-	nrProd = 3;
+	nrProd = 13;
 	nrCons = 2;
 	Task_Info *TI = malloc((nrProd+nrCons)*(sizeof(Task_Info)));
 	task_struct *TS = malloc(sizeof(task_struct));
@@ -22,8 +22,8 @@ int main()
 	vSemaphoreCreateBinary(GloReadSemaphore);
 	vSemaphoreCreateBinary(GloTranSemaphore);
 	vSemaphoreCreateBinary(GloQueueSemaphore);
-	//vSemaphoreCreateBinary(xSuspSemaphore);
-	xSuspSemaphore = xSemaphoreCreateMutex();
+	vSemaphoreCreateBinary(xSuspSemaphore);
+	//xSuspSemaphore = xSemaphoreCreateMutex();
 	
 	for(int i = 0; i < nrProd; i++)
 	{
