@@ -6,6 +6,7 @@ void PrintUsart(unsigned int iPot, unsigned int iTemp, unsigned int iLight)
 	char *temp = malloc(128);
 	sprintf(temp,"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPotentiometer Value:%d\nTemp Value:%d\nLight Value:%d\n", iPot, iTemp, iLight);
 	writeUSART(temp);
+	free(temp);
 }
 
 void PrintLight(unsigned int i)
@@ -16,6 +17,7 @@ void PrintLight(unsigned int i)
 	dip204_write_string("                    ");
 	dip204_set_cursor_position(1,3);
 	dip204_write_string(temp);
+	free(temp);
 }
 void PrintPot(unsigned int i)
 {
@@ -25,6 +27,7 @@ void PrintPot(unsigned int i)
 	dip204_write_string("                    ");
 	dip204_set_cursor_position(1,1);
 	dip204_write_string(temp);
+	free(temp);
 }
 void PrintTemp(unsigned int i)
 {
@@ -34,6 +37,7 @@ void PrintTemp(unsigned int i)
 	dip204_write_string("                    ");
 	dip204_set_cursor_position(1,2);
 	dip204_write_string(temp);
+	free(temp);
 }
 void initLED()
 {
