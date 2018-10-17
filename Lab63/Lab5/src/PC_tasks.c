@@ -91,7 +91,7 @@ void LightProducer(void * pvParameters)
 		Value = adc_get_value(&AVR32_ADC, ADC_LIGHT_CHANNEL);
 		Value |= (1 << 14);
 		
-		if(xQueueSendToBack(Qhandle,&Value,0) == 1)
+		if(xQueueSendToFront(Qhandle,&Value,50) == 1)
 		{
 			//xSemaphoreGive( GloTranSemaphore );			
 			xSemaphoreTake( GloQueueSemaphore,  ( portTickType ) portMAX_DELAY);
@@ -116,7 +116,7 @@ void TempProducer(void * pvParameters)
 		//xSemaphoreTake( GloTranSemaphore,  ( portTickType ) portMAX_DELAY);
 		//Check if there is space in the queue (1 if there is space, 0 else) and if there is, write to it..
 		
-		if(xQueueSendToBack(Qhandle,&Value,0) == 1)
+		if(xQueueSendToFront(Qhandle,&Value,50) == 1)
 		{
 			//xSemaphoreGive( GloTranSemaphore );			
 			xSemaphoreTake( GloQueueSemaphore,  ( portTickType ) portMAX_DELAY);
@@ -138,7 +138,7 @@ void PotProducer(void * pvParameters)
 		adc_start(&AVR32_ADC); // Start a ADC sampling of all active channels
 		Value = adc_get_value(&AVR32_ADC, ADC_POTENTIOMETER_CHANNEL);
 		Value |= (1 << 12);
-		if(xQueueSendToBack(Qhandle,&Value,0) == 1)
+		if(xQueueSendToFront(Qhandle,&Value,50) == 1)
 		{
 			//xSemaphoreGive( GloTranSemaphore );			
 			xSemaphoreTake( GloQueueSemaphore,  ( portTickType ) portMAX_DELAY);
