@@ -98,7 +98,7 @@ void DisplayTask(void * pvParameters)
 	volatile int tem_value; //Temperature
 	char text1[20],text2[20],text3[20]; //Saves the text for each line for reusablity
 	char USARTtext[70]; //The text sent to USART, will contain format char
-	int changed; //Deteches if a value was received for a queue
+	int changed; //Used to check if a value was received for a queue
 	portTickType xLastWakeTime;
 	const portTickType xFrequency = 10;
 	xLastWakeTime = xTaskGetTickCount();
@@ -122,6 +122,7 @@ void DisplayTask(void * pvParameters)
         }
         if( xQueueReceive( QTemp,&tem_value, ( portTickType ) 0 ) )
         {
+			//Update the display
 	        dip204_set_cursor_position(1,2);
 	        sprintf(text2,"TEMP :%04d",tem_value);
 	        dip204_printf_string(text2);
@@ -129,6 +130,7 @@ void DisplayTask(void * pvParameters)
         }
         if( xQueueReceive( QPotent,&pot_value, ( portTickType ) 0 ) )
         {
+			//Update the display
 	        dip204_set_cursor_position(1,3);
 	        sprintf(text3,"POTEN:%04d",pot_value);
 	        dip204_printf_string(text3);
