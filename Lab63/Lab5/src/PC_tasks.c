@@ -70,7 +70,7 @@ void TempTask(void * pvParameters)
 	for (;;)
 	{
 		adc_start(&AVR32_ADC);
-		temp_value = adc_get_value(&AVR32_ADC, ADC_TEMPERATURE_CHANNEL); // Get the light sensor value
+		temp_value = adc_get_value(&AVR32_ADC, ADC_TEMPERATURE_CHANNEL); // Get the temperature sensor value
 		xQueueSendToBack( QTemp, &temp_value, 0);
 		vTaskDelayUntil(&xLastWakeTime,xFrequency);
 	}
@@ -85,7 +85,7 @@ void PotenTask(void * pvParameters)
 	for (;;)
 	{
 		adc_start(&AVR32_ADC);
-		pot_value = adc_get_value(&AVR32_ADC, ADC_POTENTIOMETER_CHANNEL); // Get the light sensor value
+		pot_value = adc_get_value(&AVR32_ADC, ADC_POTENTIOMETER_CHANNEL); // Get the POTENTIOMETER value
 		xQueueSendToBack( QPotent, &pot_value, 0);
 		vTaskDelayUntil(&xLastWakeTime,xFrequency);
 	}
@@ -96,15 +96,13 @@ void DisplayTask(void * pvParameters)
 	volatile int pot_value; //Potentiometer
 	volatile int lig_value; //Light
 	volatile int tem_value; //Temperature
-	char text1[20];
-	char text2[20];
-	char text3[20];
-	char USARTtext[70];
-	int changed;
+	char text1[20],text2[20],text3[20]; //Saves the text for each line for reusablity
+	char USARTtext[70]; //The text sent to USART, will contain format char
+	int changed; //Deteches if a value was received for a queue
 	portTickType xLastWakeTime;
 	const portTickType xFrequency = 10;
 	xLastWakeTime = xTaskGetTickCount();
-	//Display start text
+	//Display start text, these will not change
 	dip204_set_cursor_position(1,1);dip204_write_string("LIGHT:");
 	dip204_set_cursor_position(1,2);dip204_write_string("TEMP :");
 	dip204_set_cursor_position(1,3);dip204_write_string("POTEN:");
@@ -113,27 +111,30 @@ void DisplayTask(void * pvParameters)
 	for (;;)
 	{
 		changed=0;
+		//Read values for the three queues
         if( xQueueReceive( QLight,&lig_value, ( portTickType ) 0 ) )
         {
+			//Update the display
 			dip204_set_cursor_position(1,1);
 			sprintf(text1,"LIGHT:%04d",lig_value);
 			dip204_printf_string(text1);
-			changed=1;
+			changed=1; //Value was received
         }
         if( xQueueReceive( QTemp,&tem_value, ( portTickType ) 0 ) )
         {
 	        dip204_set_cursor_position(1,2);
 	        sprintf(text2,"TEMP :%04d",tem_value);
 	        dip204_printf_string(text2);
-			changed=1;
+			changed=1; //Value was received
         }
         if( xQueueReceive( QPotent,&pot_value, ( portTickType ) 0 ) )
         {
 	        dip204_set_cursor_position(1,3);
 	        sprintf(text3,"POTEN:%04d",pot_value);
 	        dip204_printf_string(text3);
-			changed=1;
+			changed=1; //Value was received
         }
+		//When new values are available, sent the new text to USART
 		if(changed){
 			sprintf(USARTtext,"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n%s\n%s\n%s",text1,text2,text3);
 			writeUSART(USARTtext);

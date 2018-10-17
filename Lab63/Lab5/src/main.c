@@ -14,12 +14,12 @@ int main()
 	adc_enable(&AVR32_ADC, ADC_LIGHT_CHANNEL);
 	adc_enable(&AVR32_ADC, ADC_TEMPERATURE_CHANNEL);
 	display_init();
-	//Size of queue, size of a slot
-	QLight = xQueueCreate(1,sizeof(volatile int));
-	QTemp = xQueueCreate(1,sizeof(volatile int));
-	QPotent = xQueueCreate(1,sizeof(volatile int));
 	
-	//vSemaphoreCreateBinary((TS->xSemaphore));
+	//Create queues with space for one value (int)
+	QLight = xQueueCreate(1,sizeof(volatile int)); //LightTask --> DisplayTask
+	QTemp = xQueueCreate(1,sizeof(volatile int));  //TempTask --> DisplayTask
+	QPotent = xQueueCreate(1,sizeof(volatile int));//PotenTask --> DisplayTask  
+	
 	//Create tasks.
 	xTaskCreate(LightTask,"light",configMINIMAL_STACK_SIZE,NULL,tskIDLE_PRIORITY + 1,NULL);
 	xTaskCreate(TempTask,"temp",configMINIMAL_STACK_SIZE,NULL,tskIDLE_PRIORITY + 1,NULL);
