@@ -10,6 +10,7 @@
 #include "adc.h"
 #include "display_init.h"
 #include <stdio.h>
+#include "pwm.h"
 void mdelay(int ms);
 void mdelay(int ms)		//Delay function
 {
@@ -40,6 +41,25 @@ int main(void)
 	delay_init();
 	display_init();
 	char text[25] = "Hello world";
+	LED_Set_Intensity(LED7, 200);	//I use this to get the waveform init done and one led set.
+	
+	avr32_pwm_channel_t hej; 
+	hej.cprd = 0x000000FF;		//Set up some predefined like in LED_Set_Intensity
+	hej.cmr = (AVR32_PWM_CPRE_MCK << AVR32_PWM_CPRE_OFFSET) &	~(AVR32_PWM_CALG_MASK |	AVR32_PWM_CPOL_MASK | AVR32_PWM_CPD_MASK);
+	
+	hej.cdty = 0.4*255;		//Set my intensity.
+	AVR32_GPIO.port[1].pmr0c = 1<<20;	//Map the port to the PWM channel
+	AVR32_GPIO.port[1].pmr1c = 1<<20;
+	AVR32_GPIO.port[1].gperc = 1<<20;
+	pwm_channel_init(1, &hej);
+	pwm_start_channels(1<<1);
+	
+	hej.cdty = 0.1*255;
+	AVR32_GPIO.port[1].pmr0s = 1<<27;	//Had to use LED 0 or 1 since there is only 4 green on PWM LED 0,1, 5,7. LED 4 and 6 are red and on the same physical as 5 and 7
+	AVR32_GPIO.port[1].pmr1c = 1<<27;
+	AVR32_GPIO.port[1].gperc = 1<<27;
+	pwm_channel_init(4, &hej);
+	pwm_start_channels(1<<4);
 	
 	while(1)
 	{
@@ -61,7 +81,6 @@ int main(void)
 		brightness_LED5 = pot_value * 255 / 1024;
 		//
 		//// Set the intensity of the LED
-		LED_Set_Intensity(LED5, brightness_LED5);
 		
 		//Clear the display
 		//dip204_clear_display();
