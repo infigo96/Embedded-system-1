@@ -1,6 +1,20 @@
 #include "PC_tasks.h"
 
 //Initiates LED 0, 1 and 2.
+void UsartSWr(char *msg, int nrPh)
+{
+	xSemaphoreTake( UsartSem, ( portTickType ) portMAX_DELAY);
+	msg[12] = 49 + nrPh;
+	writeUSART(msg);
+	xSemaphoreGive(UsartSem);
+}
+void mdelay(int ms){
+	long volatile cycles = 1050*ms;
+	while (cycles != 0)
+	{
+		cycles--;
+	}
+}
 void initLED()
 {
 	volatile avr32_gpio_port_t *led_port;
@@ -43,7 +57,27 @@ void writeUSART_CRT(const char * message)
 	writeUSART(message);
 	taskEXIT_CRITICAL();
 }
-
+void Philosopher(void *pvParameters)
+{
+	Phil_Struct *PhilContr = (Phil_Struct*)pvParameters;
+	while(1)
+	{
+		if(xSemaphoreTake( PhilContr->lFork, ( portTickType ) 50) == pdTRUE)
+		{
+			UsartSWr(PhilContr->MTLF, PhilContr->nrPh);
+			if(xSemaphoreTake( PhilContr->rFork, ( portTickType ) 50) == pdTRUE)
+			{
+				UsartSWr(PhilContr->MTRF, PhilContr->nrPh);
+				vTaskDelay(200);
+				xSemaphoreGive(PhilContr->rFork);
+				UsartSWr(PhilContr->MGRF, PhilContr->nrPh);
+			}
+			xSemaphoreGive(PhilContr->lFork);
+			UsartSWr(PhilContr->MGLF, PhilContr->nrPh);		
+		}
+		//mdelay(200);
+	}
+}
 //Producer task. Sends bytes to the queue.
 void Producer(void * pvParameters)
 {

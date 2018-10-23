@@ -29,6 +29,18 @@ typedef struct task_struct
 
 }task_struct;
 
+typedef struct _phDef
+{
+	xSemaphoreHandle lFork;
+	xSemaphoreHandle rFork;
+	int nrPh;
+	char *MTLF;
+	char *MTRF;
+	char *MGRF;
+	char *MGLF;
+}Phil_Struct;
+
+xSemaphoreHandle UsartSem;
 xQueueHandle Qhandle;
 int nQueue;
 int sizeQ;
@@ -36,6 +48,7 @@ int sizeQ;
 void initLED();
 void initBUTTON(void);
 void writeUSART_CRT(const char * message);
+void Philosopher(void * pvParameters);
 void Producer(void * pvParameters);
 void Consumer(void * pvParameters);
 
