@@ -10,7 +10,7 @@ int main()
 	initLED(); initBUTTON(); initUSART(); 
 	nQueue = 0;
 	task_struct *TS;
-	char MS1[] = "Philosohper x take left fork\n";
+	char MS1[] = "Philosohper x take left fork\n";		//Predefined status messages.
 	char MS2[] = "Philosohper x take right fork and start eating\n";
 	char MS3[] = "Philosohper x stop eating and give right fork\n";
 	char MS4[] = "Philosohper x give left fork and starts thinking\n";
@@ -22,7 +22,7 @@ int main()
 	Qhandle = xQueueCreate(sizeQ,1);
 	Phil_Struct *Structs = (Phil_Struct*)malloc(sizeof(Phil_Struct)*5);
 	xSemaphoreHandle Semaphores[5];
-	vSemaphoreCreateBinary(Semaphores[0]);	
+	vSemaphoreCreateBinary(Semaphores[0]);	//A recource for each fork (or chopstick) 
 	vSemaphoreCreateBinary(Semaphores[1]);
 	vSemaphoreCreateBinary(Semaphores[2]);
 	vSemaphoreCreateBinary(Semaphores[3]);
@@ -31,11 +31,11 @@ int main()
 	
 	vSemaphoreCreateBinary((TS->xSemaphore));
 	
-	//Create tasks.
-	Structs[0].lFork = Semaphores[4];
+	//Create tasks.	First one is special since his left is the last index
+	Structs[0].lFork = Semaphores[4];	//Which forks he have to his left and right.
 	Structs[0].rFork = Semaphores[0];
-	Structs[0].nrPh = 0;
-	Structs[0].MTLF = MS1;
+	Structs[0].nrPh = 0;	//Philosopher ID
+	Structs[0].MTLF = MS1;	//Send a pointer to the status messages. Had issues with messages defined in the task before
 	Structs[0].MTRF = MS2;
 	Structs[0].MGRF = MS3;
 	Structs[0].MGLF = MS4;

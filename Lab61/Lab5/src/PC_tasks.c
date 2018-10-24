@@ -1,10 +1,9 @@
 #include "PC_tasks.h"
 
-//Initiates LED 0, 1 and 2.
-void UsartSWr(char *msg, int nrPh)
+void UsartSWr(char *msg, int nrPh)	//Writes to usart protected by a semaphore and sets the number of the philosopher in the message
 {
-	xSemaphoreTake( UsartSem, ( portTickType ) portMAX_DELAY);
-	msg[12] = 49 + nrPh;
+	xSemaphoreTake( UsartSem, ( portTickType ) portMAX_DELAY);	//Only one can write at a time 
+	msg[12] = 49 + nrPh;	//Put in the number of the philosopher starting from 1 
 	writeUSART(msg);
 	xSemaphoreGive(UsartSem);
 }
@@ -62,20 +61,20 @@ void Philosopher(void *pvParameters)
 	Phil_Struct *PhilContr = (Phil_Struct*)pvParameters;
 	while(1)
 	{
-		if(xSemaphoreTake( PhilContr->lFork, ( portTickType ) 50) == pdTRUE)
+		if(xSemaphoreTake( PhilContr->lFork, ( portTickType ) 50) == pdTRUE)	//Tries to take left fork. Have some time before giving up
 		{
-			UsartSWr(PhilContr->MTLF, PhilContr->nrPh);
-			if(xSemaphoreTake( PhilContr->rFork, ( portTickType ) 50) == pdTRUE)
+			UsartSWr(PhilContr->MTLF, PhilContr->nrPh);	//Sends status message 
+			if(xSemaphoreTake( PhilContr->rFork, ( portTickType ) 0) == pdTRUE)	//Tries to take right fork but do not wait.
 			{
 				UsartSWr(PhilContr->MTRF, PhilContr->nrPh);
-				vTaskDelay(200);
-				xSemaphoreGive(PhilContr->rFork);
+				vTaskDelay(200);	//Eating time
+				xSemaphoreGive(PhilContr->rFork);	//Give back the right one first 
 				UsartSWr(PhilContr->MGRF, PhilContr->nrPh);
 			}
-			xSemaphoreGive(PhilContr->lFork);
+			xSemaphoreGive(PhilContr->lFork);	//Gives back the left one.
 			UsartSWr(PhilContr->MGLF, PhilContr->nrPh);		
 		}
-		//mdelay(200);
+		//vTaskDelay(200);	//Potentioal thinking time. 
 	}
 }
 //Producer task. Sends bytes to the queue.
