@@ -59,8 +59,8 @@ void Philosopher(void * pvParameters)
 	portTickType xLastWakeTime = xTaskGetTickCount();
 	int * ts = (int *)pvParameters;
 	int id = *ts;
-	char text[30];
-	sprintf(text,"Phil(%d): Started\r\n",id);
+	char text[] = "Phil( ): Started\r\n";
+	text[5] = 46 + id;
 	writeUSART_CRT(text);
 	for(;;)
 	{
@@ -69,19 +69,19 @@ void Philosopher(void * pvParameters)
 		
 		// Think until the left chopstick is available; when it is, pick it up;
 		if( xSemaphoreTake( xSemaphore[id], ( portTickType ) portMAX_DELAY) == pdTRUE ){}
-		sprintf(text,"Phil(%d): Grabbed left\n",id);
+		//sprintf(text,"Phil(%d): Grabbed left\n",id);
 		writeUSART_CRT(text);
 		
 		// Think until the right chopstick is available; when it is, pick it up;
 		if( xSemaphoreTake( xSemaphore[(id+1) % NR_OF_PHIL], ( portTickType ) portMAX_DELAY) == pdTRUE ){}
-		sprintf(text,"Phil(%d): Grabbed right\n",id);
+		//sprintf(text,"Phil(%d): Grabbed right\n",id);
 		writeUSART_CRT(text);
 		
 		// When both chopsticks are held, eat for a fixed amount of time;
-		sprintf(text,"Phil(%d): Started eating\n",id);
+		//sprintf(text,"Phil(%d): Started eating\n",id);
 		writeUSART_CRT(text);
 		vTaskDelay(1500);
-		sprintf(text,"Phil(%d): Done eating\n",id);
+		//sprintf(text,"Phil(%d): Done eating\n",id);
 		writeUSART_CRT(text);
 		
 		// Then, put the right chopstick down;
@@ -89,7 +89,7 @@ void Philosopher(void * pvParameters)
 		// Then, put the left chopstick down;
 		xSemaphoreGive( xSemaphore[(id+1)%NR_OF_PHIL] );
 		
-		sprintf(text,"Phil(%d): Put down chopstick\n",id);
+		//sprintf(text,"Phil(%d): Put down chopstick\n",id);
 		writeUSART_CRT(text);
 		
 		// Repeat from the beginning.
