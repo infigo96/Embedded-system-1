@@ -8,7 +8,7 @@
 
 #include "tc.h"
 #include <stdio.h>
-#define NR_OF_PHIL 1
+#define NR_OF_PHIL 5
 //The LED addresses
 # define LED_PORT ( LED0_GPIO / 32 )
 # define LED0_PIN 27

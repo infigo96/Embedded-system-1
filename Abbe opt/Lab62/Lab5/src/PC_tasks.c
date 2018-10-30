@@ -59,38 +59,51 @@ void Philosopher(void * pvParameters)
 	portTickType xLastWakeTime = xTaskGetTickCount();
 	int * ts = (int *)pvParameters;
 	int id = *ts;
-	char text[] = "Phil( ): Started\r\n";
-	text[5] = 46 + id;
-	writeUSART_CRT(text);
+	char text1[] = "Phil(x): Started\n";
+	char text2[] = "Phil(x): Grabbed left\n";
+	char text3[] = "Phil(x): Grabbed right\r\n";
+	char text4[] = "Phil(x): Started eating----------\n";
+	char text5[] = "Phil(x): Done eating----------\n";
+	char text6[] = "Phil(x): Put down left\n";
+	char text7[] = "Phil(x): Put down right\n";
+	text1[5] = 48 + id;
+	text2[5] = 48 + id;
+	text3[5] = 48 + id;
+	text4[5] = 48 + id;
+	text5[5] = 48 + id;
+	text6[5] = 48 + id;
+	text7[5] = 48 + id;
+	writeUSART_CRT(text1);
 	for(;;)
 	{
 		// Think for a while
-		vTaskDelay(100);
+		vTaskDelay(2000);
 		
 		// Think until the left chopstick is available; when it is, pick it up;
-		if( xSemaphoreTake( xSemaphore[id], ( portTickType ) portMAX_DELAY) == pdTRUE ){}
-		//sprintf(text,"Phil(%d): Grabbed left\n",id);
-		writeUSART_CRT(text);
+		if( xSemaphoreTake( xSemaphore[id], ( portTickType ) portMAX_DELAY) == pdTRUE )
+		{
+			writeUSART_CRT(text2);
 		
-		// Think until the right chopstick is available; when it is, pick it up;
-		if( xSemaphoreTake( xSemaphore[(id+1) % NR_OF_PHIL], ( portTickType ) portMAX_DELAY) == pdTRUE ){}
-		//sprintf(text,"Phil(%d): Grabbed right\n",id);
-		writeUSART_CRT(text);
+			// Think until the right chopstick is available; when it is, pick it up;
+			//If this is set to MAX_DELAY, the program will be stuck
+			if( xSemaphoreTake( xSemaphore[(id+1) % NR_OF_PHIL], ( portTickType ) 500) == pdTRUE )
+			{
+				writeUSART_CRT(text3);
 		
-		// When both chopsticks are held, eat for a fixed amount of time;
-		//sprintf(text,"Phil(%d): Started eating\n",id);
-		writeUSART_CRT(text);
-		vTaskDelay(1500);
-		//sprintf(text,"Phil(%d): Done eating\n",id);
-		writeUSART_CRT(text);
+				// When both chopsticks are held, eat for a fixed amount of time;
+				writeUSART_CRT(text4);
+				vTaskDelay(3500);
+				writeUSART_CRT(text5);
 		
-		// Then, put the right chopstick down;
-		xSemaphoreGive( xSemaphore[id]);
-		// Then, put the left chopstick down;
-		xSemaphoreGive( xSemaphore[(id+1)%NR_OF_PHIL] );
-		
-		//sprintf(text,"Phil(%d): Put down chopstick\n",id);
-		writeUSART_CRT(text);
+				// Then, put the right chopstick down;
+				writeUSART_CRT(text6);
+				xSemaphoreGive( xSemaphore[id]);
+				
+			}
+			// Then, put the left chopstick down;
+			writeUSART_CRT(text7);
+			xSemaphoreGive( xSemaphore[(id+1)%NR_OF_PHIL] );
+		}
 		
 		// Repeat from the beginning.
 	}
