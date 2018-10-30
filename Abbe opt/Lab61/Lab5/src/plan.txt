@@ -1,0 +1,27 @@
+Pro:
+	Take y
+	if (queue != full)
+		send data
+		if (queue == full)
+			if (X == taken)
+				wake Con
+		Give y
+	else
+		Give y
+		Take x
+		Slp
+		Give x
+		
+Con:
+	Take y
+	if (queue != empty)
+		take data
+		if (queue == empty)
+			if (X == taken)
+				wake Pro
+		Give y
+	else
+		Give y
+		Take x
+		Slp
+		Give x
